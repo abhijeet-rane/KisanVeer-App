@@ -1,0 +1,101 @@
+# =============================================================
+# KisanVeer-App .gitignore
+# =============================================================
+
+# Environment & Secrets
+.env
+
+# Flutter/Dart
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+build/
+.metadata
+
+# Generated files
+*.g.dart
+*.freezed.dart
+*.mocks.dart
+**/doc/api/
+**/ios/Flutter/.last_build_id
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+*.swp
+*.swo
+devtools_options.yaml
+
+# OS
+.DS_Store
+Thumbs.db
+*.log
+
+# Debug & Symbols
+debug_info/
+app.*.symbols
+app.*.map.json
+*.class
+*.pyc
+
+# Android
+/android/app/debug
+/android/app/profile
+/android/app/release
+/android/.gradle/
+/android/local.properties
+/android/captures/
+/android/gradlew
+/android/gradlew.bat
+/android/gradle/wrapper/gradle-wrapper.jar
+*.apk
+*.aab
+
+# iOS
+/ios/Pods/
+/ios/.symlinks/
+/ios/Flutter/Flutter.framework
+/ios/Flutter/Flutter.podspec
+/ios/Flutter/engine/
+/ios/Flutter/Generated.xcconfig
+/ios/ServiceDefinitions.json
+
+# macOS
+/macos/Flutter/ephemeral/
+
+# Windows
+/windows/flutter/ephemeral/
+
+# Linux
+/linux/flutter/ephemeral/
+
+# Web
+/web/favicon.png
+
+# Misc
+.atom/
+.build/
+.buildlog/
+.history
+.svn/
+.swiftpm/
+migrate_working_dir/
+
+# Debug dumps
+db/error.txt
+db/info.txt
+
+# Database files
+db
+
+# Unused platforms (Android-only project)
+ios/
+linux/
+macos/
+windows/
+web/

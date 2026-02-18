@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Launch splash with dark green background matching Flutter premium splash -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Dark green background to match Flutter splash -->
+    <item android:drawable="@color/splash_background" />
+</layer-list>

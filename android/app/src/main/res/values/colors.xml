@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Primary brand colors matching Flutter app -->
+    <color name="primary">#0E7C3F</color>
+    <color name="primary_dark">#064E2B</color>
+    <color name="splash_background">#064E2B</color>
+    <color name="splash_dark">#032615</color>
+</resources>

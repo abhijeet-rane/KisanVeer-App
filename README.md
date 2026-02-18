@@ -114,7 +114,7 @@ assets/                        # Images, icons, fonts, animations
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/KisanVeer-App.git
+   git clone https://github.com/abhijeet-rane/KisanVeer-App.git
    cd KisanVeer-App
    ```
 
@@ -139,13 +139,13 @@ assets/                        # Images, icons, fonts, animations
 
 ## 📸 Screenshots
 
-![Screenshot 1](screenshots/image-1.png)
+![Screenshot 1](screenshots/image-1.jpg)
 
-![Screenshot 2](screenshots/image-2.png)
+![Screenshot 2](screenshots/image-2.jpg)
 
-![Screenshot 3](screenshots/image-3.png)
+![Screenshot 3](screenshots/image-3.jpg)
 
-![Screenshot 4](screenshots/image-4.png)
+![Screenshot 4](screenshots/image-4.jpg)
 
 ---
 

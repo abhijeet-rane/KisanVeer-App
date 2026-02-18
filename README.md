@@ -125,20 +125,12 @@ assets/                        # Images, icons, fonts, animations
    SUPABASE_ANON_KEY=your_supabase_anon_key
    ```
 
-3. **Setup database**
-   Run the SQL scripts from `db/` folder in your Supabase SQL editor:
-   - `user_profiles_table.sql`
-   - `marketplace_schema.sql`
-   - `farming_advice_table.sql`
-   - `supabase_security_sql.sql`
-   - `supabase_market_insights.sql`
-
-4. **Install dependencies**
+3. **Install dependencies**
    ```bash
    flutter pub get
    ```
 
-5. **Run the app**
+4. **Run the app**
    ```bash
    flutter run
    ```
@@ -147,11 +139,13 @@ assets/                        # Images, icons, fonts, animations
 
 ## 📸 Screenshots
 
-<!-- Add your screenshots here -->
-<!-- ![Home Screen](screenshots/home.png) -->
-<!-- ![Market Dashboard](screenshots/market.png) -->
+![Screenshot 1](screenshots/image-1.png)
 
-*Screenshots coming soon*
+![Screenshot 2](screenshots/image-2.png)
+
+![Screenshot 3](screenshots/image-3.png)
+
+![Screenshot 4](screenshots/image-4.png)
 
 ---
 

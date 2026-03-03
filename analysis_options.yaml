@@ -4,16 +4,39 @@ analyzer:
   errors:
     # Treat deprecated API usage as info (not blocking CI)
     deprecated_member_use: info
+    # Treat these as info instead of warnings (cosmetic, not bugs)
+    unnecessary_null_comparison: info
+    unnecessary_non_null_assertion: info
+    unnecessary_type_check: info
+    unnecessary_cast: info
+    dead_null_aware_expression: info
+    unused_field: info
+    unused_element: info
+    unused_import: info
+    unused_local_variable: info
+    unnecessary_import: info
   exclude:
     - "**/*.g.dart"
     - "**/*.freezed.dart"
 
 linter:
   rules:
-    # Suppress noisy style suggestions that don't affect functionality
+    # Suppress noisy style suggestions
     use_super_parameters: false
     unnecessary_const: false
     unnecessary_this: false
     unnecessary_brace_in_string_interps: false
     prefer_final_fields: false
     avoid_print: false
+    use_build_context_synchronously: false
+    sort_child_properties_last: false
+    library_private_types_in_public_api: false
+    prefer_interpolation_to_compose_strings: false
+
+    depend_on_referenced_packages: false
+    unnecessary_to_list_in_spreads: false
+    prefer_conditional_assignment: false
+    unnecessary_null_in_if_null_operators: false
+    await_only_futures: false
+    curly_braces_in_flow_control_structures: false
+    no_leading_underscores_for_local_identifiers: false

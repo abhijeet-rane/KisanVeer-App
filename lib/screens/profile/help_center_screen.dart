@@ -14,26 +14,31 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
   final List<Map<String, dynamic>> _faqItems = [
     {
       'question': 'How do I add or change the crops I grow?',
-      'answer': 'You can add or change your crops by going to your Profile, tapping on "Edit Profile", and then selecting the crops you grow from the list provided.'
+      'answer':
+          'You can add or change your crops by going to your Profile, tapping on "Edit Profile", and then selecting the crops you grow from the list provided.'
     },
     {
       'question': 'How does the weather forecast help me with farming?',
-      'answer': 'The weather forecast provides detailed information about expected weather conditions that affect your crops. Based on the current weather and forecast, the app provides specific recommendations for your crops to help you maximize yield and prevent damage.'
+      'answer':
+          'The weather forecast provides detailed information about expected weather conditions that affect your crops. Based on the current weather and forecast, the app provides specific recommendations for your crops to help you maximize yield and prevent damage.'
     },
     {
       'question': 'Can I sell my produce directly through this app?',
-      'answer': 'Yes! The Market tab allows you to list your produce for sale. You can also connect with buyers in your area who are looking for fresh produce directly from farmers.'
+      'answer':
+          'Yes! The Market tab allows you to list your produce for sale. You can also connect with buyers in your area who are looking for fresh produce directly from farmers.'
     },
     {
       'question': 'How do I get financial assistance for farming?',
-      'answer': 'Visit the Finance tab to view available financial products including loans, insurance, and subsidies specifically for farmers. You can apply directly through the app.'
+      'answer':
+          'Visit the Finance tab to view available financial products including loans, insurance, and subsidies specifically for farmers. You can apply directly through the app.'
     },
     {
       'question': 'How do I connect with other farmers?',
-      'answer': 'The Community tab allows you to connect with other farmers, join groups based on crops or location, and participate in discussions to share best practices.'
+      'answer':
+          'The Community tab allows you to connect with other farmers, join groups based on crops or location, and participate in discussions to share best practices.'
     },
   ];
-  
+
   final List<Map<String, dynamic>> _contactOptions = [
     {
       'title': 'Email Support',
@@ -60,7 +65,7 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
       'type': 'screen'
     },
   ];
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -96,9 +101,9 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
                 },
               ),
             ),
-            
+
             const SizedBox(height: 24),
-            
+
             // Quick Contact Options
             const Text(
               'Contact Support',
@@ -108,7 +113,7 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
               ),
             ),
             const SizedBox(height: 16),
-            
+
             CustomCard(
               padding: EdgeInsets.zero,
               child: ListView.separated(
@@ -124,7 +129,7 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
                       color: Colors.green,
                     ),
                     title: Text(option['title']),
-                    subtitle: option['type'] != 'screen' 
+                    subtitle: option['type'] != 'screen'
                         ? Text(option['action'])
                         : null,
                     onTap: () {
@@ -134,9 +139,9 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
                 },
               ),
             ),
-            
+
             const SizedBox(height: 24),
-            
+
             // FAQs
             const Text(
               'Frequently Asked Questions',
@@ -146,7 +151,7 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
               ),
             ),
             const SizedBox(height: 16),
-            
+
             ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
@@ -181,9 +186,9 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
                 );
               },
             ),
-            
+
             const SizedBox(height: 24),
-            
+
             // Additional Resources
             const Text(
               'Additional Resources',
@@ -193,7 +198,7 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
               ),
             ),
             const SizedBox(height: 16),
-            
+
             CustomCard(
               padding: EdgeInsets.zero,
               child: Column(
@@ -236,14 +241,14 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 24),
           ],
         ),
       ),
     );
   }
-  
+
   void _handleContactAction(String type, String action) async {
     switch (type) {
       case 'email':
@@ -260,7 +265,7 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
           _showErrorSnackbar('Could not open email app');
         }
         break;
-        
+
       case 'phone':
         final Uri phoneUri = Uri(
           scheme: 'tel',
@@ -272,7 +277,7 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
           _showErrorSnackbar('Could not open phone app');
         }
         break;
-        
+
       case 'whatsapp':
         final Uri whatsappUri = Uri.parse(
           'https://wa.me/${action.replaceAll(RegExp(r'\s+'), '')}',
@@ -283,7 +288,7 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
           _showErrorSnackbar('Could not open WhatsApp');
         }
         break;
-        
+
       case 'screen':
         if (action == 'report') {
           Navigator.push(
@@ -296,7 +301,7 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
         break;
     }
   }
-  
+
   void _showErrorSnackbar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message)),

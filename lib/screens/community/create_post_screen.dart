@@ -81,7 +81,8 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       final imageUrls = <String>[];
       for (final imageFile in _selectedImages) {
         final fileName = path.basename(imageFile.path);
-        final imageUrl = await _communityService.uploadPostImage(imageFile, fileName);
+        final imageUrl =
+            await _communityService.uploadPostImage(imageFile, fileName);
         imageUrls.add(imageUrl);
       }
 

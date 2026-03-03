@@ -28,7 +28,6 @@ class _MarketInsightsScreenState extends State<MarketInsightsScreen> {
   // Data for popular commodities
   List<PinnedCommodity> _pinnedCommodities = [];
 
-
   @override
   void initState() {
     super.initState();
@@ -46,12 +45,10 @@ class _MarketInsightsScreenState extends State<MarketInsightsScreen> {
       final summary = await _marketService.getDailyMarketSummary();
       final pinned = await _marketService.getPinnedCommodities();
 
-
       setState(() {
         _pinnedCommodities = pinned;
         _isLoading = false;
       });
-
     } catch (e) {
       setState(() {
         _errorMessage = e.toString();
@@ -268,7 +265,8 @@ class _MarketInsightsScreenState extends State<MarketInsightsScreen> {
   Widget _quickActionButton({
     required IconData icon,
     required String label,
-    required VoidCallback onTap, required MaterialColor iconColor,
+    required VoidCallback onTap,
+    required MaterialColor iconColor,
   }) {
     return InkWell(
       onTap: onTap,
@@ -323,7 +321,6 @@ class _MarketInsightsScreenState extends State<MarketInsightsScreen> {
       ),
     );
   }
-
 
   Widget _pinnedCommodityCard(PinnedCommodity commodity, [int index = 0]) {
     String marketLocation = commodity.market ?? '';
@@ -387,14 +384,13 @@ class _MarketInsightsScreenState extends State<MarketInsightsScreen> {
         ),
       ),
     ).animate().fadeIn(duration: 300.ms, delay: 100.ms * index).slideX(
-      begin: 0.1,
-      end: 0,
-      curve: Curves.easeOutQuad,
-      duration: 300.ms,
-      delay: 100.ms * index,
-    );
+          begin: 0.1,
+          end: 0,
+          curve: Curves.easeOutQuad,
+          duration: 300.ms,
+          delay: 100.ms * index,
+        );
   }
-
 
   Widget _buildFeatureCards() {
     return GridView.count(

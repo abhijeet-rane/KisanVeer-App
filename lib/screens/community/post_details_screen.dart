@@ -201,15 +201,17 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                               fit: BoxFit.cover,
                               width: 200,
                               placeholder: (context, url) => Container(
-                                color:
-                                    Theme.of(context).colorScheme.surfaceVariant,
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .surfaceVariant,
                                 child: const Center(
                                   child: CircularProgressIndicator(),
                                 ),
                               ),
                               errorWidget: (context, url, error) => Container(
-                                color:
-                                    Theme.of(context).colorScheme.errorContainer,
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .errorContainer,
                                 child: const Icon(Icons.error),
                               ),
                             ),

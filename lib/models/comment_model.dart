@@ -37,7 +37,7 @@ class CommentModel {
       updatedAt: DateTime.now(),
     );
   }
-  
+
   // Convert from JSON for local storage
   factory CommentModel.fromJson(Map<String, dynamic> json) {
     return CommentModel(
@@ -48,14 +48,13 @@ class CommentModel {
       userName: json['userName'] ?? '',
       userPhotoUrl: json['userPhotoUrl'] ?? '',
       likeCount: json['likeCount'] ?? 0,
-      likedBy: json['likedBy'] != null 
-          ? List<String>.from(json['likedBy']) 
-          : [],
-      createdAt: json['createdAt'] != null 
-          ? DateTime.parse(json['createdAt']) 
+      likedBy:
+          json['likedBy'] != null ? List<String>.from(json['likedBy']) : [],
+      createdAt: json['createdAt'] != null
+          ? DateTime.parse(json['createdAt'])
           : DateTime.now(),
-      updatedAt: json['updatedAt'] != null 
-          ? DateTime.parse(json['updatedAt']) 
+      updatedAt: json['updatedAt'] != null
+          ? DateTime.parse(json['updatedAt'])
           : DateTime.now(),
     );
   }

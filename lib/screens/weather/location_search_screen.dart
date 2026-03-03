@@ -52,11 +52,11 @@ class _LocationSearchScreenState extends State<LocationSearchScreen> {
       });
       return;
     }
-    
+
     setState(() {
       _isSearching = true;
     });
-    
+
     try {
       List<String> suggestions = await _getSuggestions(query);
       setState(() {
@@ -74,44 +74,43 @@ class _LocationSearchScreenState extends State<LocationSearchScreen> {
 
   Future<List<String>> _getSuggestions(String query) async {
     if (query.length < 3) return [];
-    
+
     try {
       List<Location> locations = await locationFromAddress(query);
-      
+
       if (locations.isEmpty) return [];
-      
+
       // Get locations and format them
       List<String> suggestions = [];
       for (var location in locations.take(5)) {
         List<Placemark> placemarks = await placemarkFromCoordinates(
-          location.latitude, 
-          location.longitude
-        );
-        
+            location.latitude, location.longitude);
+
         if (placemarks.isNotEmpty) {
           final place = placemarks.first;
           String formattedAddress = '';
-          
+
           if (place.locality != null && place.locality!.isNotEmpty) {
             formattedAddress += place.locality!;
           }
-          
-          if (place.administrativeArea != null && place.administrativeArea!.isNotEmpty) {
+
+          if (place.administrativeArea != null &&
+              place.administrativeArea!.isNotEmpty) {
             if (formattedAddress.isNotEmpty) formattedAddress += ', ';
             formattedAddress += place.administrativeArea!;
           }
-          
+
           if (place.country != null && place.country!.isNotEmpty) {
             if (formattedAddress.isNotEmpty) formattedAddress += ', ';
             formattedAddress += place.country!;
           }
-          
+
           if (formattedAddress.isNotEmpty) {
             suggestions.add(formattedAddress);
           }
         }
       }
-      
+
       return suggestions;
     } catch (e) {
       print('Error getting suggestions: $e');
@@ -140,7 +139,7 @@ class _LocationSearchScreenState extends State<LocationSearchScreen> {
     } catch (e) {
       // Pop the loading dialog
       Navigator.pop(context);
-      
+
       // Show error
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -176,7 +175,8 @@ class _LocationSearchScreenState extends State<LocationSearchScreen> {
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
-                contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+                contentPadding:
+                    const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
                 suffixIcon: _searchController.text.isNotEmpty
                     ? IconButton(
                         icon: const Icon(Icons.clear),
@@ -195,13 +195,11 @@ class _LocationSearchScreenState extends State<LocationSearchScreen> {
               },
             ),
           ),
-          
           if (_isSearching)
             const Padding(
               padding: EdgeInsets.all(16.0),
               child: Center(child: CircularProgressIndicator()),
             ),
-            
           if (_searchResults.isNotEmpty)
             Expanded(
               child: ListView.builder(
@@ -245,7 +243,8 @@ class _LocationSearchScreenState extends State<LocationSearchScreen> {
                         return ListTile(
                           leading: const Icon(Icons.history),
                           title: Text(_recentSearches[index]),
-                          onTap: () => _onLocationSelected(_recentSearches[index]),
+                          onTap: () =>
+                              _onLocationSelected(_recentSearches[index]),
                         );
                       },
                     ),

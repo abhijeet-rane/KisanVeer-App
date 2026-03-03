@@ -5,17 +5,18 @@ import 'package:flutter/semantics.dart';
 class AccessibilityUtils {
   // Prevent instantiation
   AccessibilityUtils._();
-  
+
   /// Announce message to screen reader
-  static void announce(String message, {TextDirection textDirection = TextDirection.ltr}) {
+  static void announce(String message,
+      {TextDirection textDirection = TextDirection.ltr}) {
     SemanticsService.announce(message, textDirection);
   }
-  
+
   /// Announce success message
   static void announceSuccess(String message) {
     announce('Success: $message');
   }
-  
+
   /// Announce error message
   static void announceError(String message) {
     announce('Error: $message');
@@ -33,7 +34,7 @@ class SemanticWrapper extends StatelessWidget {
   final bool isImage;
   final bool excludeSemantics;
   final VoidCallback? onTap;
-  
+
   const SemanticWrapper({
     Key? key,
     required this.child,
@@ -70,7 +71,7 @@ class AccessibleIconButton extends StatelessWidget {
   final String semanticLabel;
   final Color? color;
   final double size;
-  
+
   const AccessibleIconButton({
     Key? key,
     required this.icon,
@@ -99,7 +100,7 @@ class FocusHighlight extends StatelessWidget {
   final Widget child;
   final Color highlightColor;
   final double borderRadius;
-  
+
   const FocusHighlight({
     Key? key,
     required this.child,
@@ -131,19 +132,19 @@ class FocusHighlight extends StatelessWidget {
 /// Extension for easy semantic labeling
 extension AccessibleWidget on Widget {
   Widget withSemanticLabel(String label) => Semantics(
-    label: label,
-    child: this,
-  );
-  
+        label: label,
+        child: this,
+      );
+
   Widget asButton(String label) => Semantics(
-    button: true,
-    label: label,
-    child: this,
-  );
-  
+        button: true,
+        label: label,
+        child: this,
+      );
+
   Widget asHeader(String label) => Semantics(
-    header: true,
-    label: label,
-    child: this,
-  );
+        header: true,
+        label: label,
+        child: this,
+      );
 }

@@ -8,7 +8,8 @@ import 'package:google_fonts/google_fonts.dart';
 class CommunityMembersSheet extends StatefulWidget {
   final Community community;
 
-  const CommunityMembersSheet({Key? key, required this.community}) : super(key: key);
+  const CommunityMembersSheet({Key? key, required this.community})
+      : super(key: key);
 
   @override
   State<CommunityMembersSheet> createState() => _CommunityMembersSheetState();
@@ -27,7 +28,8 @@ class _CommunityMembersSheetState extends State<CommunityMembersSheet> {
 
   Future<void> _loadMembers() async {
     try {
-      final members = await _communityService.getCommunityMembers(widget.community.id);
+      final members =
+          await _communityService.getCommunityMembers(widget.community.id);
       setState(() {
         _members = members;
         _isLoading = false;
@@ -83,7 +85,8 @@ class _CommunityMembersSheetState extends State<CommunityMembersSheet> {
               ),
               Flexible(
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
                     color: Colors.blue.shade50,
                     borderRadius: BorderRadius.circular(20),
@@ -177,13 +180,13 @@ class _CommunityMembersSheetState extends State<CommunityMembersSheet> {
                   backgroundColor: Colors.grey[300],
                   child: member.avatarUrl == null
                       ? Text(
-                    member.displayName[0].toUpperCase(),
-                    style: GoogleFonts.poppins(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey[700],
-                    ),
-                  )
+                          member.displayName[0].toUpperCase(),
+                          style: GoogleFonts.poppins(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey[700],
+                          ),
+                        )
                       : null,
                 ),
                 const SizedBox(width: 16),

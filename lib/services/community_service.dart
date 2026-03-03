@@ -261,9 +261,8 @@ class CommunityService {
           .select('community_id')
           .eq('user_id', userId);
 
-      final memberCommunityIds = memberCommunities
-          .map((row) => row['community_id'] as String)
-          .toSet();
+      final memberCommunityIds =
+          memberCommunities.map((row) => row['community_id'] as String).toSet();
 
       // Get pending join requests
       final pendingRequests = await _supabase
@@ -272,9 +271,8 @@ class CommunityService {
           .eq('user_id', userId)
           .eq('status', 'pending');
 
-      final pendingRequestIds = pendingRequests
-          .map((row) => row['community_id'] as String)
-          .toSet();
+      final pendingRequestIds =
+          pendingRequests.map((row) => row['community_id'] as String).toSet();
 
       return response.map((row) {
         final community = Community.fromJson(
@@ -308,15 +306,18 @@ class CommunityService {
 
     String? posterImageUrl;
     if (posterImage != null) {
-      final fileName = '${DateTime.now().millisecondsSinceEpoch}_${name.toLowerCase().replaceAll(' ', '_')}.jpg';
+      final fileName =
+          '${DateTime.now().millisecondsSinceEpoch}_${name.toLowerCase().replaceAll(' ', '_')}.jpg';
       final filePath = 'community_posters/$fileName';
-      
-      await _supabase.storage.from('community_images').upload(filePath, posterImage);
-      posterImageUrl = _supabase.storage.from('community_images').getPublicUrl(filePath);
+
+      await _supabase.storage
+          .from('community_images')
+          .upload(filePath, posterImage);
+      posterImageUrl =
+          _supabase.storage.from('community_images').getPublicUrl(filePath);
     }
 
     final response = await _supabase
-
         .from('communities')
         .insert({
           'name': name,
@@ -340,8 +341,6 @@ class CommunityService {
       admin: UserProfile.fromJson(response['admin_profiles']),
     );
   }
-
-
 
   Future<void> sendJoinRequest(String communityId) async {
     final userId = _supabase.auth.currentUser?.id;
@@ -370,13 +369,10 @@ class CommunityService {
       });
     }
 
-    await _supabase
-        .from('community_join_requests')
-        .update({
-          'status': accept ? 'accepted' : 'rejected',
-          'processed_at': DateTime.now().toIso8601String(),
-        })
-        .eq('id', requestId);
+    await _supabase.from('community_join_requests').update({
+      'status': accept ? 'accepted' : 'rejected',
+      'processed_at': DateTime.now().toIso8601String(),
+    }).eq('id', requestId);
   }
 
   Future<List<CommunityThread>> getCommunityThreads(String communityId) async {
@@ -451,11 +447,15 @@ class CommunityService {
     List<String> imageUrls = [];
     if (images != null && images.isNotEmpty) {
       for (final image in images) {
-        final fileName = '${DateTime.now().millisecondsSinceEpoch}_${const Uuid().v4()}.jpg';
+        final fileName =
+            '${DateTime.now().millisecondsSinceEpoch}_${const Uuid().v4()}.jpg';
         final filePath = 'community_messages/$fileName';
-        
-        await _supabase.storage.from('community_images').upload(filePath, image);
-        final url = _supabase.storage.from('community_images').getPublicUrl(filePath);
+
+        await _supabase.storage
+            .from('community_images')
+            .upload(filePath, image);
+        final url =
+            _supabase.storage.from('community_images').getPublicUrl(filePath);
         imageUrls.add(url);
       }
     }
@@ -518,24 +518,25 @@ class CommunityService {
     File? posterImage,
   }) async {
     final updates = <String, dynamic>{};
-    
+
     if (name != null) updates['name'] = name;
     if (description != null) updates['description'] = description;
     if (isPrivate != null) updates['is_private'] = isPrivate;
 
     if (posterImage != null) {
-      final fileName = '${DateTime.now().millisecondsSinceEpoch}_${name?.toLowerCase().replaceAll(' ', '_') ?? communityId}.jpg';
+      final fileName =
+          '${DateTime.now().millisecondsSinceEpoch}_${name?.toLowerCase().replaceAll(' ', '_') ?? communityId}.jpg';
       final filePath = 'community_posters/$fileName';
-      
-      await _supabase.storage.from('community_images').upload(filePath, posterImage);
-      updates['poster_image_url'] = _supabase.storage.from('community_images').getPublicUrl(filePath);
+
+      await _supabase.storage
+          .from('community_images')
+          .upload(filePath, posterImage);
+      updates['poster_image_url'] =
+          _supabase.storage.from('community_images').getPublicUrl(filePath);
     }
 
     if (updates.isNotEmpty) {
-      await _supabase
-          .from('communities')
-          .update(updates)
-          .eq('id', communityId);
+      await _supabase.from('communities').update(updates).eq('id', communityId);
     }
   }
 
@@ -577,7 +578,8 @@ class CommunityService {
       });
 
       // Update the members count
-      await _supabase.rpc('increment_community_members', params: {'community_id': communityId});
+      await _supabase.rpc('increment_community_members',
+          params: {'community_id': communityId});
     }
   }
 
@@ -588,6 +590,8 @@ class CommunityService {
         .eq('community_id', communityId)
         .order('joined_at', ascending: false);
 
-    return response.map((row) => UserProfile.fromJson(row['user_profiles'])).toList();
+    return response
+        .map((row) => UserProfile.fromJson(row['user_profiles']))
+        .toList();
   }
 }

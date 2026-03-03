@@ -99,7 +99,8 @@ class _CommunityThreadScreenState extends State<CommunityThreadScreen> {
         category: _selectedCategory,
       );
 
-      if (_messageController.text.trim().isNotEmpty || _selectedImages.isNotEmpty) {
+      if (_messageController.text.trim().isNotEmpty ||
+          _selectedImages.isNotEmpty) {
         await _communityService.sendMessage(
           communityId: widget.community.id,
           threadId: thread.id,
@@ -228,7 +229,8 @@ class _CommunityThreadScreenState extends State<CommunityThreadScreen> {
                                   : null,
                               child: message.sender.avatarUrl == null
                                   ? Text(
-                                      message.sender.displayName[0].toUpperCase(),
+                                      message.sender.displayName[0]
+                                          .toUpperCase(),
                                     )
                                   : null,
                             ),
@@ -388,8 +390,7 @@ class _CommunityThreadScreenState extends State<CommunityThreadScreen> {
                           borderSide: BorderSide.none,
                         ),
                         filled: true,
-                        fillColor:
-                            Theme.of(context).colorScheme.surfaceVariant,
+                        fillColor: Theme.of(context).colorScheme.surfaceVariant,
                         contentPadding: const EdgeInsets.symmetric(
                           horizontal: 20,
                           vertical: 10,

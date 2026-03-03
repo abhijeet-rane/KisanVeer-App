@@ -299,15 +299,16 @@ class PinnedCommodity {
       createdAt: json['created_at'] != null
           ? DateTime.parse(json['created_at'])
           : DateTime.now(),
-      pinnedAt: json['pinned_at'] != null
-          ? DateTime.parse(json['pinned_at'])
-          : null,
-      currentPrice: json['current_price'] != null && json['current_price'] is num
-          ? (json['current_price'] as num).toDouble()
-          : 0.0,
-      initialPrice: json['initial_price'] != null && json['initial_price'] is num
-          ? (json['initial_price'] as num).toDouble()
-          : 0.0,
+      pinnedAt:
+          json['pinned_at'] != null ? DateTime.parse(json['pinned_at']) : null,
+      currentPrice:
+          json['current_price'] != null && json['current_price'] is num
+              ? (json['current_price'] as num).toDouble()
+              : 0.0,
+      initialPrice:
+          json['initial_price'] != null && json['initial_price'] is num
+              ? (json['initial_price'] as num).toDouble()
+              : 0.0,
       priceChange: 0.0, // Will be calculated later
     );
   }
@@ -357,6 +358,7 @@ class PriceAlert {
       if (value is String) return double.tryParse(value) ?? 0.0;
       return 0.0;
     }
+
     return PriceAlert(
       id: parseId(json['id']),
       userId: parseId(json['user_id']),
@@ -365,7 +367,8 @@ class PriceAlert {
       district: json['district'] != null ? parseString(json['district']) : null,
       market: json['market'] != null ? parseString(json['market']) : null,
       thresholdPrice: parseDouble(json['threshold_price']),
-      alertCondition: json['alert_condition'] ?? json['condition_type'] ?? 'above',
+      alertCondition:
+          json['alert_condition'] ?? json['condition_type'] ?? 'above',
       isActive: json['is_active'] is bool ? json['is_active'] : true,
       lastTriggeredAt: json['last_triggered_at'] != null
           ? DateTime.tryParse(json['last_triggered_at'].toString())

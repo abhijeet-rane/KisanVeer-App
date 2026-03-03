@@ -96,5 +96,6 @@ class ApplicationModel {
 
   String toJson() => json.encode(toMap());
 
-  factory ApplicationModel.fromJson(String source) => ApplicationModel.fromMap(json.decode(source));
+  factory ApplicationModel.fromJson(String source) =>
+      ApplicationModel.fromMap(json.decode(source));
 }

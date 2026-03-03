@@ -10,12 +10,12 @@ import 'package:kisan_veer/utils/app_logger.dart';
 class BiometricService {
   final LocalAuthentication _localAuth = LocalAuthentication();
   final SecureStorageService _secureStorage = SecureStorageService();
-  
+
   // Singleton pattern
   static final BiometricService _instance = BiometricService._internal();
   factory BiometricService() => _instance;
   BiometricService._internal();
-  
+
   /// Check if device supports biometric authentication
   Future<bool> isDeviceSupported() async {
     try {
@@ -25,7 +25,7 @@ class BiometricService {
       return false;
     }
   }
-  
+
   /// Check if biometrics are available and enrolled
   Future<bool> canCheckBiometrics() async {
     try {
@@ -35,27 +35,28 @@ class BiometricService {
       return false;
     }
   }
-  
+
   /// Get available biometric types
   Future<List<BiometricType>> getAvailableBiometrics() async {
     try {
       return await _localAuth.getAvailableBiometrics();
     } catch (e) {
-      AppLogger.e('Error getting available biometrics', tag: 'Biometric', error: e);
+      AppLogger.e('Error getting available biometrics',
+          tag: 'Biometric', error: e);
       return [];
     }
   }
-  
+
   /// Check if biometric login is available and enabled
   Future<bool> isBiometricLoginAvailable() async {
     final isSupported = await isDeviceSupported();
     final canCheck = await canCheckBiometrics();
     final isEnabled = await _secureStorage.isBiometricEnabled();
     final hasCredentials = await _secureStorage.hasStoredCredentials();
-    
+
     return isSupported && canCheck && isEnabled && hasCredentials;
   }
-  
+
   /// Authenticate user with biometrics
   /// Returns true if authentication successful, false otherwise
   Future<BiometricResult> authenticate({
@@ -68,7 +69,7 @@ class BiometricService {
       if (!canCheck) {
         return BiometricResult.notAvailable;
       }
-      
+
       final authenticated = await _localAuth.authenticate(
         localizedReason: reason,
         options: AuthenticationOptions(
@@ -77,9 +78,10 @@ class BiometricService {
           useErrorDialogs: true,
         ),
       );
-      
+
       if (authenticated) {
-        AppLogger.success('Biometric authentication successful', tag: 'Biometric');
+        AppLogger.success('Biometric authentication successful',
+            tag: 'Biometric');
         return BiometricResult.success;
       } else {
         AppLogger.w('Biometric authentication failed', tag: 'Biometric');
@@ -87,7 +89,7 @@ class BiometricService {
       }
     } on PlatformException catch (e) {
       AppLogger.e('Biometric auth error', tag: 'Biometric', error: e);
-      
+
       switch (e.code) {
         case auth_error.notEnrolled:
           return BiometricResult.notEnrolled;
@@ -104,7 +106,7 @@ class BiometricService {
       return BiometricResult.error;
     }
   }
-  
+
   /// Enable biometric authentication for the user
   Future<bool> enableBiometric() async {
     try {
@@ -112,14 +114,14 @@ class BiometricService {
       final result = await authenticate(
         reason: 'Confirm your identity to enable biometric login',
       );
-      
+
       if (result == BiometricResult.success) {
         // Store locally
         await _secureStorage.setBiometricEnabled(true);
-        
+
         // Sync to Supabase
         await _syncBiometricToSupabase(true);
-        
+
         AppLogger.success('Biometric login enabled', tag: 'Biometric');
         return true;
       }
@@ -129,47 +131,51 @@ class BiometricService {
       return false;
     }
   }
-  
+
   /// Disable biometric authentication
   Future<void> disableBiometric() async {
     await _secureStorage.setBiometricEnabled(false);
     await _syncBiometricToSupabase(false);
     AppLogger.d('Biometric login disabled', tag: 'Biometric');
   }
-  
+
   /// Sync biometric setting to Supabase
   Future<void> _syncBiometricToSupabase(bool enabled) async {
     try {
       final supabase = Supabase.instance.client;
       final userId = supabase.auth.currentUser?.id;
-      
+
       if (userId == null) {
-        AppLogger.w('Cannot sync biometric - user not logged in', tag: 'Biometric');
+        AppLogger.w('Cannot sync biometric - user not logged in',
+            tag: 'Biometric');
         return;
       }
-      
+
       await supabase.from('user_security_settings').upsert({
         'user_id': userId,
         'biometric_enabled': enabled,
-        'biometric_last_used': enabled ? DateTime.now().toIso8601String() : null,
+        'biometric_last_used':
+            enabled ? DateTime.now().toIso8601String() : null,
         'updated_at': DateTime.now().toIso8601String(),
       }, onConflict: 'user_id');
-      
-      AppLogger.d('Biometric setting synced to Supabase: $enabled', tag: 'Biometric');
+
+      AppLogger.d('Biometric setting synced to Supabase: $enabled',
+          tag: 'Biometric');
     } catch (e) {
-      AppLogger.e('Failed to sync biometric to Supabase', tag: 'Biometric', error: e);
+      AppLogger.e('Failed to sync biometric to Supabase',
+          tag: 'Biometric', error: e);
     }
   }
-  
+
   /// Check if biometric is enabled by user
   Future<bool> isBiometricEnabled() async {
     return _secureStorage.isBiometricEnabled();
   }
-  
+
   /// Get biometric type string for display
   Future<String> getBiometricTypeName() async {
     final types = await getAvailableBiometrics();
-    
+
     if (types.contains(BiometricType.face)) {
       return 'Face ID';
     } else if (types.contains(BiometricType.fingerprint)) {
@@ -181,7 +187,7 @@ class BiometricService {
     }
     return 'Biometric';
   }
-  
+
   /// Stop any ongoing authentication
   Future<void> stopAuthentication() async {
     try {
@@ -205,13 +211,16 @@ enum BiometricResult {
 /// Extension for user-friendly messages
 extension BiometricResultMessage on BiometricResult {
   String get message => switch (this) {
-    BiometricResult.success => 'Authentication successful',
-    BiometricResult.failed => 'Authentication failed. Please try again.',
-    BiometricResult.notAvailable => 'Biometric authentication is not available on this device.',
-    BiometricResult.notEnrolled => 'No biometrics enrolled. Please set up fingerprint or face recognition in your device settings.',
-    BiometricResult.lockedOut => 'Too many failed attempts. Please try again later or use your password.',
-    BiometricResult.error => 'An error occurred. Please try again.',
-  };
-  
+        BiometricResult.success => 'Authentication successful',
+        BiometricResult.failed => 'Authentication failed. Please try again.',
+        BiometricResult.notAvailable =>
+          'Biometric authentication is not available on this device.',
+        BiometricResult.notEnrolled =>
+          'No biometrics enrolled. Please set up fingerprint or face recognition in your device settings.',
+        BiometricResult.lockedOut =>
+          'Too many failed attempts. Please try again later or use your password.',
+        BiometricResult.error => 'An error occurred. Please try again.',
+      };
+
   bool get isSuccess => this == BiometricResult.success;
 }

@@ -13,7 +13,8 @@ class LoanDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final progress = (loan.totalAmount - loan.remainingAmount) / loan.totalAmount;
+    final progress =
+        (loan.totalAmount - loan.remainingAmount) / loan.totalAmount;
 
     return Scaffold(
       appBar: AppBar(
@@ -71,21 +72,20 @@ class LoanDetailsScreen extends StatelessWidget {
                     style: AppTextStyles.h3,
                   ),
                   const SizedBox(height: 16),
-                  _buildDetailRow('Total Amount', '₹${loan.totalAmount.toStringAsFixed(2)}'),
-                  _buildDetailRow('Interest Rate',
-                    loan.interestRate != null
-                      ? '${loan.interestRate!.toStringAsFixed(2)}%'
-                      : 'N/A'
-                  ),
+                  _buildDetailRow('Total Amount',
+                      '₹${loan.totalAmount.toStringAsFixed(2)}'),
+                  _buildDetailRow(
+                      'Interest Rate',
+                      loan.interestRate != null
+                          ? '${loan.interestRate!.toStringAsFixed(2)}%'
+                          : 'N/A'),
                   _buildDetailRow('Purpose', loan.purpose),
                   _buildDetailRow('Lender', loan.lenderName),
                   _buildDetailRow('Start Date',
-                    '${loan.startDate.day}/${loan.startDate.month}/${loan.startDate.year}'
-                  ),
+                      '${loan.startDate.day}/${loan.startDate.month}/${loan.startDate.year}'),
                   if (loan.endDate != null)
                     _buildDetailRow('End Date',
-                      '${loan.endDate!.day}/${loan.endDate!.month}/${loan.endDate!.year}'
-                    ),
+                        '${loan.endDate!.day}/${loan.endDate!.month}/${loan.endDate!.year}'),
                   _buildDetailRow('Status', loan.status.toUpperCase()),
                 ],
               ),
@@ -94,24 +94,24 @@ class LoanDetailsScreen extends StatelessWidget {
             CustomButton(
               onPressed: loan.remainingAmount > 0
                   ? () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => LoanPaymentScreen(
-                      loan: loan,
-                      onPaymentSuccess: () {
-                        Navigator.pop(context, true);
-                      },
-                    ),
-                  ),
-                );
-              }
-                  : () {},  // Disable the button if the loan is fully repaid
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => LoanPaymentScreen(
+                            loan: loan,
+                            onPaymentSuccess: () {
+                              Navigator.pop(context, true);
+                            },
+                          ),
+                        ),
+                      );
+                    }
+                  : () {}, // Disable the button if the loan is fully repaid
               text: 'Make Payment',
               icon: Icons.payment,
-              backgroundColor: loan.remainingAmount > 0 ? AppColors.primary : Colors.grey,
+              backgroundColor:
+                  loan.remainingAmount > 0 ? AppColors.primary : Colors.grey,
             ),
-
           ],
         ),
       ),

@@ -47,7 +47,11 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   bool _isSeller = false;
   String? _selectedState;
   String? _selectedDistrict;
-  List<String> _states = ['State 1', 'State 2', 'State 3']; // Replace with actual states
+  List<String> _states = [
+    'State 1',
+    'State 2',
+    'State 3'
+  ]; // Replace with actual states
   List<String> _districts = [];
 
   @override
@@ -58,7 +62,27 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     _loadCartCount();
     _initProductExtras();
     _states = [
-      'Maharashtra', 'Gujarat', 'Madhya Pradesh', 'Rajasthan', 'Karnataka', 'Uttar Pradesh', 'Punjab', 'Haryana', 'Bihar', 'West Bengal', 'Tamil Nadu', 'Andhra Pradesh', 'Telangana', 'Kerala', 'Odisha', 'Chhattisgarh', 'Jharkhand', 'Assam', 'Goa', 'Delhi', 'Others'
+      'Maharashtra',
+      'Gujarat',
+      'Madhya Pradesh',
+      'Rajasthan',
+      'Karnataka',
+      'Uttar Pradesh',
+      'Punjab',
+      'Haryana',
+      'Bihar',
+      'West Bengal',
+      'Tamil Nadu',
+      'Andhra Pradesh',
+      'Telangana',
+      'Kerala',
+      'Odisha',
+      'Chhattisgarh',
+      'Jharkhand',
+      'Assam',
+      'Goa',
+      'Delhi',
+      'Others'
     ];
     if (_selectedState == null) {
       _selectedState = '';
@@ -85,9 +109,11 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   Future<void> _initProductExtras() async {
     final userId = await _marketplaceService.getCurrentUserId();
     // Check if user can review this product
-    final canReview = await _marketplaceService.canUserReviewProduct(widget.productId);
+    final canReview =
+        await _marketplaceService.canUserReviewProduct(widget.productId);
     // Check if user has already reviewed
-    final reviews = await _marketplaceService.getProductReviews(widget.productId);
+    final reviews =
+        await _marketplaceService.getProductReviews(widget.productId);
     final hasReviewed = reviews.any((r) => r.userId == userId);
     setState(() {
       _canReviewProduct = canReview;
@@ -498,7 +524,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                   ],
                 ),
                 const Divider(height: 32),
-                
                 const Text(
                   'Description',
                   style: TextStyle(
@@ -546,7 +571,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                       child: CustomButton(
                         text:
                             'Add to Cart : ₹${(product.price * _quantity).toStringAsFixed(2)}',
-                        onPressed: _addingToCart ? null : () => _addToCart(product),
+                        onPressed:
+                            _addingToCart ? null : () => _addToCart(product),
                         color: AppColors.primary,
                         textColor: Colors.white,
                         isLoading: _addingToCart,
@@ -763,16 +789,22 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('Write a Review', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                      const Text('Write a Review',
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 12),
                       Row(
                         children: [
                           const Text('Rating: '),
                           DropdownButton<int>(
                             value: _reviewRating,
-                            items: List.generate(5, (i) => i + 1).map((v) => DropdownMenuItem(value: v, child: Text(v.toString()))).toList(),
+                            items: List.generate(5, (i) => i + 1)
+                                .map((v) => DropdownMenuItem(
+                                    value: v, child: Text(v.toString())))
+                                .toList(),
                             onChanged: (val) {
-                              if (val != null) setState(() => _reviewRating = val);
+                              if (val != null)
+                                setState(() => _reviewRating = val);
                             },
                           ),
                         ],
@@ -808,15 +840,19 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                   _hasReviewedProduct = true;
                                 });
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text('Review submitted!')),
+                                  const SnackBar(
+                                      content: Text('Review submitted!')),
                                 );
                                 // Optionally refresh reviews
                                 setState(() {
-                                  _reviewsFuture = _marketplaceService.getProductReviews(widget.productId);
+                                  _reviewsFuture = _marketplaceService
+                                      .getProductReviews(widget.productId);
                                 });
                               } catch (e) {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text('Failed to submit review: \$e')),
+                                  SnackBar(
+                                      content:
+                                          Text('Failed to submit review: \$e')),
                                 );
                               }
                             }

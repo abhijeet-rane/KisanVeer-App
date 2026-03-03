@@ -6,7 +6,8 @@ import 'application_form_screen.dart';
 
 class SchemeDetailsScreen extends StatefulWidget {
   final String schemeId;
-  const SchemeDetailsScreen({Key? key, required this.schemeId}) : super(key: key);
+  const SchemeDetailsScreen({Key? key, required this.schemeId})
+      : super(key: key);
 
   @override
   State<SchemeDetailsScreen> createState() => _SchemeDetailsScreenState();
@@ -82,17 +83,20 @@ class _SchemeDetailsScreenState extends State<SchemeDetailsScreen> {
                           // Card for scheme title and department
                           Card(
                             elevation: 2,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14)),
                             color: Colors.teal[50],
                             margin: const EdgeInsets.only(bottom: 18),
                             child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 18, vertical: 18),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Row(
                                     children: [
-                                      const Icon(Icons.policy, color: Colors.teal, size: 28),
+                                      const Icon(Icons.policy,
+                                          color: Colors.teal, size: 28),
                                       const SizedBox(width: 10),
                                       Expanded(
                                         child: Text(
@@ -109,7 +113,8 @@ class _SchemeDetailsScreenState extends State<SchemeDetailsScreen> {
                                   const SizedBox(height: 10),
                                   Row(
                                     children: [
-                                      const Icon(Icons.account_balance, size: 20, color: Colors.black54),
+                                      const Icon(Icons.account_balance,
+                                          size: 20, color: Colors.black54),
                                       const SizedBox(width: 6),
                                       Expanded(
                                         child: Text(
@@ -140,11 +145,15 @@ class _SchemeDetailsScreenState extends State<SchemeDetailsScreen> {
                           // Benefits section
                           Row(
                             children: [
-                              const Icon(Icons.emoji_events, color: Colors.orange, size: 22),
+                              const Icon(Icons.emoji_events,
+                                  color: Colors.orange, size: 22),
                               const SizedBox(width: 8),
                               Text(
                                 'Benefits',
-                                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleMedium
+                                    ?.copyWith(fontWeight: FontWeight.bold),
                               ),
                             ],
                           ),
@@ -160,19 +169,25 @@ class _SchemeDetailsScreenState extends State<SchemeDetailsScreen> {
                                   ),
                                   child: Text(
                                     _scheme!.benefits,
-                                    style: const TextStyle(fontSize: 15, height: 1.5),
+                                    style: const TextStyle(
+                                        fontSize: 15, height: 1.5),
                                   ),
                                 )
-                              : const Text('For Benefits Provided Please Refer Below Document.'),
+                              : const Text(
+                                  'For Benefits Provided Please Refer Below Document.'),
                           const SizedBox(height: 18),
                           // Eligibility section
                           Row(
                             children: [
-                              const Icon(Icons.verified_user, color: Colors.blue, size: 22),
+                              const Icon(Icons.verified_user,
+                                  color: Colors.blue, size: 22),
                               const SizedBox(width: 8),
                               Text(
                                 'Eligibility',
-                                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleMedium
+                                    ?.copyWith(fontWeight: FontWeight.bold),
                               ),
                             ],
                           ),
@@ -185,7 +200,11 @@ class _SchemeDetailsScreenState extends State<SchemeDetailsScreen> {
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
-                              _scheme!.eligibility.replaceAll(r'\n', '\n').replaceAll('\\n', '\n').replaceAll(RegExp(r'\n+'), '\n').replaceAll('\\', '\\'),
+                              _scheme!.eligibility
+                                  .replaceAll(r'\n', '\n')
+                                  .replaceAll('\\n', '\n')
+                                  .replaceAll(RegExp(r'\n+'), '\n')
+                                  .replaceAll('\\', '\\'),
                               style: const TextStyle(fontSize: 15, height: 1.5),
                             ),
                           ),
@@ -193,51 +212,69 @@ class _SchemeDetailsScreenState extends State<SchemeDetailsScreen> {
                           // Required Documents section
                           Row(
                             children: [
-                              const Icon(Icons.description, color: Colors.green, size: 22),
+                              const Icon(Icons.description,
+                                  color: Colors.green, size: 22),
                               const SizedBox(width: 8),
                               Text(
                                 'Required Documents',
-                                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleMedium
+                                    ?.copyWith(fontWeight: FontWeight.bold),
                               ),
                             ],
                           ),
                           const SizedBox(height: 4),
-                          ..._scheme!.getRequiredDocumentsList().map((doc) => Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 2.0),
+                          ..._scheme!.getRequiredDocumentsList().map((doc) =>
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 2.0),
                                 child: Row(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    const Icon(Icons.check_box_outlined, color: Colors.green, size: 18),
+                                    const Icon(Icons.check_box_outlined,
+                                        color: Colors.green, size: 18),
                                     const SizedBox(width: 8),
-                                    Expanded(child: Text(doc, style: const TextStyle(fontSize: 15))),
+                                    Expanded(
+                                        child: Text(doc,
+                                            style:
+                                                const TextStyle(fontSize: 15))),
                                   ],
                                 ),
                               )),
                           const SizedBox(height: 18),
-                          if (_scheme!.viewBenefitsLink != null && _scheme!.viewBenefitsLink!.isNotEmpty)
+                          if (_scheme!.viewBenefitsLink != null &&
+                              _scheme!.viewBenefitsLink!.isNotEmpty)
                             Padding(
                               padding: const EdgeInsets.only(bottom: 8.0),
                               child: TextButton.icon(
-                                icon: const Icon(Icons.open_in_new, color: Colors.teal),
+                                icon: const Icon(Icons.open_in_new,
+                                    color: Colors.teal),
                                 label: const Text('View More Benefits'),
                                 style: TextButton.styleFrom(
                                   foregroundColor: Colors.teal,
-                                  textStyle: const TextStyle(fontWeight: FontWeight.bold),
+                                  textStyle: const TextStyle(
+                                      fontWeight: FontWeight.bold),
                                 ),
-                                onPressed: () => _launchURL(_scheme!.viewBenefitsLink!),
+                                onPressed: () =>
+                                    _launchURL(_scheme!.viewBenefitsLink!),
                               ),
                             ),
-                          if (_scheme!.mahadbtApplyLink != null && _scheme!.mahadbtApplyLink!.isNotEmpty)
+                          if (_scheme!.mahadbtApplyLink != null &&
+                              _scheme!.mahadbtApplyLink!.isNotEmpty)
                             Padding(
                               padding: const EdgeInsets.only(bottom: 8.0),
                               child: TextButton.icon(
-                                icon: const Icon(Icons.open_in_new, color: Colors.blue),
+                                icon: const Icon(Icons.open_in_new,
+                                    color: Colors.blue),
                                 label: const Text('Apply on MahaDBT'),
                                 style: TextButton.styleFrom(
                                   foregroundColor: Colors.blue,
-                                  textStyle: const TextStyle(fontWeight: FontWeight.bold),
+                                  textStyle: const TextStyle(
+                                      fontWeight: FontWeight.bold),
                                 ),
-                                onPressed: () => _launchURL(_scheme!.mahadbtApplyLink!),
+                                onPressed: () =>
+                                    _launchURL(_scheme!.mahadbtApplyLink!),
                               ),
                             ),
                           const SizedBox(height: 24),
@@ -246,9 +283,12 @@ class _SchemeDetailsScreenState extends State<SchemeDetailsScreen> {
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.green,
                                 foregroundColor: Colors.white,
-                                textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                                padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 14),
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                textStyle: const TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.bold),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 40, vertical: 14),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10)),
                                 elevation: 3,
                                 shadowColor: Colors.greenAccent,
                               ),
@@ -257,7 +297,8 @@ class _SchemeDetailsScreenState extends State<SchemeDetailsScreen> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => ApplicationFormScreen(scheme: _scheme!),
+                                    builder: (context) =>
+                                        ApplicationFormScreen(scheme: _scheme!),
                                   ),
                                 );
                               },

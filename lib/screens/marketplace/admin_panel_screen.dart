@@ -21,10 +21,12 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
   String _searchQuery = '';
   List<Product> get _filteredProducts {
     if (_searchQuery.isEmpty) return _products;
-    return _products.where((p) =>
-      p.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-      (p.seller?.displayName?.toLowerCase() ?? '').contains(_searchQuery.toLowerCase())
-    ).toList();
+    return _products
+        .where((p) =>
+            p.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+            (p.seller?.displayName?.toLowerCase() ?? '')
+                .contains(_searchQuery.toLowerCase()))
+        .toList();
   }
 
   String _selectedStatus = 'All';
@@ -37,7 +39,10 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
   }
 
   Future<void> _loadUserProducts() async {
-    setState(() { _isLoading = true; _error = null; });
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
     try {
       final products = await _marketplaceService.getSellerProducts();
       setState(() {
@@ -58,7 +63,9 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
       _loadUserProducts();
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to delete product: $e'), backgroundColor: Colors.red),
+        SnackBar(
+            content: Text('Failed to delete product: $e'),
+            backgroundColor: Colors.red),
       );
     }
   }
@@ -89,10 +96,13 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
                 const SizedBox(width: 8),
                 DropdownButton<String>(
                   value: _selectedStatus,
-                  items: _statusOptions.map((status) => DropdownMenuItem(
-                    value: status,
-                    child: Text(status[0].toUpperCase() + status.substring(1)),
-                  )).toList(),
+                  items: _statusOptions
+                      .map((status) => DropdownMenuItem(
+                            value: status,
+                            child: Text(
+                                status[0].toUpperCase() + status.substring(1)),
+                          ))
+                      .toList(),
                   onChanged: (val) => setState(() => _selectedStatus = val!),
                 ),
               ],
@@ -104,28 +114,41 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
                 : _error != null
                     ? Center(child: Text(_error!))
                     : ListView.builder(
-                        itemCount: _filteredProducts.where((p) => _selectedStatus == 'All' || (p.status ?? 'available') == _selectedStatus).length,
+                        itemCount: _filteredProducts
+                            .where((p) =>
+                                _selectedStatus == 'All' ||
+                                (p.status ?? 'available') == _selectedStatus)
+                            .length,
                         itemBuilder: (context, index) {
-                          final productsToShow = _filteredProducts.where((p) => _selectedStatus == 'All' || (p.status ?? 'available') == _selectedStatus).toList();
+                          final productsToShow = _filteredProducts
+                              .where((p) =>
+                                  _selectedStatus == 'All' ||
+                                  (p.status ?? 'available') == _selectedStatus)
+                              .toList();
                           final product = productsToShow[index];
                           return Card(
                             margin: const EdgeInsets.all(8),
                             child: ListTile(
                               leading: product.imageUrls.isNotEmpty
-                                  ? Image.network(product.imageUrls.first, width: 48, height: 48, fit: BoxFit.cover)
+                                  ? Image.network(product.imageUrls.first,
+                                      width: 48, height: 48, fit: BoxFit.cover)
                                   : const Icon(Icons.image, size: 48),
                               title: Text(product.name),
-                              subtitle: Text('Status: ${product.status ?? 'available'}\nPrice: ${product.price}'),
+                              subtitle: Text(
+                                  'Status: ${product.status ?? 'available'}\nPrice: ${product.price}'),
                               trailing: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   IconButton(
-                                    icon: const Icon(Icons.edit, color: Colors.blue),
+                                    icon: const Icon(Icons.edit,
+                                        color: Colors.blue),
                                     onPressed: () async {
                                       final updated = await Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                          builder: (context) => EditProductScreen(product: product),
+                                          builder: (context) =>
+                                              EditProductScreen(
+                                                  product: product),
                                         ),
                                       );
                                       if (updated == true) _loadUserProducts();
@@ -133,7 +156,8 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
                                     tooltip: 'Edit',
                                   ),
                                   IconButton(
-                                    icon: const Icon(Icons.delete, color: Colors.red),
+                                    icon: const Icon(Icons.delete,
+                                        color: Colors.red),
                                     onPressed: () => _deleteProduct(product.id),
                                     tooltip: 'Delete',
                                   ),

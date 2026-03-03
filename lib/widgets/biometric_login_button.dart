@@ -9,7 +9,7 @@ class BiometricLoginButton extends StatefulWidget {
   final Future<void> Function() onSuccess;
   final VoidCallback? onFailed;
   final String? customMessage;
-  
+
   const BiometricLoginButton({
     Key? key,
     required this.onSuccess,
@@ -24,21 +24,21 @@ class BiometricLoginButton extends StatefulWidget {
 class _BiometricLoginButtonState extends State<BiometricLoginButton>
     with SingleTickerProviderStateMixin {
   final BiometricService _biometricService = BiometricService();
-  
+
   bool _isAuthenticating = false;
   bool _isAvailable = false;
   String _biometricTypeName = 'Biometric';
-  
+
   late AnimationController _pulseController;
   late Animation<double> _pulseAnimation;
-  
+
   @override
   void initState() {
     super.initState();
     _initAnimation();
     _checkAvailability();
   }
-  
+
   void _initAnimation() {
     _pulseController = AnimationController(
       duration: const Duration(milliseconds: 1500),
@@ -49,14 +49,14 @@ class _BiometricLoginButtonState extends State<BiometricLoginButton>
     );
     _pulseController.repeat(reverse: true);
   }
-  
+
   Future<void> _checkAvailability() async {
     // Check if device supports biometrics AND user has enabled biometric login
     final isSupported = await _biometricService.isDeviceSupported();
     final canCheck = await _biometricService.canCheckBiometrics();
     final isEnabled = await _biometricService.isBiometricEnabled();
     final typeName = await _biometricService.getBiometricTypeName();
-    
+
     if (mounted) {
       setState(() {
         // Show button only if device supports AND user has enabled biometric
@@ -65,18 +65,18 @@ class _BiometricLoginButtonState extends State<BiometricLoginButton>
       });
     }
   }
-  
+
   Future<void> _authenticate() async {
     if (_isAuthenticating || !_isAvailable) return;
-    
+
     setState(() => _isAuthenticating = true);
     HapticUtils.buttonPress();
-    
+
     try {
       final result = await _biometricService.authenticate(
         reason: widget.customMessage ?? 'Authenticate to login to Kisan Veer',
       );
-      
+
       if (result.isSuccess) {
         HapticUtils.success();
         await widget.onSuccess();
@@ -91,7 +91,7 @@ class _BiometricLoginButtonState extends State<BiometricLoginButton>
       }
     }
   }
-  
+
   void _showErrorSnackBar(String message) {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
@@ -102,7 +102,7 @@ class _BiometricLoginButtonState extends State<BiometricLoginButton>
       ),
     );
   }
-  
+
   @override
   void dispose() {
     _pulseController.dispose();
@@ -114,13 +114,15 @@ class _BiometricLoginButtonState extends State<BiometricLoginButton>
     if (!_isAvailable) {
       return const SizedBox.shrink();
     }
-    
+
     return Column(
       children: [
         // Divider with "or" text
         Row(
           children: [
-            Expanded(child: Divider(color: AppColors.textSecondary.withOpacity(0.3))),
+            Expanded(
+                child:
+                    Divider(color: AppColors.textSecondary.withOpacity(0.3))),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Text(
@@ -131,11 +133,13 @@ class _BiometricLoginButtonState extends State<BiometricLoginButton>
                 ),
               ),
             ),
-            Expanded(child: Divider(color: AppColors.textSecondary.withOpacity(0.3))),
+            Expanded(
+                child:
+                    Divider(color: AppColors.textSecondary.withOpacity(0.3))),
           ],
         ),
         const SizedBox(height: 20),
-        
+
         // Biometric button
         GestureDetector(
           onTap: _authenticate,
@@ -174,7 +178,7 @@ class _BiometricLoginButtonState extends State<BiometricLoginButton>
           ),
         ),
         const SizedBox(height: 12),
-        
+
         // Label
         Text(
           'Login with $_biometricTypeName',
@@ -193,28 +197,29 @@ class BiometricSettingsToggle extends StatefulWidget {
   const BiometricSettingsToggle({Key? key}) : super(key: key);
 
   @override
-  State<BiometricSettingsToggle> createState() => _BiometricSettingsToggleState();
+  State<BiometricSettingsToggle> createState() =>
+      _BiometricSettingsToggleState();
 }
 
 class _BiometricSettingsToggleState extends State<BiometricSettingsToggle> {
   final BiometricService _biometricService = BiometricService();
-  
+
   bool _isEnabled = false;
   bool _isAvailable = false;
   String _biometricTypeName = 'Biometric';
   bool _isLoading = true;
-  
+
   @override
   void initState() {
     super.initState();
     _loadSettings();
   }
-  
+
   Future<void> _loadSettings() async {
     final canCheck = await _biometricService.canCheckBiometrics();
     final isEnabled = await _biometricService.isBiometricEnabled();
     final typeName = await _biometricService.getBiometricTypeName();
-    
+
     if (mounted) {
       setState(() {
         _isAvailable = canCheck;
@@ -224,12 +229,12 @@ class _BiometricSettingsToggleState extends State<BiometricSettingsToggle> {
       });
     }
   }
-  
+
   Future<void> _toggleBiometric(bool value) async {
     if (!_isAvailable) return;
-    
+
     HapticUtils.selection();
-    
+
     if (value) {
       // Enable - requires authentication
       final success = await _biometricService.enableBiometric();
@@ -246,7 +251,7 @@ class _BiometricSettingsToggleState extends State<BiometricSettingsToggle> {
       }
     }
   }
-  
+
   void _showSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -269,7 +274,7 @@ class _BiometricSettingsToggleState extends State<BiometricSettingsToggle> {
         ),
       );
     }
-    
+
     if (!_isAvailable) {
       return ListTile(
         leading: Icon(
@@ -286,7 +291,7 @@ class _BiometricSettingsToggleState extends State<BiometricSettingsToggle> {
         ),
       );
     }
-    
+
     return SwitchListTile(
       secondary: Icon(
         _biometricTypeName == 'Face ID' ? Icons.face : Icons.fingerprint,

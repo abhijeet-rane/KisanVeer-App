@@ -455,7 +455,6 @@ class _PinnedCommoditiesScreenState extends State<PinnedCommoditiesScreen> {
                           ),
                         );
                       },
-
                       icon: const Icon(Icons.notifications_outlined, size: 18),
                       label: const Text('Set Alert'),
                       style: OutlinedButton.styleFrom(

@@ -9,7 +9,7 @@ class ShimmerLoading extends StatelessWidget {
   final double height;
   final double borderRadius;
   final BoxShape shape;
-  
+
   const ShimmerLoading({
     Key? key,
     this.width = double.infinity,
@@ -22,25 +22,25 @@ class ShimmerLoading extends StatelessWidget {
   const ShimmerLoading.circle({
     Key? key,
     required double size,
-  }) : width = size,
-       height = size,
-       borderRadius = 0,
-       shape = BoxShape.circle,
-       super(key: key);
+  })  : width = size,
+        height = size,
+        borderRadius = 0,
+        shape = BoxShape.circle,
+        super(key: key);
 
   /// Card shimmer
   const ShimmerLoading.card({
     Key? key,
     this.height = 120,
-  }) : width = double.infinity,
-       borderRadius = 16,
-       shape = BoxShape.rectangle,
-       super(key: key);
+  })  : width = double.infinity,
+        borderRadius = 16,
+        shape = BoxShape.rectangle,
+        super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return Shimmer.fromColors(
       baseColor: isDark ? Colors.grey[800]! : Colors.grey[300]!,
       highlightColor: isDark ? Colors.grey[700]! : Colors.grey[100]!,
@@ -50,8 +50,8 @@ class ShimmerLoading extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           shape: shape,
-          borderRadius: shape == BoxShape.rectangle 
-              ? BorderRadius.circular(borderRadius) 
+          borderRadius: shape == BoxShape.rectangle
+              ? BorderRadius.circular(borderRadius)
               : null,
         ),
       ),
@@ -152,7 +152,7 @@ class SkeletonDashboardCard extends StatelessWidget {
 class SkeletonListTile extends StatelessWidget {
   final bool hasLeading;
   final bool hasTrailing;
-  
+
   const SkeletonListTile({
     Key? key,
     this.hasLeading = true,
@@ -191,7 +191,7 @@ class SkeletonListTile extends StatelessWidget {
 class SkeletonPage extends StatelessWidget {
   final int itemCount;
   final Widget Function(BuildContext, int)? itemBuilder;
-  
+
   const SkeletonPage({
     Key? key,
     this.itemCount = 5,
@@ -203,12 +203,13 @@ class SkeletonPage extends StatelessWidget {
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: itemCount,
-      itemBuilder: itemBuilder ?? (context, index) => Padding(
-        padding: const EdgeInsets.only(bottom: 16),
-        child: index == 0 
-            ? const SkeletonDashboardCard()
-            : const SkeletonProductCard(),
-      ),
+      itemBuilder: itemBuilder ??
+          (context, index) => Padding(
+                padding: const EdgeInsets.only(bottom: 16),
+                child: index == 0
+                    ? const SkeletonDashboardCard()
+                    : const SkeletonProductCard(),
+              ),
     );
   }
 }

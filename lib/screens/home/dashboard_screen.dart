@@ -335,10 +335,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     "Government Schemes\n& Subsidies",
                                     const SchemesListingScreen()),
                                 _buildServiceCard(
-                                    Icons.monitor,
-                                    "Smart Farm\nMonitor",
-                                    const GasSensorMonitorScreen(),
-                                  ),
+                                  Icons.monitor,
+                                  "Smart Farm\nMonitor",
+                                  const GasSensorMonitorScreen(),
+                                ),
                               ],
                             ),
 
@@ -728,8 +728,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
         final pinnedList = snapshot.data!;
         // Sort by percentage increase in price (descending)
         pinnedList.sort((a, b) {
-          double aPercent = a.initialPrice != 0 ? ((a.currentPrice - a.initialPrice) / a.initialPrice) * 100 : 0;
-          double bPercent = b.initialPrice != 0 ? ((b.currentPrice - b.initialPrice) / b.initialPrice) * 100 : 0;
+          double aPercent = a.initialPrice != 0
+              ? ((a.currentPrice - a.initialPrice) / a.initialPrice) * 100
+              : 0;
+          double bPercent = b.initialPrice != 0
+              ? ((b.currentPrice - b.initialPrice) / b.initialPrice) * 100
+              : 0;
           return bPercent.compareTo(aPercent);
         });
         return CustomCard(
@@ -750,7 +754,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
               ),
               Divider(height: 1),
               ...pinnedList.take(4).map((pinned) {
-                final isProfit = ((pinned.currentPrice - pinned.initialPrice) / pinned.initialPrice) * 100 >= 0;
+                final isProfit = ((pinned.currentPrice - pinned.initialPrice) /
+                            pinned.initialPrice) *
+                        100 >=
+                    0;
                 return Padding(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -805,7 +812,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               ),
                               child: Text(
                                 (() {
-                                  double percent = pinned.initialPrice != 0 ? ((pinned.currentPrice - pinned.initialPrice) / pinned.initialPrice) * 100 : 0;
+                                  double percent = pinned.initialPrice != 0
+                                      ? ((pinned.currentPrice -
+                                                  pinned.initialPrice) /
+                                              pinned.initialPrice) *
+                                          100
+                                      : 0;
                                   String sign = percent >= 0 ? '+' : '';
                                   return '$sign${percent.toStringAsFixed(1)}%';
                                 })(),

@@ -25,7 +25,8 @@ class MyProductsScreen extends StatelessWidget {
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => ProductDetailsScreen(productId: product.id),
+                      builder: (context) =>
+                          ProductDetailsScreen(productId: product.id),
                     ),
                   ),
                 );

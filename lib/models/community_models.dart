@@ -23,7 +23,8 @@ class UserProfile {
   }
 
   static UserProfile defaultProfile() {
-    return UserProfile(id: "unknown", displayName: "Unknown Admin", createdAt: DateTime.now());
+    return UserProfile(
+        id: "unknown", displayName: "Unknown Admin", createdAt: DateTime.now());
   }
 
   Map<String, dynamic> toJson() {
@@ -217,7 +218,6 @@ class Community {
     );
   }
 
-
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -253,7 +253,8 @@ class CommunityThread {
     this.messageCount = 0,
   });
 
-  factory CommunityThread.fromJson(Map<String, dynamic> json, {UserProfile? creator}) {
+  factory CommunityThread.fromJson(Map<String, dynamic> json,
+      {UserProfile? creator}) {
     return CommunityThread(
       id: json['id'] as String,
       title: json['title'] as String,
@@ -289,7 +290,8 @@ class CommunityMessage {
     this.threadId,
   });
 
-  factory CommunityMessage.fromJson(Map<String, dynamic> json, {UserProfile? sender, CommunityMessage? replyTo}) {
+  factory CommunityMessage.fromJson(Map<String, dynamic> json,
+      {UserProfile? sender, CommunityMessage? replyTo}) {
     return CommunityMessage(
       id: json['id'] as String,
       content: json['content'] as String?,

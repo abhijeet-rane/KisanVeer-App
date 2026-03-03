@@ -18,11 +18,11 @@ class FinancialService {
   }
 
   Future<void> addIncomeTransaction(
-      String title,
-      String category,
-      double amount,
-      DateTime date,
-      ) async {
+    String title,
+    String category,
+    double amount,
+    DateTime date,
+  ) async {
     await _supabase.from('income_transactions').insert({
       'title': title,
       'category': category,
@@ -45,11 +45,11 @@ class FinancialService {
   }
 
   Future<void> addExpenseTransaction(
-      String title,
-      String category,
-      double amount,
-      DateTime date,
-      ) async {
+    String title,
+    String category,
+    double amount,
+    DateTime date,
+  ) async {
     await _supabase.from('expense_transactions').insert({
       'title': title,
       'category': category,
@@ -90,7 +90,7 @@ class FinancialService {
       };
 
       final response =
-      await _supabase.from('loans').insert(loanData).select().single();
+          await _supabase.from('loans').insert(loanData).select().single();
 
       return Loan.fromJson(response);
     } catch (e) {
@@ -99,10 +99,10 @@ class FinancialService {
   }
 
   Future<void> updateLoanRemainingAmount(
-      String loanId,
-      double paymentAmount,
-      String paymentMethod,
-      ) async {
+    String loanId,
+    double paymentAmount,
+    String paymentMethod,
+  ) async {
     try {
       final userId = _supabase.auth.currentUser?.id;
       if (userId == null) throw Exception('User not authenticated');
@@ -168,16 +168,16 @@ class FinancialService {
 
     final monthlyIncome = incomeTransactions
         .where((t) =>
-    t.transactionDate
-        .isAfter(startOfMonth.subtract(const Duration(days: 1))) &&
-        t.transactionDate.isBefore(endOfMonth.add(const Duration(days: 1))))
+            t.transactionDate
+                .isAfter(startOfMonth.subtract(const Duration(days: 1))) &&
+            t.transactionDate.isBefore(endOfMonth.add(const Duration(days: 1))))
         .fold<double>(0, (sum, t) => sum + t.amount);
 
     final monthlyExpense = expenseTransactions
         .where((t) =>
-    t.transactionDate
-        .isAfter(startOfMonth.subtract(const Duration(days: 1))) &&
-        t.transactionDate.isBefore(endOfMonth.add(const Duration(days: 1))))
+            t.transactionDate
+                .isAfter(startOfMonth.subtract(const Duration(days: 1))) &&
+            t.transactionDate.isBefore(endOfMonth.add(const Duration(days: 1))))
         .fold<double>(0, (sum, t) => sum + t.amount);
 
     return {
@@ -187,25 +187,25 @@ class FinancialService {
   }
 
   Future<Map<String, List<FinancialTransaction>>> getTransactionHistory(
-      DateTime startDate,
-      DateTime endDate,
-      ) async {
+    DateTime startDate,
+    DateTime endDate,
+  ) async {
     try {
       final incomeTransactions = await getIncomeTransactions();
       final expenseTransactions = await getExpenseTransactions();
 
       final filteredIncome = incomeTransactions
           .where((t) =>
-      t.transactionDate
-          .isAfter(startDate.subtract(const Duration(days: 1))) &&
-          t.transactionDate.isBefore(endDate.add(const Duration(days: 1))))
+              t.transactionDate
+                  .isAfter(startDate.subtract(const Duration(days: 1))) &&
+              t.transactionDate.isBefore(endDate.add(const Duration(days: 1))))
           .toList();
 
       final filteredExpenses = expenseTransactions
           .where((t) =>
-      t.transactionDate
-          .isAfter(startDate.subtract(const Duration(days: 1))) &&
-          t.transactionDate.isBefore(endDate.add(const Duration(days: 1))))
+              t.transactionDate
+                  .isAfter(startDate.subtract(const Duration(days: 1))) &&
+              t.transactionDate.isBefore(endDate.add(const Duration(days: 1))))
           .toList();
 
       return {
@@ -271,7 +271,7 @@ class FinancialService {
 
       // Calculate income stability score (20% weight)
       double incomeStabilityScore =
-      _calculateIncomeStabilityScore(incomeTransactions);
+          _calculateIncomeStabilityScore(incomeTransactions);
 
       // Calculate expense management score (10% weight)
       double expenseManagementScore = _calculateExpenseManagementScore(
@@ -282,9 +282,9 @@ class FinancialService {
       // Calculate final score (base: 300, max additional: 600)
       int finalScore = 300 +
           ((paymentHistoryScore * 240) +
-              (creditUtilizationScore * 180) +
-              (incomeStabilityScore * 120) +
-              (expenseManagementScore * 60))
+                  (creditUtilizationScore * 180) +
+                  (incomeStabilityScore * 120) +
+                  (expenseManagementScore * 60))
               .round();
 
       // Ensure score is within valid range
@@ -323,7 +323,7 @@ class FinancialService {
     for (final loan in loans) {
       // Skip loans with empty ID
       if (loan.id.isEmpty) continue;
-      
+
       try {
         final payments = await getLoanPayments(loan.id);
         totalPayments += payments.length;
@@ -396,20 +396,20 @@ class FinancialService {
   }
 
   double _calculateExpenseManagementScore(
-      List<FinancialTransaction> incomeTransactions,
-      List<FinancialTransaction> expenseTransactions,
-      ) {
+    List<FinancialTransaction> incomeTransactions,
+    List<FinancialTransaction> expenseTransactions,
+  ) {
     if (incomeTransactions.isEmpty) return 0.5; // Neutral score for no history
 
     // Calculate total income and expenses
     final totalIncome = incomeTransactions.fold<double>(
       0,
-          (sum, transaction) => sum + transaction.amount,
+      (sum, transaction) => sum + transaction.amount,
     );
 
     final totalExpenses = expenseTransactions.fold<double>(
       0,
-          (sum, transaction) => sum + transaction.amount,
+      (sum, transaction) => sum + transaction.amount,
     );
 
     if (totalIncome == 0) return 0.5;

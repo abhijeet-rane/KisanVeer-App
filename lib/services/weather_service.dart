@@ -48,7 +48,7 @@ class WeatherService {
           .from('secrets')
           .select('key_value')
           .eq('key_name', 'openweather_api_key')
-          .single();  // Ensures only one row is fetched
+          .single(); // Ensures only one row is fetched
 
       if (response == null || response['key_value'] == null) {
         throw Exception('API key not found in Supabase.');
@@ -87,7 +87,8 @@ class WeatherService {
 
       return {
         'temperature': data['main']['temp'].round(),
-        'feelsLike': data['main']['feels_like']?.round() ?? data['main']['temp'].round(), 
+        'feelsLike':
+            data['main']['feels_like']?.round() ?? data['main']['temp'].round(),
         'condition': data['weather'][0]['main'],
         'description': data['weather'][0]['description'],
         'humidity': data['main']['humidity'],
@@ -116,7 +117,7 @@ class WeatherService {
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
       final List<dynamic> forecastList = data['list'];
-      
+
       // Extract hourly forecast for the next 24 hours (8 intervals at 3 hours each)
       return forecastList.take(8).map<Map<String, dynamic>>((item) {
         final dateTime = DateTime.fromMillisecondsSinceEpoch(item['dt'] * 1000);
@@ -144,19 +145,20 @@ class WeatherService {
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
       final List<dynamic> forecastList = data['list'];
-      
+
       // Extract daily forecast by grouping 3-hour forecasts by day
       final Map<String, List<dynamic>> dailyForecastMap = {};
       for (final forecast in forecastList) {
-        final dateTime = DateTime.fromMillisecondsSinceEpoch(forecast['dt'] * 1000);
+        final dateTime =
+            DateTime.fromMillisecondsSinceEpoch(forecast['dt'] * 1000);
         final day = DateFormat('yyyy-MM-dd').format(dateTime);
-        
+
         if (!dailyForecastMap.containsKey(day)) {
           dailyForecastMap[day] = [];
         }
         dailyForecastMap[day]!.add(forecast);
       }
-      
+
       // Consolidate daily forecasts (average of 3-hour forecasts for each day)
       final List<Map<String, dynamic>> dailyForecast = [];
       dailyForecastMap.forEach((day, forecasts) {
@@ -165,16 +167,16 @@ class WeatherService {
         double tempMaxSum = 0;
         String commonCondition = '';
         Map<String, int> conditionCount = {};
-        
+
         for (final forecast in forecasts) {
           tempSum += forecast['main']['temp'];
           tempMinSum += forecast['main']['temp_min'];
           tempMaxSum += forecast['main']['temp_max'];
-          
+
           final condition = forecast['weather'][0]['main'];
           conditionCount[condition] = (conditionCount[condition] ?? 0) + 1;
         }
-        
+
         // Find most common weather condition
         int maxCount = 0;
         conditionCount.forEach((condition, count) {
@@ -183,10 +185,11 @@ class WeatherService {
             commonCondition = condition;
           }
         });
-        
+
         final count = forecasts.length;
-        final dateTime = DateTime.fromMillisecondsSinceEpoch(forecasts[0]['dt'] * 1000);
-        
+        final dateTime =
+            DateTime.fromMillisecondsSinceEpoch(forecasts[0]['dt'] * 1000);
+
         dailyForecast.add({
           'day': DateFormat('EEE').format(dateTime),
           'date': DateFormat('MMM d').format(dateTime),
@@ -197,7 +200,7 @@ class WeatherService {
           'icon': _getWeatherIcon(forecasts[0]['weather'][0]['icon']),
         });
       });
-      
+
       // Only return first 5 days
       return dailyForecast.take(5).toList();
     } else {
@@ -225,7 +228,7 @@ class WeatherService {
     try {
       final String condition = currentWeather['condition'] ?? '';
       final List<Map<String, dynamic>> allAdvice = [];
-      
+
       // Get current season for more specific advice
       final now = DateTime.now();
       final String season;
@@ -238,7 +241,7 @@ class WeatherService {
       } else {
         season = 'summer';
       }
-      
+
       // Query Supabase for general advice based on current conditions
       final generalResponse = await _client
           .from('farming_advice')
@@ -248,10 +251,11 @@ class WeatherService {
           .or('season.is.null,season.eq.$season')
           .order('created_at', ascending: false)
           .limit(2);
-      
+
       // Convert general advice to our format
       if (generalResponse.isNotEmpty) {
-        allAdvice.addAll(List<Map<String, dynamic>>.from(generalResponse.map((item) {
+        allAdvice
+            .addAll(List<Map<String, dynamic>>.from(generalResponse.map((item) {
           return {
             'crop': 'General',
             'advice': item['advice_description'],
@@ -263,28 +267,27 @@ class WeatherService {
           };
         })));
       }
-      
+
       // Get user's selected crops for crop-specific advice
       // Force refresh to get latest crop selections
-      final userCrops = await _cropAdviceService.getUserCrops(forceRefresh: true);
-      
+      final userCrops =
+          await _cropAdviceService.getUserCrops(forceRefresh: true);
+
       // Get crop-specific advice using cropAdviceService
       // This will handle fetching from database and fallback to generated advice
-      final cropSpecificAdvice = await _cropAdviceService.getCropSpecificAdvice(
-        currentWeather,
-        specificCrops: userCrops
-      );
-      
+      final cropSpecificAdvice = await _cropAdviceService
+          .getCropSpecificAdvice(currentWeather, specificCrops: userCrops);
+
       // Add crop-specific advice to our list
       if (cropSpecificAdvice.isNotEmpty) {
         allAdvice.addAll(cropSpecificAdvice);
       }
-      
+
       // If we have no advice at all, generate fallback advice
       if (allAdvice.isEmpty) {
         return _generateAdvice(currentWeather);
       }
-      
+
       return allAdvice;
     } catch (e) {
       print('Error getting farming advice: $e');
@@ -293,7 +296,8 @@ class WeatherService {
   }
 
   /// Generate advice based on weather conditions (fallback when no database advice is found)
-  List<Map<String, dynamic>> _generateAdvice(Map<String, dynamic> currentWeather) {
+  List<Map<String, dynamic>> _generateAdvice(
+      Map<String, dynamic> currentWeather) {
     final List<Map<String, dynamic>> advice = [];
     final String condition = currentWeather['condition'] ?? '';
     final int temp = currentWeather['temperature'] ?? 25;
@@ -415,15 +419,16 @@ class WeatherService {
       if (cachedData != null) {
         // Check for alerts in cached data
         await _alertService.checkForAlerts(cachedData);
-        
+
         // Always get fresh farming advice even with cached weather data
         final currentWeather = cachedData['currentWeather'];
         final genericAdvice = await getFarmingAdvice(currentWeather);
-        final cropSpecificAdvice = await _cropAdviceService.getCropSpecificAdvice(currentWeather);
-        
+        final cropSpecificAdvice =
+            await _cropAdviceService.getCropSpecificAdvice(currentWeather);
+
         // Update advice in cached data
         cachedData['farmingAdvice'] = [...genericAdvice, ...cropSpecificAdvice];
-        
+
         return cachedData;
       }
 
@@ -517,7 +522,7 @@ class WeatherService {
 
   /// Clear weather cache to force a fresh data fetch
   Future<void> clearWeatherCache() async {
-    // Use the existing clearCache method from CacheService 
+    // Use the existing clearCache method from CacheService
     await _cacheService.clearCache();
   }
 

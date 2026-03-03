@@ -690,14 +690,16 @@ class MarketplaceService {
 
     // Fetch address if address_id exists
     Address? address;
-    if (orderData['address_id'] != null && (orderData['address_id'] as String).isNotEmpty) {
+    if (orderData['address_id'] != null &&
+        (orderData['address_id'] as String).isNotEmpty) {
       final addressData = await _supabase
           .from('addresses')
           .select()
           .eq('id', orderData['address_id'])
           .single();
       address = Address.fromJson(addressData);
-    } else if (orderData['address'] != null && orderData['address'] is Map<String, dynamic>) {
+    } else if (orderData['address'] != null &&
+        orderData['address'] is Map<String, dynamic>) {
       address = Address.fromJson(orderData['address']);
     }
 
@@ -735,16 +737,17 @@ class MarketplaceService {
       totalAmount: (orderData['total_amount'] is String)
           ? double.tryParse(orderData['total_amount']) ?? 0.0
           : (orderData['total_amount'] ?? 0.0),
-      address: address ?? Address(
-        id: '',
-        userId: '',
-        name: '',
-        fullAddress: '',
-        city: '',
-        state: '',
-        pincode: '',
-        phone: '',
-      ),
+      address: address ??
+          Address(
+            id: '',
+            userId: '',
+            name: '',
+            fullAddress: '',
+            city: '',
+            state: '',
+            pincode: '',
+            phone: '',
+          ),
       addressId: orderData['address_id'],
       createdAt: DateTime.parse(orderData['created_at']),
       updatedAt: DateTime.parse(orderData['updated_at']),
@@ -1118,7 +1121,14 @@ class MarketplaceService {
         'id': _uuid.v4(),
         'order_id': orderId,
         'status': newStatus,
-        'notes': (newStatus == 'pending' || newStatus == 'confirmed' || newStatus == 'packed' || newStatus == 'shipped' || newStatus == 'delivered' || newStatus == 'cancelled') ? null : (notes ?? 'Status updated to $newStatus'),
+        'notes': (newStatus == 'pending' ||
+                newStatus == 'confirmed' ||
+                newStatus == 'packed' ||
+                newStatus == 'shipped' ||
+                newStatus == 'delivered' ||
+                newStatus == 'cancelled')
+            ? null
+            : (notes ?? 'Status updated to $newStatus'),
         'created_at': DateTime.now().toIso8601String(),
         'updated_by': userId,
       });

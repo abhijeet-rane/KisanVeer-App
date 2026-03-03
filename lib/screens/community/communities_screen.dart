@@ -208,7 +208,8 @@ class _CommunitiesScreenState extends State<CommunitiesScreen> {
                 opacity: 1.0,
                 duration: const Duration(milliseconds: 500),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: community.isPrivate
@@ -260,7 +261,8 @@ class _CommunitiesScreenState extends State<CommunitiesScreen> {
           : RefreshIndicator(
               onRefresh: _loadCommunities,
               child: ListView(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
                 children: [
                   // Join Communities Card
                   Card(
@@ -275,7 +277,10 @@ class _CommunitiesScreenState extends State<CommunitiesScreen> {
                       child: Container(
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
-                            colors: [Colors.blue.withOpacity(0.1), Colors.blueAccent.withOpacity(0.1)],
+                            colors: [
+                              Colors.blue.withOpacity(0.1),
+                              Colors.blueAccent.withOpacity(0.1)
+                            ],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
@@ -289,7 +294,8 @@ class _CommunitiesScreenState extends State<CommunitiesScreen> {
                           ],
                         ),
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 14),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -308,7 +314,8 @@ class _CommunitiesScreenState extends State<CommunitiesScreen> {
                                         ),
                                       ],
                                     ),
-                                    child: const Icon(Icons.group_add, size: 28, color: Colors.blue),
+                                    child: const Icon(Icons.group_add,
+                                        size: 28, color: Colors.blue),
                                   ),
                                   const SizedBox(width: 14),
                                   Expanded(
@@ -341,23 +348,29 @@ class _CommunitiesScreenState extends State<CommunitiesScreen> {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => const CreateCommunityScreen(),
+                                        builder: (context) =>
+                                            const CreateCommunityScreen(),
                                       ),
                                     ).then((_) => _loadCommunities());
                                   },
                                   child: Container(
                                     width: double.infinity,
-                                    padding: const EdgeInsets.symmetric(vertical: 16),
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 16),
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(14),
                                       gradient: LinearGradient(
-                                        colors: [Colors.blue.shade400, Colors.blue.shade700],
+                                        colors: [
+                                          Colors.blue.shade400,
+                                          Colors.blue.shade700
+                                        ],
                                         begin: Alignment.topLeft,
                                         end: Alignment.bottomRight,
                                       ),
                                       boxShadow: [
                                         BoxShadow(
-                                          color: Colors.blue.shade300.withOpacity(0.6),
+                                          color: Colors.blue.shade300
+                                              .withOpacity(0.6),
                                           blurRadius: 12,
                                           offset: const Offset(0, 4),
                                         ),
@@ -390,7 +403,10 @@ class _CommunitiesScreenState extends State<CommunitiesScreen> {
                     Container(
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
-                          colors: [Colors.blueAccent.withOpacity(0.2), Colors.white],
+                          colors: [
+                            Colors.blueAccent.withOpacity(0.2),
+                            Colors.white
+                          ],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         ),
@@ -410,7 +426,8 @@ class _CommunitiesScreenState extends State<CommunitiesScreen> {
                         children: [
                           Row(
                             children: [
-                              Icon(Icons.groups_rounded, size: 28, color: Colors.blueAccent),
+                              Icon(Icons.groups_rounded,
+                                  size: 28, color: Colors.blueAccent),
                               const SizedBox(width: 8),
                               const Text(
                                 'My Communities',
@@ -424,9 +441,12 @@ class _CommunitiesScreenState extends State<CommunitiesScreen> {
                           ),
                           const SizedBox(height: 12),
                           SizedBox(
-                            height: 350, // Increased height to better fit image & details
+                            height:
+                                350, // Increased height to better fit image & details
                             child: PageView.builder(
-                              controller: PageController(viewportFraction: 0.85), // Smooth scrolling with slight overlap
+                              controller: PageController(
+                                  viewportFraction:
+                                      0.85), // Smooth scrolling with slight overlap
                               scrollDirection: Axis.horizontal,
                               itemCount: _myCommunities.length,
                               itemBuilder: (context, index) {
@@ -434,7 +454,8 @@ class _CommunitiesScreenState extends State<CommunitiesScreen> {
                                 return AnimatedContainer(
                                   duration: Duration(milliseconds: 300),
                                   curve: Curves.easeInOut,
-                                  margin: const EdgeInsets.symmetric(horizontal: 8),
+                                  margin:
+                                      const EdgeInsets.symmetric(horizontal: 8),
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(16),
                                     color: Colors.white.withOpacity(0.9),
@@ -461,11 +482,10 @@ class _CommunitiesScreenState extends State<CommunitiesScreen> {
                     const SizedBox(height: 24),
                   ],
 
-
-
                   // Popular Communities Section
                   Padding(
-                    padding: const EdgeInsets.only(top: 10), // Adjust space as needed
+                    padding: const EdgeInsets.only(
+                        top: 10), // Adjust space as needed
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [

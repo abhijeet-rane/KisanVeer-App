@@ -19,7 +19,7 @@ class OrderSummaryCard extends StatelessWidget {
     final currencyFormat = NumberFormat.currency(locale: 'en_IN', symbol: '₹');
     final dateFormat = DateFormat('MMM d, yyyy');
     final timeFormat = DateFormat('h:mm a');
-    
+
     return Card(
       elevation: 2,
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 0),
@@ -70,7 +70,8 @@ class OrderSummaryCard extends StatelessWidget {
                   ),
                   // Order Status
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
                       color: _getStatusColor(order.status).withOpacity(0.1),
                       borderRadius: BorderRadius.circular(20),
@@ -88,12 +89,13 @@ class OrderSummaryCard extends StatelessWidget {
               ),
               const Divider(height: 24),
               // Order Items
-              if (order.items != null && order.items!.isNotEmpty) ...[  
+              if (order.items != null && order.items!.isNotEmpty) ...[
                 ListView.separated(
                   physics: const NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
                   itemCount: order.items!.length > 2 ? 2 : order.items!.length,
-                  separatorBuilder: (context, index) => const Divider(height: 16),
+                  separatorBuilder: (context, index) =>
+                      const Divider(height: 16),
                   itemBuilder: (context, index) {
                     final item = order.items![index];
                     return Row(
@@ -108,11 +110,13 @@ class OrderSummaryCard extends StatelessWidget {
                               width: 60,
                               height: 60,
                               fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) => Container(
+                              errorBuilder: (context, error, stackTrace) =>
+                                  Container(
                                 width: 60,
                                 height: 60,
                                 color: Colors.grey[200],
-                                child: const Icon(Icons.image_not_supported_outlined),
+                                child: const Icon(
+                                    Icons.image_not_supported_outlined),
                               ),
                             ),
                           )
@@ -124,7 +128,8 @@ class OrderSummaryCard extends StatelessWidget {
                               color: Colors.grey[200],
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            child: const Icon(Icons.image_not_supported_outlined),
+                            child:
+                                const Icon(Icons.image_not_supported_outlined),
                           ),
                         const SizedBox(width: 12),
                         // Product Details
@@ -134,7 +139,8 @@ class OrderSummaryCard extends StatelessWidget {
                             children: [
                               Text(
                                 item.product?.name ?? 'Product',
-                                style: const TextStyle(fontWeight: FontWeight.w500),
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.w500),
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -151,7 +157,8 @@ class OrderSummaryCard extends StatelessWidget {
                         ),
                         // Item Total
                         Text(
-                          currencyFormat.format((item.product?.price ?? 0) * item.quantity),
+                          currencyFormat.format(
+                              (item.product?.price ?? 0) * item.quantity),
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ],
@@ -235,7 +242,7 @@ class OrderSummaryCard extends StatelessWidget {
         return Colors.grey;
     }
   }
-  
+
   String _getStatusText(String status) {
     switch (status.toLowerCase()) {
       case 'pending':

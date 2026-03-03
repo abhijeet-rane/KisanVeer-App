@@ -41,9 +41,8 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   @override
   void initState() {
     super.initState();
-    _selectedCategory = widget.isIncome
-        ? _incomeCategories.first
-        : _expenseCategories.first;
+    _selectedCategory =
+        widget.isIncome ? _incomeCategories.first : _expenseCategories.first;
   }
 
   Future<void> _selectDate(BuildContext context) async {
@@ -82,7 +81,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                '${widget.isIncome ? "Income" : "Expense"} added successfully!'),
+                  '${widget.isIncome ? "Income" : "Expense"} added successfully!'),
               backgroundColor: Colors.green,
             ),
           );
@@ -137,8 +136,9 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.category),
                 ),
-                items: (widget.isIncome ? _incomeCategories : _expenseCategories)
-                    .map((String category) {
+                items:
+                    (widget.isIncome ? _incomeCategories : _expenseCategories)
+                        .map((String category) {
                   return DropdownMenuItem<String>(
                     value: category,
                     child: Text(category),

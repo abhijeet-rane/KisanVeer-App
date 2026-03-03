@@ -4,7 +4,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 /// A utility class to manage weather notifications for logged-in users
 class WeatherNotificationManager {
-  static const String _lastNotificationTimeKey = 'last_weather_notification_time';
+  static const String _lastNotificationTimeKey =
+      'last_weather_notification_time';
   static final AuthService _authService = AuthService();
 
   /// Shows a weather notification if the user is logged in
@@ -18,12 +19,12 @@ class WeatherNotificationManager {
     final prefs = await SharedPreferences.getInstance();
     final lastNotificationTime = prefs.getInt(_lastNotificationTimeKey) ?? 0;
     final currentTime = DateTime.now().millisecondsSinceEpoch;
-    
+
     // Check if at least 1 hour has passed since the last notification
     // (3,600,000 milliseconds = 1 hour)
     if (currentTime - lastNotificationTime >= 3600000) {
       await NotificationsService.showWeatherNotification();
-      
+
       // Update the last notification time
       await prefs.setInt(_lastNotificationTimeKey, currentTime);
     }
@@ -38,12 +39,10 @@ class WeatherNotificationManager {
     }
 
     await NotificationsService.showWeatherNotification();
-    
+
     // Update the last notification time
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt(
-      _lastNotificationTimeKey, 
-      DateTime.now().millisecondsSinceEpoch
-    );
+        _lastNotificationTimeKey, DateTime.now().millisecondsSinceEpoch);
   }
 }

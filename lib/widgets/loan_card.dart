@@ -16,7 +16,8 @@ class LoanCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final progress = (loan.totalAmount - loan.remainingAmount) / loan.totalAmount;
+    final progress =
+        (loan.totalAmount - loan.remainingAmount) / loan.totalAmount;
 
     return Card(
       elevation: 6,
@@ -41,9 +42,9 @@ class LoanCard extends StatelessWidget {
                 Text(
                   loan.title,
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.green.shade900,
-                  ),
+                        fontWeight: FontWeight.bold,
+                        color: Colors.green.shade900,
+                      ),
                 ),
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -56,7 +57,9 @@ class LoanCard extends StatelessWidget {
                   child: Text(
                     loan.remainingAmount > 0 ? 'Active' : 'Closed',
                     style: TextStyle(
-                      color: loan.remainingAmount > 0 ? Colors.orange.shade800 : Colors.green.shade800,
+                      color: loan.remainingAmount > 0
+                          ? Colors.orange.shade800
+                          : Colors.green.shade800,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -67,18 +70,23 @@ class LoanCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _buildInfoColumn('Amount', '₹${loan.totalAmount.toStringAsFixed(0)}', Colors.green.shade900),
-                _buildInfoColumn('Interest Rate', '${loan.interestRate}%', Colors.blue.shade800),
-                _buildInfoColumn('Due Date', _formatDate(loan.endDate), Colors.red.shade800),
+                _buildInfoColumn(
+                    'Amount',
+                    '₹${loan.totalAmount.toStringAsFixed(0)}',
+                    Colors.green.shade900),
+                _buildInfoColumn('Interest Rate', '${loan.interestRate}%',
+                    Colors.blue.shade800),
+                _buildInfoColumn(
+                    'Due Date', _formatDate(loan.endDate), Colors.red.shade800),
               ],
             ),
             SizedBox(height: 16),
             Text(
               'Repayment Progress',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                color: Colors.blueGrey.shade700,
-                fontWeight: FontWeight.w600,
-              ),
+                    color: Colors.blueGrey.shade700,
+                    fontWeight: FontWeight.w600,
+                  ),
             ),
             SizedBox(height: 8),
             ClipRRect(
@@ -86,7 +94,8 @@ class LoanCard extends StatelessWidget {
               child: LinearProgressIndicator(
                 value: progress,
                 backgroundColor: Colors.grey.shade300,
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.green.shade600),
+                valueColor:
+                    AlwaysStoppedAnimation<Color>(Colors.green.shade600),
               ),
             ),
             SizedBox(height: 8),
@@ -95,11 +104,14 @@ class LoanCard extends StatelessWidget {
               children: [
                 Text(
                   'Paid: ₹${(loan.totalAmount - loan.remainingAmount).toStringAsFixed(0)}',
-                  style: TextStyle(color: Colors.green.shade900, fontWeight: FontWeight.w600),
+                  style: TextStyle(
+                      color: Colors.green.shade900,
+                      fontWeight: FontWeight.w600),
                 ),
                 Text(
                   'Remaining: ₹${loan.remainingAmount.toStringAsFixed(0)}',
-                  style: TextStyle(color: Colors.red.shade700, fontWeight: FontWeight.w600),
+                  style: TextStyle(
+                      color: Colors.red.shade700, fontWeight: FontWeight.w600),
                 ),
               ],
             ),
@@ -122,7 +134,8 @@ class LoanCard extends StatelessWidget {
                       ),
                       side: BorderSide(color: Colors.green.shade700),
                     ),
-                    child: Text('Details', style: TextStyle(color: Colors.green.shade700)),
+                    child: Text('Details',
+                        style: TextStyle(color: Colors.green.shade700)),
                   ),
                 ),
                 SizedBox(width: 16),
@@ -130,26 +143,29 @@ class LoanCard extends StatelessWidget {
                   child: ElevatedButton(
                     onPressed: loan.remainingAmount > 0
                         ? () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => LoanPaymentScreen(
-                            loan: loan,
-                            onPaymentSuccess: onPaymentSuccess,
-                          ),
-                        ),
-                      );
-                    }
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => LoanPaymentScreen(
+                                  loan: loan,
+                                  onPaymentSuccess: onPaymentSuccess,
+                                ),
+                              ),
+                            );
+                          }
                         : null,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: loan.remainingAmount > 0 ? Colors.green.shade700 : Colors.grey,
+                      backgroundColor: loan.remainingAmount > 0
+                          ? Colors.green.shade700
+                          : Colors.grey,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
                     child: Text(
                       'Make Payment',
-                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                      style: TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.w600),
                     ),
                   ),
                 ),

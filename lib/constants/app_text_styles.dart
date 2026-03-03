@@ -11,7 +11,7 @@ class AppTextStyles {
     fontFamily: 'Poppins',
     height: 1.3,
   );
-  
+
   static const TextStyle h2 = TextStyle(
     fontSize: 24,
     fontWeight: FontWeight.bold,
@@ -19,7 +19,7 @@ class AppTextStyles {
     fontFamily: 'Poppins',
     height: 1.3,
   );
-  
+
   static const TextStyle h3 = TextStyle(
     fontSize: 20,
     fontWeight: FontWeight.w600,
@@ -27,7 +27,7 @@ class AppTextStyles {
     fontFamily: 'Poppins',
     height: 1.3,
   );
-  
+
   static const TextStyle h4 = TextStyle(
     fontSize: 18,
     fontWeight: FontWeight.w600,
@@ -35,7 +35,7 @@ class AppTextStyles {
     fontFamily: 'Poppins',
     height: 1.3,
   );
-  
+
   // Body text
   static const TextStyle bodyLarge = TextStyle(
     fontSize: 16,
@@ -44,7 +44,7 @@ class AppTextStyles {
     fontFamily: 'Poppins',
     height: 1.5,
   );
-  
+
   static const TextStyle bodyMedium = TextStyle(
     fontSize: 14,
     fontWeight: FontWeight.normal,
@@ -52,7 +52,7 @@ class AppTextStyles {
     fontFamily: 'Poppins',
     height: 1.5,
   );
-  
+
   static const TextStyle bodySmall = TextStyle(
     fontSize: 12,
     fontWeight: FontWeight.normal,
@@ -60,7 +60,7 @@ class AppTextStyles {
     fontFamily: 'Poppins',
     height: 1.5,
   );
-  
+
   // Special text styles
   static const TextStyle buttonText = TextStyle(
     fontSize: 16,
@@ -69,28 +69,28 @@ class AppTextStyles {
     fontFamily: 'Poppins',
     letterSpacing: 0.5,
   );
-  
+
   static const TextStyle caption = TextStyle(
     fontSize: 12,
     fontWeight: FontWeight.w500,
     color: AppColors.textSecondary,
     fontFamily: 'Poppins',
   );
-  
+
   static const TextStyle label = TextStyle(
     fontSize: 14,
     fontWeight: FontWeight.w500,
     color: AppColors.textPrimary,
     fontFamily: 'Poppins',
   );
-  
+
   static const TextStyle price = TextStyle(
     fontSize: 18,
     fontWeight: FontWeight.bold,
     color: AppColors.primary,
     fontFamily: 'Poppins',
   );
-  
+
   static const TextStyle tabLabel = TextStyle(
     fontSize: 14,
     fontWeight: FontWeight.w600,

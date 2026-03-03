@@ -139,7 +139,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             backgroundColor: Colors.green,
           ),
         );
-        Navigator.pop(context, updatedUser); // Return success to previous screen
+        Navigator.pop(
+            context, updatedUser); // Return success to previous screen
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -209,12 +210,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     backgroundImage: _imageFile != null
                         ? FileImage(_imageFile!) as ImageProvider<Object>
                         : (_userModel?.photoUrl.isNotEmpty == true
-                            ? NetworkImage(_userModel!.photoUrl) as ImageProvider<Object>
+                            ? NetworkImage(_userModel!.photoUrl)
+                                as ImageProvider<Object>
                             : null),
-                    child: _imageFile == null && (_userModel?.photoUrl.isEmpty ?? true)
+                    child: _imageFile == null &&
+                            (_userModel?.photoUrl.isEmpty ?? true)
                         ? Text(
                             _nameController.text.isNotEmpty
-                                ? _nameController.text.substring(0, 1).toUpperCase()
+                                ? _nameController.text
+                                    .substring(0, 1)
+                                    .toUpperCase()
                                 : 'U',
                             style: const TextStyle(
                               fontSize: 40,

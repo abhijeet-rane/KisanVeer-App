@@ -32,7 +32,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
     try {
       final notifications = await _notificationService.getNotifications();
-      
+
       setState(() {
         _notifications = notifications;
         _isLoading = false;
@@ -41,7 +41,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       setState(() {
         _isLoading = false;
       });
-      
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Error loading notifications: $e'),
@@ -55,7 +55,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     try {
       await _notificationService.markAllAsRead();
       await _loadNotifications();
-      
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('All notifications marked as read'),
@@ -75,11 +75,11 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   Future<void> _clearAll() async {
     try {
       await _notificationService.clearAllNotifications();
-      
+
       setState(() {
         _notifications = [];
       });
-      
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('All notifications cleared'),
@@ -99,7 +99,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   Future<void> _markAsRead(NotificationModel notification) async {
     try {
       await _notificationService.markAsRead(notification.id);
-      
+
       setState(() {
         final index = _notifications.indexWhere((n) => n.id == notification.id);
         if (index != -1) {
@@ -119,11 +119,11 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   Future<void> _deleteNotification(NotificationModel notification) async {
     try {
       await _notificationService.deleteNotification(notification.id);
-      
+
       setState(() {
         _notifications.removeWhere((n) => n.id == notification.id);
       });
-      
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Notification deleted'),
@@ -165,11 +165,11 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         return Icon(Icons.notifications, color: Colors.grey.shade700);
     }
   }
-  
+
   String _formatTimestamp(DateTime timestamp) {
     final now = DateTime.now();
     final difference = now.difference(timestamp);
-    
+
     if (difference.inDays > 0) {
       return DateFormat('MMM d, y').format(timestamp);
     } else if (difference.inHours > 0) {
@@ -242,7 +242,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                             itemCount: _notifications.length,
                             itemBuilder: (context, index) {
                               final notification = _notifications[index];
-                              
+
                               return Dismissible(
                                 key: Key(notification.id),
                                 background: Container(
@@ -266,15 +266,18 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                                   ),
                                   backgroundColor: notification.read
                                       ? Colors.white
-                                      : _getNotificationColor(notification.type),
+                                      : _getNotificationColor(
+                                          notification.type),
                                   child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       _getNotificationIcon(notification.type),
                                       const SizedBox(width: 16),
                                       Expanded(
                                         child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
                                             Text(
                                               notification.title,
@@ -295,7 +298,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                                             ),
                                             const SizedBox(height: 8),
                                             Text(
-                                              _formatTimestamp(notification.timestamp),
+                                              _formatTimestamp(
+                                                  notification.timestamp),
                                               style: TextStyle(
                                                 fontSize: 12,
                                                 color: Colors.grey.shade600,
@@ -303,10 +307,13 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                                             ),
                                             if (!notification.read)
                                               Align(
-                                                alignment: Alignment.centerRight,
+                                                alignment:
+                                                    Alignment.centerRight,
                                                 child: TextButton(
-                                                  child: const Text('Mark as Read'),
-                                                  onPressed: () => _markAsRead(notification),
+                                                  child: const Text(
+                                                      'Mark as Read'),
+                                                  onPressed: () =>
+                                                      _markAsRead(notification),
                                                 ),
                                               ),
                                           ],

@@ -86,9 +86,13 @@ class Loan {
       title: json['title'] as String,
       totalAmount: (json['total_amount'] as num).toDouble(),
       remainingAmount: (json['remaining_amount'] as num).toDouble(),
-      interestRate: json['interest_rate'] != null ? (json['interest_rate'] as num).toDouble() : null,
+      interestRate: json['interest_rate'] != null
+          ? (json['interest_rate'] as num).toDouble()
+          : null,
       startDate: DateTime.parse(json['start_date'] as String),
-      endDate: json['end_date'] != null ? DateTime.parse(json['end_date'] as String) : null,
+      endDate: json['end_date'] != null
+          ? DateTime.parse(json['end_date'] as String)
+          : null,
       status: json['status'] as String,
       purpose: json['purpose'] as String,
       lenderName: json['lender_name'] as String,

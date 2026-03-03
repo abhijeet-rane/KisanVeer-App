@@ -619,7 +619,6 @@ class _PriceHeatmapScreenState extends State<PriceHeatmapScreen> {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
-
                         Text(
                           '₹${data.averagePrice.toStringAsFixed(2)}/Qtl',
                           style: AppTextStyles.bodyMedium.copyWith(

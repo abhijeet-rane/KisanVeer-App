@@ -9,7 +9,7 @@ class AppTheme {
       primaryColor: AppColors.primary,
       scaffoldBackgroundColor: AppColors.background,
       fontFamily: 'Poppins',
-      
+
       // App Bar Theme
       appBarTheme: const AppBarTheme(
         backgroundColor: Colors.transparent,
@@ -27,7 +27,7 @@ class AppTheme {
           statusBarIconBrightness: Brightness.dark,
         ),
       ),
-      
+
       // Elevated Button Theme
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
@@ -45,7 +45,7 @@ class AppTheme {
           ),
         ),
       ),
-      
+
       // Text Button Theme
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
@@ -57,7 +57,7 @@ class AppTheme {
           ),
         ),
       ),
-      
+
       // Outlined Button Theme
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
@@ -74,12 +74,13 @@ class AppTheme {
           ),
         ),
       ),
-      
+
       // Input Decoration Theme
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: Colors.white,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: AppColors.textLight, width: 1),
@@ -107,7 +108,7 @@ class AppTheme {
           fontFamily: 'Poppins',
         ),
       ),
-      
+
       // Card Theme
       cardTheme: const CardThemeData(
         color: AppColors.cardBackground,
@@ -118,7 +119,7 @@ class AppTheme {
         ),
         margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 0),
       ),
-      
+
       // Checkbox Theme
       checkboxTheme: CheckboxThemeData(
         fillColor: WidgetStateProperty.resolveWith<Color>((states) {
@@ -132,7 +133,7 @@ class AppTheme {
           borderRadius: BorderRadius.circular(4),
         ),
       ),
-      
+
       // Bottom Navigation Bar Theme
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         backgroundColor: Colors.white,
@@ -151,14 +152,14 @@ class AppTheme {
           fontFamily: 'Poppins',
         ),
       ),
-      
+
       // Floating Action Button Theme
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         elevation: 4,
       ),
-      
+
       // Slider Theme
       sliderTheme: SliderThemeData(
         activeTrackColor: AppColors.primary,
@@ -169,7 +170,7 @@ class AppTheme {
         thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 12),
         overlayShape: const RoundSliderOverlayShape(overlayRadius: 24),
       ),
-      
+
       // Tab Bar Theme
       tabBarTheme: const TabBarThemeData(
         labelColor: AppColors.primary,
@@ -195,14 +196,14 @@ class AppTheme {
       ),
     );
   }
-  
+
   static ThemeData get darkTheme {
     return ThemeData(
       primaryColor: AppColors.primary,
       scaffoldBackgroundColor: const Color(0xFF121212),
       fontFamily: 'Poppins',
       brightness: Brightness.dark,
-      
+
       // App Bar Theme
       appBarTheme: const AppBarTheme(
         backgroundColor: Colors.transparent,
@@ -220,7 +221,7 @@ class AppTheme {
           statusBarIconBrightness: Brightness.light,
         ),
       ),
-      
+
       // Elevated Button Theme
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
@@ -238,7 +239,7 @@ class AppTheme {
           ),
         ),
       ),
-      
+
       // Text Button Theme
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
@@ -250,7 +251,7 @@ class AppTheme {
           ),
         ),
       ),
-      
+
       // Outlined Button Theme
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
@@ -267,12 +268,13 @@ class AppTheme {
           ),
         ),
       ),
-      
+
       // Input Decoration Theme
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: const Color(0xFF1E1E1E),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: Color(0xFF444444), width: 1),
@@ -300,7 +302,7 @@ class AppTheme {
           fontFamily: 'Poppins',
         ),
       ),
-      
+
       // Card Theme
       cardTheme: const CardThemeData(
         color: const Color(0xFF1E1E1E),
@@ -311,7 +313,7 @@ class AppTheme {
         ),
         margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 0),
       ),
-      
+
       // Checkbox Theme
       checkboxTheme: CheckboxThemeData(
         fillColor: MaterialStateProperty.resolveWith<Color>((states) {
@@ -325,7 +327,7 @@ class AppTheme {
           borderRadius: BorderRadius.circular(4),
         ),
       ),
-      
+
       // Bottom Navigation Bar Theme
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         backgroundColor: Color(0xFF1E1E1E),
@@ -344,14 +346,14 @@ class AppTheme {
           fontFamily: 'Poppins',
         ),
       ),
-      
+
       // Floating Action Button Theme
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         elevation: 4,
       ),
-      
+
       // Slider Theme
       sliderTheme: SliderThemeData(
         activeTrackColor: AppColors.primary,
@@ -362,7 +364,7 @@ class AppTheme {
         thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 12),
         overlayShape: const RoundSliderOverlayShape(overlayRadius: 24),
       ),
-      
+
       // Tab Bar Theme
       tabBarTheme: const TabBarThemeData(
         labelColor: AppColors.primary,

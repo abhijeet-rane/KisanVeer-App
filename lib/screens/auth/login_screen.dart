@@ -22,7 +22,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _authService = AuthService();
-  
+
   bool _isLoading = false;
   bool _isGoogleLoading = false;
   String? _errorMessage;
@@ -36,7 +36,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _handleLogin() async {
     if (_isLoading) return;
-    
+
     if (_formKey.currentState?.validate() ?? false) {
       setState(() {
         _isLoading = true;
@@ -78,7 +78,8 @@ class _LoginScreenState extends State<LoginScreen> {
       setState(() {
         _isLoading = false;
         if (e.toString().contains('sign_in_canceled')) {
-          _errorMessage = null; // User canceled the sign-in process, don't show error
+          _errorMessage =
+              null; // User canceled the sign-in process, don't show error
         } else {
           _errorMessage = e.toString();
         }
@@ -89,7 +90,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -110,7 +111,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
             ),
-            
+
             Positioned(
               bottom: 0,
               left: 0,
@@ -125,7 +126,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
             ),
-            
+
             // Main content
             SingleChildScrollView(
               child: Padding(
@@ -134,7 +135,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: 40),
-                    
+
                     // App logo and branding
                     Center(
                       child: Container(
@@ -180,41 +181,44 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                     ).animate().scale(
-                      duration: const Duration(milliseconds: 600),
-                      curve: Curves.easeOutBack,
-                    ),
-                    
+                          duration: const Duration(milliseconds: 600),
+                          curve: Curves.easeOutBack,
+                        ),
+
                     const SizedBox(height: 40),
-                    
+
                     // Welcome text
                     Text(
                       'Welcome Back!',
                       style: AppTextStyles.h1,
-                    ).animate().fadeIn(
-                      duration: const Duration(milliseconds: 600),
-                      delay: const Duration(milliseconds: 200),
-                    ).moveX(
-                      begin: -20,
-                      end: 0,
-                      duration: const Duration(milliseconds: 600),
-                      curve: Curves.easeOutQuad,
-                      delay: const Duration(milliseconds: 200),
-                    ),
-                    
+                    )
+                        .animate()
+                        .fadeIn(
+                          duration: const Duration(milliseconds: 600),
+                          delay: const Duration(milliseconds: 200),
+                        )
+                        .moveX(
+                          begin: -20,
+                          end: 0,
+                          duration: const Duration(milliseconds: 600),
+                          curve: Curves.easeOutQuad,
+                          delay: const Duration(milliseconds: 200),
+                        ),
+
                     const SizedBox(height: 8),
-                    
+
                     Text(
                       'Sign in to continue to KisanVeer',
                       style: AppTextStyles.bodyMedium.copyWith(
                         color: AppColors.textSecondary,
                       ),
                     ).animate().fadeIn(
-                      duration: const Duration(milliseconds: 600),
-                      delay: const Duration(milliseconds: 300),
-                    ),
-                    
+                          duration: const Duration(milliseconds: 600),
+                          delay: const Duration(milliseconds: 300),
+                        ),
+
                     const SizedBox(height: 40),
-                    
+
                     // Login form
                     Form(
                       key: _formKey,
@@ -230,12 +234,12 @@ class _LoginScreenState extends State<LoginScreen> {
                             prefixIcon: Icons.email_outlined,
                             validator: Validators.validateEmail,
                           ).animate().fadeIn(
-                            duration: const Duration(milliseconds: 600),
-                            delay: const Duration(milliseconds: 400),
-                          ),
-                          
+                                duration: const Duration(milliseconds: 600),
+                                delay: const Duration(milliseconds: 400),
+                              ),
+
                           const SizedBox(height: 24),
-                          
+
                           // Password field
                           CustomTextField(
                             label: 'Password',
@@ -250,12 +254,12 @@ class _LoginScreenState extends State<LoginScreen> {
                               return null;
                             },
                           ).animate().fadeIn(
-                            duration: const Duration(milliseconds: 600),
-                            delay: const Duration(milliseconds: 500),
-                          ),
-                          
+                                duration: const Duration(milliseconds: 600),
+                                delay: const Duration(milliseconds: 500),
+                              ),
+
                           const SizedBox(height: 16),
-                          
+
                           // Forgot password link
                           Align(
                             alignment: Alignment.centerRight,
@@ -264,7 +268,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => const ForgotPasswordScreen(),
+                                    builder: (context) =>
+                                        const ForgotPasswordScreen(),
                                   ),
                                 );
                               },
@@ -277,12 +282,12 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                           ).animate().fadeIn(
-                            duration: const Duration(milliseconds: 600),
-                            delay: const Duration(milliseconds: 600),
-                          ),
-                          
+                                duration: const Duration(milliseconds: 600),
+                                delay: const Duration(milliseconds: 600),
+                              ),
+
                           const SizedBox(height: 24),
-                          
+
                           // Error message
                           if (_errorMessage != null)
                             Container(
@@ -313,22 +318,21 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ],
                               ),
                             ).animate().shake(),
-                          
-                          if (_errorMessage != null)
-                            const SizedBox(height: 24),
-                          
+
+                          if (_errorMessage != null) const SizedBox(height: 24),
+
                           // Login button
                           CustomButton(
                             text: 'Login',
                             isLoading: _isLoading,
                             onPressed: _handleLogin,
                           ).animate().fadeIn(
-                            duration: const Duration(milliseconds: 600),
-                            delay: const Duration(milliseconds: 700),
-                          ),
-                          
+                                duration: const Duration(milliseconds: 600),
+                                delay: const Duration(milliseconds: 700),
+                              ),
+
                           const SizedBox(height: 24),
-                          
+
                           // Or separator
                           Row(
                             children: [
@@ -339,7 +343,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                               ),
                               Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 16),
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 16),
                                 child: Text(
                                   'OR',
                                   style: AppTextStyles.bodySmall.copyWith(
@@ -355,12 +360,12 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ],
                           ).animate().fadeIn(
-                            duration: const Duration(milliseconds: 600),
-                            delay: const Duration(milliseconds: 800),
-                          ),
-                          
+                                duration: const Duration(milliseconds: 600),
+                                delay: const Duration(milliseconds: 800),
+                              ),
+
                           const SizedBox(height: 24),
-                          
+
                           // Google sign in button
                           CustomButton(
                             text: 'Sign in with Google',
@@ -369,35 +374,39 @@ class _LoginScreenState extends State<LoginScreen> {
                             onPressed: _handleGoogleSignIn,
                             leadingIcon: Icons.g_mobiledata,
                           ).animate().fadeIn(
-                            duration: const Duration(milliseconds: 600),
-                            delay: const Duration(milliseconds: 900),
-                          ),
-                          
+                                duration: const Duration(milliseconds: 600),
+                                delay: const Duration(milliseconds: 900),
+                              ),
+
                           const SizedBox(height: 24),
-                          
+
                           // Biometric login button
                           BiometricLoginButton(
                             onSuccess: () async {
                               // Restore Supabase session from saved tokens
-                              final success = await _authService.restoreSessionForBiometric();
+                              final success = await _authService
+                                  .restoreSessionForBiometric();
                               if (success && mounted) {
-                                Navigator.pushReplacementNamed(context, '/main');
+                                Navigator.pushReplacementNamed(
+                                    context, '/main');
                               } else if (mounted) {
                                 setState(() {
-                                  _errorMessage = 'Please login with password once to refresh your session. Biometric will work again afterward.';
+                                  _errorMessage =
+                                      'Please login with password once to refresh your session. Biometric will work again afterward.';
                                 });
                               }
                             },
                             onFailed: () {
                               setState(() {
-                                _errorMessage = 'Biometric authentication failed';
+                                _errorMessage =
+                                    'Biometric authentication failed';
                               });
                             },
                           ).animate().fadeIn(
-                            duration: const Duration(milliseconds: 600),
-                            delay: const Duration(milliseconds: 1000),
-                          ),
-                          
+                                duration: const Duration(milliseconds: 600),
+                                delay: const Duration(milliseconds: 1000),
+                              ),
+
                           // Register link
                           Center(
                             child: GestureDetector(
@@ -405,7 +414,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => const RegisterScreen(),
+                                    builder: (context) =>
+                                        const RegisterScreen(),
                                   ),
                                 );
                               },
@@ -430,9 +440,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                           ).animate().fadeIn(
-                            duration: const Duration(milliseconds: 600),
-                            delay: const Duration(milliseconds: 1000),
-                          ),
+                                duration: const Duration(milliseconds: 600),
+                                delay: const Duration(milliseconds: 1000),
+                              ),
                         ],
                       ),
                     ),

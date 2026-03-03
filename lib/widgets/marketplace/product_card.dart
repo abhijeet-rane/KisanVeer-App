@@ -17,8 +17,9 @@ class ProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final currencyFormat = NumberFormat.currency(locale: 'en_IN', symbol: '\u20b9');
-    
+    final currencyFormat =
+        NumberFormat.currency(locale: 'en_IN', symbol: '\u20b9');
+
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
       shape: RoundedRectangleBorder(
@@ -67,7 +68,7 @@ class ProductCard extends StatelessWidget {
                       ),
                     ),
             ),
-            
+
             // Product Details
             Padding(
               padding: const EdgeInsets.all(16),

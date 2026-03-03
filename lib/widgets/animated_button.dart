@@ -10,7 +10,7 @@ class AnimatedPressButton extends StatefulWidget {
   final double scaleAmount;
   final Duration animationDuration;
   final bool enableHaptic;
-  
+
   const AnimatedPressButton({
     Key? key,
     required this.child,
@@ -28,7 +28,7 @@ class _AnimatedPressButtonState extends State<AnimatedPressButton>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
-  
+
   @override
   void initState() {
     super.initState();
@@ -44,27 +44,27 @@ class _AnimatedPressButtonState extends State<AnimatedPressButton>
       curve: Curves.easeInOut,
     ));
   }
-  
+
   @override
   void dispose() {
     _controller.dispose();
     super.dispose();
   }
-  
+
   void _onTapDown(TapDownDetails details) {
     if (widget.onPressed != null) {
       _controller.forward();
     }
   }
-  
+
   void _onTapUp(TapUpDetails details) {
     _controller.reverse();
   }
-  
+
   void _onTapCancel() {
     _controller.reverse();
   }
-  
+
   void _onTap() {
     if (widget.onPressed != null) {
       if (widget.enableHaptic) {
@@ -73,7 +73,7 @@ class _AnimatedPressButtonState extends State<AnimatedPressButton>
       widget.onPressed!();
     }
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -97,7 +97,7 @@ class AnimatedCard extends StatelessWidget {
   final EdgeInsets? margin;
   final double borderRadius;
   final Color? backgroundColor;
-  
+
   const AnimatedCard({
     Key? key,
     required this.child,
@@ -126,14 +126,14 @@ class AnimatedCard extends StatelessWidget {
       ),
       child: child,
     );
-    
+
     if (onTap != null) {
       return AnimatedPressButton(
         onPressed: onTap,
         child: card,
       );
     }
-    
+
     return card;
   }
 }
@@ -143,7 +143,7 @@ class AnimatedFAB extends StatefulWidget {
   final VoidCallback onPressed;
   final IconData icon;
   final String? label;
-  
+
   const AnimatedFAB({
     Key? key,
     required this.onPressed,
@@ -159,7 +159,7 @@ class _AnimatedFABState extends State<AnimatedFAB>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
-  
+
   @override
   void initState() {
     super.initState();
@@ -171,13 +171,13 @@ class _AnimatedFABState extends State<AnimatedFAB>
       CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
     );
   }
-  
+
   @override
   void dispose() {
     _controller.dispose();
     super.dispose();
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -214,7 +214,7 @@ class AnimatedIconButton extends StatelessWidget {
   final Color? color;
   final double size;
   final String? tooltip;
-  
+
   const AnimatedIconButton({
     Key? key,
     required this.icon,
@@ -235,7 +235,7 @@ class AnimatedIconButton extends StatelessWidget {
       tooltip: tooltip,
       splashRadius: size + 8,
     );
-    
+
     return AnimatedPressButton(
       onPressed: null, // Let IconButton handle the tap
       scaleAmount: 0.9,

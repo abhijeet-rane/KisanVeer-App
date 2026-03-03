@@ -37,7 +37,8 @@ class _FinancialReportsScreenState extends State<FinancialReportsScreen> {
         _monthlyTotals = {
           'income': monthlyData['income'] ?? 0.0,
           'expense': monthlyData['expense'] ?? 0.0,
-          'balance': (monthlyData['income'] ?? 0.0) - (monthlyData['expense'] ?? 0.0),
+          'balance':
+              (monthlyData['income'] ?? 0.0) - (monthlyData['expense'] ?? 0.0),
         };
         _trends = trendsData;
         _isLoading = false;
@@ -193,8 +194,7 @@ class _FinancialReportsScreenState extends State<FinancialReportsScreen> {
                         getTitlesWidget: (value, meta) {
                           if (value.isFinite && !value.isNaN) {
                             int intValue = value.toInt();
-                            if (intValue >= 0 &&
-                                intValue < _selectedMonths) {
+                            if (intValue >= 0 && intValue < _selectedMonths) {
                               final date = DateTime.now().subtract(
                                 Duration(
                                     days: 30 *
@@ -203,8 +203,7 @@ class _FinancialReportsScreenState extends State<FinancialReportsScreen> {
                               return Padding(
                                 padding: const EdgeInsets.all(4.0),
                                 child: Text(
-                                  '${date.month}/${date.year.toString()
-                                      .substring(2)}',
+                                  '${date.month}/${date.year.toString().substring(2)}',
                                   style: TextStyle(fontSize: 10),
                                 ),
                               );

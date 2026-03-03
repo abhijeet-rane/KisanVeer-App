@@ -159,7 +159,6 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 16),
-
               const Text(
                 'Change your password',
                 style: TextStyle(
@@ -168,16 +167,12 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   color: AppColors.primary,
                 ),
               ),
-
               const SizedBox(height: 8),
-
               const Text(
                 'For security reasons, please enter your current password before setting a new one.',
                 style: TextStyle(color: Colors.grey, fontSize: 14),
               ),
-
               const SizedBox(height: 32),
-
               _buildPasswordField(
                 controller: _currentPasswordController,
                 labelText: 'Current Password',
@@ -189,9 +184,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 },
                 validator: _validateCurrentPassword,
               ),
-
               const SizedBox(height: 24),
-
               _buildPasswordField(
                 controller: _newPasswordController,
                 labelText: 'New Password',
@@ -203,9 +196,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 },
                 validator: _validateNewPassword,
               ),
-
               const SizedBox(height: 24),
-
               _buildPasswordField(
                 controller: _confirmPasswordController,
                 labelText: 'Confirm New Password',
@@ -217,18 +208,14 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 },
                 validator: _validateConfirmPassword,
               ),
-
               const SizedBox(height: 40),
-
               CustomButton(
                 onPressed: _isLoading ? () {} : _handleChangePasswordSync,
                 text: _isLoading ? 'Please wait...' : 'Change Password',
                 isLoading: _isLoading,
                 width: double.infinity,
               ),
-
               const SizedBox(height: 24),
-
               if (!_isLoading)
                 const Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

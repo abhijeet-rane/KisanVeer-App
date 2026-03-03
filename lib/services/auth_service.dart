@@ -16,16 +16,16 @@ class AuthService {
 
   // Check if user is logged in
   bool get isLoggedIn => supabase.auth.currentUser != null;
-  
+
   /// Initialize auth state listener to save session on any login
   void initAuthStateListener() {
     if (_listenerInitialized) return;
     _listenerInitialized = true;
-    
+
     supabase.auth.onAuthStateChange.listen((data) {
       final AuthChangeEvent event = data.event;
       final Session? session = data.session;
-      
+
       if (event == AuthChangeEvent.signedIn && session != null) {
         // Save session for biometric on ANY sign in
         _saveSessionForBiometric(session);
@@ -93,7 +93,8 @@ class AuthService {
   Future<void> _sendUserToSupabase(Session? session) async {
     if (session == null) return;
 
-    final url = Uri.parse('https://wmqpftdxdduhbdsjybzu.supabase.co/functions/v1/handle-new-user');
+    final url = Uri.parse(
+        'https://wmqpftdxdduhbdsjybzu.supabase.co/functions/v1/handle-new-user');
 
     final response = await http.post(
       url,
@@ -126,7 +127,7 @@ class AuthService {
       if (response.user == null) {
         throw Exception('Authentication failed');
       }
-      
+
       // Save session for biometric login
       if (response.session != null) {
         await _saveSessionForBiometric(response.session!);
@@ -135,7 +136,7 @@ class AuthService {
       throw _handleAuthException(e);
     }
   }
-  
+
   /// Save session tokens for biometric login restoration
   Future<void> _saveSessionForBiometric(Session session) async {
     try {
@@ -148,35 +149,37 @@ class AuthService {
       );
       AppLogger.d('Session saved for biometric login', tag: 'Auth');
     } catch (e) {
-      AppLogger.e('Failed to save session for biometric', tag: 'Auth', error: e);
+      AppLogger.e('Failed to save session for biometric',
+          tag: 'Auth', error: e);
     }
   }
-  
+
   /// Restore session for biometric login
   /// Call this after successful biometric authentication
   Future<bool> restoreSessionForBiometric() async {
     try {
       final secureStorage = SecureStorageService();
       final refreshToken = await secureStorage.getRefreshToken();
-      
+
       if (refreshToken == null || refreshToken.isEmpty) {
         AppLogger.w('No refresh token found for biometric login', tag: 'Auth');
         return false;
       }
-      
+
       // Refresh the session using stored refresh token
       final response = await supabase.auth.setSession(refreshToken);
-      
+
       if (response.session != null) {
         // Update stored tokens with new session
         await _saveSessionForBiometric(response.session!);
         AppLogger.success('Session restored for biometric login', tag: 'Auth');
         return true;
       }
-      
+
       return false;
     } catch (e) {
-      AppLogger.e('Failed to restore session for biometric', tag: 'Auth', error: e);
+      AppLogger.e('Failed to restore session for biometric',
+          tag: 'Auth', error: e);
       return false;
     }
   }

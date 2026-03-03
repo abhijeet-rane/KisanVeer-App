@@ -6,7 +6,6 @@ import 'package:kisan_veer/widgets/post_card.dart';
 import 'package:kisan_veer/screens/community/post_details_screen.dart';
 import 'package:kisan_veer/screens/community/communities_screen.dart';
 
-
 class CommunityScreen extends StatefulWidget {
   const CommunityScreen({Key? key}) : super(key: key);
 
@@ -153,18 +152,18 @@ class _CommunityScreenState extends State<CommunityScreen>
       appBar: AppBar(
         title: const Text('Community'),
         actions: _tabController.index == 1
-        ? [
-          IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: () {
-              showSearch(
-                context: context,
-                delegate: CommunitySearchDelegate(_communityService),
-              );
-            },
-          ),
-        ]
-          : null,
+            ? [
+                IconButton(
+                  icon: const Icon(Icons.search),
+                  onPressed: () {
+                    showSearch(
+                      context: context,
+                      delegate: CommunitySearchDelegate(_communityService),
+                    );
+                  },
+                ),
+              ]
+            : null,
         bottom: TabBar(
           controller: _tabController,
           tabs: const [
@@ -266,14 +265,10 @@ class _CommunityScreenState extends State<CommunityScreen>
                                 }
                               },
                             );
-
                           },
                         ),
                 ),
-
               ],
-
-
             ),
           ),
 
@@ -287,9 +282,9 @@ class _CommunityScreenState extends State<CommunityScreen>
         builder: (context, child) {
           return _tabController.index == 0
               ? FloatingActionButton(
-            onPressed: _createPost,
-            child: const Icon(Icons.add),
-          )
+                  onPressed: _createPost,
+                  child: const Icon(Icons.add),
+                )
               : SizedBox(); // Empty SizedBox hides the button
         },
       ),

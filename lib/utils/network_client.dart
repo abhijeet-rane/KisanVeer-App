@@ -7,27 +7,26 @@ import 'package:kisan_veer/utils/app_logger.dart';
 /// Provides consistent error handling across all API calls
 class NetworkClient {
   static const Duration defaultTimeout = Duration(seconds: 30);
-  
+
   final http.Client _client;
   final Duration _timeout;
-  
+
   NetworkClient({
     http.Client? client,
     Duration? timeout,
-  }) : _client = client ?? http.Client(),
-       _timeout = timeout ?? defaultTimeout;
-  
+  })  : _client = client ?? http.Client(),
+        _timeout = timeout ?? defaultTimeout;
+
   /// GET request with Result type
   Future<Result<http.Response>> get(
     Uri url, {
     Map<String, String>? headers,
     Duration? timeout,
   }) async {
-    return _executeRequest(() => _client
-        .get(url, headers: headers)
-        .timeout(timeout ?? _timeout));
+    return _executeRequest(
+        () => _client.get(url, headers: headers).timeout(timeout ?? _timeout));
   }
-  
+
   /// POST request with Result type
   Future<Result<http.Response>> post(
     Uri url, {
@@ -39,7 +38,7 @@ class NetworkClient {
         .post(url, headers: headers, body: body)
         .timeout(timeout ?? _timeout));
   }
-  
+
   /// PUT request with Result type
   Future<Result<http.Response>> put(
     Uri url, {
@@ -51,31 +50,30 @@ class NetworkClient {
         .put(url, headers: headers, body: body)
         .timeout(timeout ?? _timeout));
   }
-  
+
   /// DELETE request with Result type
   Future<Result<http.Response>> delete(
     Uri url, {
     Map<String, String>? headers,
     Duration? timeout,
   }) async {
-    return _executeRequest(() => _client
-        .delete(url, headers: headers)
-        .timeout(timeout ?? _timeout));
+    return _executeRequest(() =>
+        _client.delete(url, headers: headers).timeout(timeout ?? _timeout));
   }
-  
+
   /// Execute request with error handling
   Future<Result<http.Response>> _executeRequest(
     Future<http.Response> Function() request,
   ) async {
     try {
       final response = await request();
-      
+
       // Log the request
       AppLogger.network(
         'HTTP ${response.request?.method} ${response.statusCode}',
         data: response.request?.url,
       );
-      
+
       // Handle HTTP status codes
       if (response.statusCode >= 200 && response.statusCode < 300) {
         return Result.success(response);
@@ -107,7 +105,8 @@ class NetworkClient {
       AppLogger.e('Request timeout', tag: 'Network');
       return Result.failure(NetworkError.timeout());
     } catch (e, stack) {
-      AppLogger.e('Unexpected network error', tag: 'Network', error: e, stackTrace: stack);
+      AppLogger.e('Unexpected network error',
+          tag: 'Network', error: e, stackTrace: stack);
       return Result.failure(NetworkError(
         message: 'An unexpected error occurred',
         originalError: e,
@@ -115,7 +114,7 @@ class NetworkClient {
       ));
     }
   }
-  
+
   /// Close the client
   void dispose() {
     _client.close();
@@ -126,7 +125,7 @@ class NetworkClient {
 class TimeoutException implements Exception {
   final String message;
   const TimeoutException([this.message = 'Request timed out']);
-  
+
   @override
   String toString() => message;
 }

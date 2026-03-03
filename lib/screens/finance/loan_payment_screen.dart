@@ -66,9 +66,7 @@ class _LoanPaymentScreenState extends State<LoanPaymentScreen> {
       await _audioPlayer.onPlayerComplete.first;
 
       // Insert payment details into Supabase
-      await Supabase.instance.client
-          .from('loan_payments')
-          .insert({
+      await Supabase.instance.client.from('loan_payments').insert({
         'loan_id': widget.loan.id,
         'amount': amount,
         'payment_method': 'Razorpay',
@@ -124,15 +122,15 @@ class _LoanPaymentScreenState extends State<LoanPaymentScreen> {
     }
 
     // Fetch API key from Supabase
-  final supabaseService = SupabaseService();
-  String? apiKey = await supabaseService.getpaymentApiKey('razorpay_key');
+    final supabaseService = SupabaseService();
+    String? apiKey = await supabaseService.getpaymentApiKey('razorpay_key');
 
-  if (apiKey == null) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Error: Unable to retrieve API key')),
-    );
-    return;
-  }
+    if (apiKey == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: Unable to retrieve API key')),
+      );
+      return;
+    }
 
     var options = {
       'key': apiKey,

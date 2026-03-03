@@ -8,7 +8,7 @@ import 'package:timeline_tile/timeline_tile.dart';
 class OrderStatusTimeline extends StatelessWidget {
   final List<OrderStatusHistory> statusHistory;
   final bool isActive;
-  
+
   const OrderStatusTimeline({
     Key? key,
     required this.statusHistory,
@@ -50,7 +50,7 @@ class OrderStatusTimeline extends StatelessWidget {
                 final status = sortedHistory[index];
                 final isFirst = index == 0;
                 final isLast = index == sortedHistory.length - 1;
-                
+
                 return TimelineTile(
                   alignment: TimelineAlign.start,
                   isFirst: isFirst,
@@ -79,7 +79,8 @@ class OrderStatusTimeline extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              DateFormat('MMM d, h:mm a').format(status.createdAt),
+                              DateFormat('MMM d, h:mm a')
+                                  .format(status.createdAt),
                               style: TextStyle(
                                 fontSize: 13,
                                 color: Colors.grey[600],

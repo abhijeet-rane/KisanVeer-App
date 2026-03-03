@@ -128,15 +128,26 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen>
       return _orders;
     } else if (tabIndex == 1) {
       // Active: pending, payment_pending, confirmed, processing, shipped
-      return _orders.where((order) => [
-        'pending', 'payment_pending', 'confirmed', 'processing', 'shipped', 'active'
-      ].contains(order.status.toLowerCase())).toList();
+      return _orders
+          .where((order) => [
+                'pending',
+                'payment_pending',
+                'confirmed',
+                'processing',
+                'shipped',
+                'active'
+              ].contains(order.status.toLowerCase()))
+          .toList();
     } else if (tabIndex == 2) {
       // Completed: completed
-      return _orders.where((order) => order.status.toLowerCase() == 'completed').toList();
+      return _orders
+          .where((order) => order.status.toLowerCase() == 'completed')
+          .toList();
     } else if (tabIndex == 3) {
       // Cancelled
-      return _orders.where((order) => order.status.toLowerCase() == 'cancelled').toList();
+      return _orders
+          .where((order) => order.status.toLowerCase() == 'cancelled')
+          .toList();
     }
     return [];
   }

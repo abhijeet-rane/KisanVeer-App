@@ -86,7 +86,8 @@ class _GasSensorMonitorScreenState extends State<GasSensorMonitorScreen> {
 
   bool _isLive() {
     if (_latestData == null) return false;
-    final String? tsStr = _latestData!['created_at'] ?? _latestData!['timestamp'];
+    final String? tsStr =
+        _latestData!['created_at'] ?? _latestData!['timestamp'];
     if (tsStr == null) return false;
     final DateTime ts = DateTime.parse(tsStr);
     return DateTime.now().difference(ts).inSeconds <= 10;
@@ -130,16 +131,20 @@ class _GasSensorMonitorScreenState extends State<GasSensorMonitorScreen> {
     if (_latestData == null) {
       return const Center(child: Text('No sensor data available.'));
     }
-    final int mq2Value = _parseInt(_latestData, 'mq2') ?? _parseInt(_latestData, 'mq2_value') ?? 0;
+    final int mq2Value = _parseInt(_latestData, 'mq2') ??
+        _parseInt(_latestData, 'mq2_value') ??
+        0;
     final int moistureValue = _parseInt(_latestData, 'moisture') ?? 0;
-    final String timeStr = DateFormat('hh:mm:ss a, dd MMM')
-        .format(DateTime.parse(_latestData!['created_at'] ?? _latestData!['timestamp']));
+    final String timeStr = DateFormat('hh:mm:ss a, dd MMM').format(
+        DateTime.parse(
+            _latestData!['created_at'] ?? _latestData!['timestamp']));
     final Color statusColor = _getStatusColor(mq2Value);
     final String statusText = _getStatusText(mq2Value);
     final bool isLive = _isLive();
     final Color moistureColor = _getMoistureColor(moistureValue);
     final String moistureStatus = _getMoistureStatus(moistureValue);
-    print("Live moisture value: $moistureValue, status: $moistureStatus, crop: $_selectedCrop");
+    print(
+        "Live moisture value: $moistureValue, status: $moistureStatus, crop: $_selectedCrop");
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -149,7 +154,8 @@ class _GasSensorMonitorScreenState extends State<GasSensorMonitorScreen> {
           padding: const EdgeInsets.only(bottom: 12.0),
           child: Row(
             children: [
-              const Text('Crop:', style: TextStyle(fontWeight: FontWeight.bold)),
+              const Text('Crop:',
+                  style: TextStyle(fontWeight: FontWeight.bold)),
               const SizedBox(width: 10),
               DropdownButton<String>(
                 value: _selectedCrop,
@@ -171,7 +177,8 @@ class _GasSensorMonitorScreenState extends State<GasSensorMonitorScreen> {
           ),
         ),
         Card(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           elevation: 2,
           margin: const EdgeInsets.only(bottom: 16),
           child: Padding(
@@ -204,13 +211,16 @@ class _GasSensorMonitorScreenState extends State<GasSensorMonitorScreen> {
                   ),
                 ),
                 const SizedBox(height: 6),
-                Text('Threshold for $_selectedCrop: '
+                Text(
+                    'Threshold for $_selectedCrop: '
                     '${cropMoistureThresholds[_selectedCrop]!['min']}% - '
                     '${cropMoistureThresholds[_selectedCrop]!['max']}%',
-                    style: const TextStyle(fontSize: 13, color: Colors.black54)),
+                    style:
+                        const TextStyle(fontSize: 13, color: Colors.black54)),
                 const SizedBox(height: 4),
                 Text('Last updated: $timeStr',
-                    style: const TextStyle(fontSize: 12, color: Colors.black54)),
+                    style:
+                        const TextStyle(fontSize: 12, color: Colors.black54)),
               ],
             ),
           ),
@@ -218,8 +228,8 @@ class _GasSensorMonitorScreenState extends State<GasSensorMonitorScreen> {
         Stack(
           children: [
             Card(
-              shape:
-                  RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16)),
               elevation: 4,
               color: statusColor.withOpacity(0.12),
               child: Padding(
@@ -244,8 +254,7 @@ class _GasSensorMonitorScreenState extends State<GasSensorMonitorScreen> {
                         ),
                         if ((!isLive &&
                             !_isLoading &&
-                            (_latestData == null ||
-                                mq2Value == 0)))
+                            (_latestData == null || mq2Value == 0)))
                           Row(
                             children: const [
                               Icon(Icons.error, color: Colors.red, size: 18),
@@ -302,7 +311,8 @@ class _GasSensorMonitorScreenState extends State<GasSensorMonitorScreen> {
                             Text(
                               'High Gas Concentration Detected!',
                               style: TextStyle(
-                                  color: Colors.red, fontWeight: FontWeight.bold),
+                                  color: Colors.red,
+                                  fontWeight: FontWeight.bold),
                             ),
                           ],
                         ),
@@ -318,8 +328,8 @@ class _GasSensorMonitorScreenState extends State<GasSensorMonitorScreen> {
                 child: SizedBox(
                   width: 24,
                   height: 24,
-                  child:
-                      CircularProgressIndicator(strokeWidth: 2, color: statusColor),
+                  child: CircularProgressIndicator(
+                      strokeWidth: 2, color: statusColor),
                 ),
               ),
           ],
@@ -387,7 +397,10 @@ class _GasSensorMonitorScreenState extends State<GasSensorMonitorScreen> {
                                 if (idx < 0 || idx >= _history.length)
                                   return const SizedBox.shrink();
                                 final String time = DateFormat('HH:mm').format(
-                                    DateTime.parse(_history[idx]['created_at'] ?? _history[idx]['timestamp'] ?? ''));
+                                    DateTime.parse(_history[idx]
+                                            ['created_at'] ??
+                                        _history[idx]['timestamp'] ??
+                                        ''));
                                 return Padding(
                                   padding: const EdgeInsets.only(top: 4.0),
                                   child: Text(time,
@@ -407,18 +420,26 @@ class _GasSensorMonitorScreenState extends State<GasSensorMonitorScreen> {
                         minY: 0,
                         maxY: [
                           (_history
-                                  .map((e) => _parseInt(e, 'mq2')?.toDouble() ?? _parseInt(e, 'mq2_value')?.toDouble() ?? 0)
-                                  .reduce((a, b) => a > b ? a : b)
-                                  + 20),
+                                  .map((e) =>
+                                      _parseInt(e, 'mq2')?.toDouble() ??
+                                      _parseInt(e, 'mq2_value')?.toDouble() ??
+                                      0)
+                                  .reduce((a, b) => a > b ? a : b) +
+                              20),
                           800.0
-                        ].reduce((a, b) => a > b ? a : b), // always at least 800 for better scaling
+                        ].reduce((a, b) => a > b
+                            ? a
+                            : b), // always at least 800 for better scaling
                         lineBarsData: [
                           LineChartBarData(
                             spots: [
                               for (int i = 0; i < _history.length; i++)
                                 FlSpot(
                                     i.toDouble(),
-                                    _parseInt(_history[i], 'mq2')?.toDouble() ?? _parseInt(_history[i], 'mq2_value')?.toDouble() ?? 0),
+                                    _parseInt(_history[i], 'mq2')?.toDouble() ??
+                                        _parseInt(_history[i], 'mq2_value')
+                                            ?.toDouble() ??
+                                        0),
                             ],
                             isCurved: true,
                             color: Colors.green.shade700,
@@ -474,7 +495,9 @@ class _GasSensorMonitorScreenState extends State<GasSensorMonitorScreen> {
                               reservedSize: 48,
                               getTitlesWidget: (value, meta) {
                                 // Show Y-axis as percentage
-                                if (value % 20 == 0 && value >= 0 && value <= 100) {
+                                if (value % 20 == 0 &&
+                                    value >= 0 &&
+                                    value <= 100) {
                                   return Text('${value.toInt()}%',
                                       style: const TextStyle(fontSize: 12));
                                 }
@@ -497,7 +520,10 @@ class _GasSensorMonitorScreenState extends State<GasSensorMonitorScreen> {
                                 if (idx < 0 || idx >= _history.length)
                                   return const SizedBox.shrink();
                                 final String time = DateFormat('HH:mm').format(
-                                    DateTime.parse(_history[idx]['created_at'] ?? _history[idx]['timestamp'] ?? ''));
+                                    DateTime.parse(_history[idx]
+                                            ['created_at'] ??
+                                        _history[idx]['timestamp'] ??
+                                        ''));
                                 return Padding(
                                   padding: const EdgeInsets.only(top: 4.0),
                                   child: Text(time,
@@ -522,7 +548,9 @@ class _GasSensorMonitorScreenState extends State<GasSensorMonitorScreen> {
                               for (int i = 0; i < _history.length; i++)
                                 FlSpot(
                                     i.toDouble(),
-                                    _parseInt(_history[i], 'moisture')?.toDouble() ?? 0),
+                                    _parseInt(_history[i], 'moisture')
+                                            ?.toDouble() ??
+                                        0),
                             ],
                             isCurved: true,
                             color: Colors.blue.shade700,

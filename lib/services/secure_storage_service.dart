@@ -12,7 +12,7 @@ class SecureStorageService {
       accessibility: KeychainAccessibility.first_unlock_this_device,
     ),
   );
-  
+
   // Storage keys
   static const String _keyAccessToken = 'access_token';
   static const String _keyRefreshToken = 'refresh_token';
@@ -21,14 +21,15 @@ class SecureStorageService {
   static const String _keyBiometricEnabled = 'biometric_enabled';
   static const String _keyLastActivity = 'last_activity';
   static const String _keySessionExpiry = 'session_expiry';
-  
+
   // Singleton pattern
-  static final SecureStorageService _instance = SecureStorageService._internal();
+  static final SecureStorageService _instance =
+      SecureStorageService._internal();
   factory SecureStorageService() => _instance;
   SecureStorageService._internal();
-  
+
   // ============ Token Management ============
-  
+
   /// Save authentication tokens securely
   Future<void> saveAuthTokens({
     required String accessToken,
@@ -50,33 +51,33 @@ class SecureStorageService {
       rethrow;
     }
   }
-  
+
   /// Get access token
   Future<String?> getAccessToken() async {
     return _storage.read(key: _keyAccessToken);
   }
-  
+
   /// Get refresh token
   Future<String?> getRefreshToken() async {
     return _storage.read(key: _keyRefreshToken);
   }
-  
+
   /// Get stored user ID
   Future<String?> getUserId() async {
     return _storage.read(key: _keyUserId);
   }
-  
+
   /// Get stored user email
   Future<String?> getUserEmail() async {
     return _storage.read(key: _keyUserEmail);
   }
-  
+
   /// Check if user has stored credentials
   Future<bool> hasStoredCredentials() async {
     final token = await getAccessToken();
     return token != null && token.isNotEmpty;
   }
-  
+
   /// Clear all auth tokens (logout)
   Future<void> clearAuthTokens() async {
     try {
@@ -90,28 +91,29 @@ class SecureStorageService {
       ]);
       AppLogger.d('Auth tokens cleared', tag: 'SecureStorage');
     } catch (e) {
-      AppLogger.e('Failed to clear auth tokens', tag: 'SecureStorage', error: e);
+      AppLogger.e('Failed to clear auth tokens',
+          tag: 'SecureStorage', error: e);
     }
   }
-  
+
   // ============ Biometric Settings ============
-  
+
   /// Enable biometric authentication
   Future<void> setBiometricEnabled(bool enabled) async {
     await _storage.write(
-      key: _keyBiometricEnabled, 
+      key: _keyBiometricEnabled,
       value: enabled.toString(),
     );
   }
-  
+
   /// Check if biometric is enabled
   Future<bool> isBiometricEnabled() async {
     final value = await _storage.read(key: _keyBiometricEnabled);
     return value == 'true';
   }
-  
+
   // ============ Session Management ============
-  
+
   /// Update last activity timestamp
   Future<void> _updateLastActivity() async {
     await _storage.write(
@@ -119,28 +121,29 @@ class SecureStorageService {
       value: DateTime.now().millisecondsSinceEpoch.toString(),
     );
   }
-  
+
   /// Update last activity (call on user interaction)
   Future<void> recordActivity() async {
     await _updateLastActivity();
   }
-  
+
   /// Get last activity timestamp
   Future<DateTime?> getLastActivity() async {
     final value = await _storage.read(key: _keyLastActivity);
     if (value == null) return null;
     return DateTime.fromMillisecondsSinceEpoch(int.parse(value));
   }
-  
+
   /// Check if session has expired (30 minutes inactivity)
-  Future<bool> isSessionExpired({Duration timeout = const Duration(minutes: 30)}) async {
+  Future<bool> isSessionExpired(
+      {Duration timeout = const Duration(minutes: 30)}) async {
     final lastActivity = await getLastActivity();
     if (lastActivity == null) return true;
-    
+
     final now = DateTime.now();
     return now.difference(lastActivity) > timeout;
   }
-  
+
   /// Set session expiry time
   Future<void> setSessionExpiry(DateTime expiry) async {
     await _storage.write(
@@ -148,14 +151,15 @@ class SecureStorageService {
       value: expiry.millisecondsSinceEpoch.toString(),
     );
   }
-  
+
   /// Clear all stored data
   Future<void> clearAll() async {
     try {
       await _storage.deleteAll();
       AppLogger.d('All secure storage cleared', tag: 'SecureStorage');
     } catch (e) {
-      AppLogger.e('Failed to clear secure storage', tag: 'SecureStorage', error: e);
+      AppLogger.e('Failed to clear secure storage',
+          tag: 'SecureStorage', error: e);
     }
   }
 }

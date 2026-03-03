@@ -18,23 +18,23 @@ class _DailyDashboardScreenState extends State<DailyDashboardScreen> {
   final MarketService _marketService = MarketService();
   bool _isLoading = true;
   String? _errorMessage;
-  
+
   // Data from API
   late DailyMarketSummary _summary;
-  
+
   @override
   void initState() {
     super.initState();
     _loadDashboardData();
   }
-  
+
   Future<void> _loadDashboardData() async {
     try {
       setState(() {
         _isLoading = true;
         _errorMessage = null;
       });
-      
+
       // Get daily market summary
       final summary = await _marketService.getDailyMarketSummary();
 
@@ -73,7 +73,7 @@ class _DailyDashboardScreenState extends State<DailyDashboardScreen> {
               : _buildDashboard(),
     );
   }
-  
+
   Widget _buildErrorView() {
     return RefreshIndicator(
       onRefresh: _loadDashboardData,
@@ -124,10 +124,11 @@ class _DailyDashboardScreenState extends State<DailyDashboardScreen> {
       ),
     );
   }
-  
+
   Widget _buildDashboard() {
-    final today = DateFormat('dd MMM yyyy').format(DateFormat('dd/MM/yyyy').parse(_summary.date));
-    
+    final today = DateFormat('dd MMM yyyy')
+        .format(DateFormat('dd/MM/yyyy').parse(_summary.date));
+
     return RefreshIndicator(
       onRefresh: _loadDashboardData,
       child: SingleChildScrollView(
@@ -171,7 +172,7 @@ class _DailyDashboardScreenState extends State<DailyDashboardScreen> {
                 ),
               ),
             ),
-            
+
             // Top commodities
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
@@ -181,7 +182,7 @@ class _DailyDashboardScreenState extends State<DailyDashboardScreen> {
               ),
             ),
             _buildTopCommoditiesChart(),
-            
+
             // Market volatility
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
@@ -191,14 +192,14 @@ class _DailyDashboardScreenState extends State<DailyDashboardScreen> {
               ),
             ),
             _buildVolatilityList(),
-            
+
             const SizedBox(height: 32),
           ],
         ),
       ),
     );
   }
-  
+
   Widget _buildTopCommoditiesChart() {
     return Container(
       height: 300,
@@ -215,8 +216,8 @@ class _DailyDashboardScreenState extends State<DailyDashboardScreen> {
                 child: BarChart(
                   BarChartData(
                     alignment: BarChartAlignment.spaceAround,
-                    maxY: _summary.topCommodities.isEmpty 
-                        ? 100 
+                    maxY: _summary.topCommodities.isEmpty
+                        ? 100
                         : _summary.topCommodities.first.averagePrice * 1.2,
                     gridData: FlGridData(
                       horizontalInterval: 1000,
@@ -257,10 +258,12 @@ class _DailyDashboardScreenState extends State<DailyDashboardScreen> {
                         sideTitles: SideTitles(
                           showTitles: true,
                           getTitlesWidget: (value, meta) {
-                            if (value >= _summary.topCommodities.length || value < 0) {
+                            if (value >= _summary.topCommodities.length ||
+                                value < 0) {
                               return const SizedBox.shrink();
                             }
-                            final commodity = _summary.topCommodities[value.toInt()];
+                            final commodity =
+                                _summary.topCommodities[value.toInt()];
                             return Padding(
                               padding: const EdgeInsets.only(top: 8.0),
                               child: RotatedBox(
@@ -315,13 +318,13 @@ class _DailyDashboardScreenState extends State<DailyDashboardScreen> {
         ),
       ),
     ).animate().fadeIn(duration: 500.ms).slideY(
-      begin: 0.1,
-      end: 0,
-      duration: 500.ms,
-      curve: Curves.easeOutQuad,
-    );
+          begin: 0.1,
+          end: 0,
+          duration: 500.ms,
+          curve: Curves.easeOutQuad,
+        );
   }
-  
+
   Widget _buildVolatilityList() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -344,14 +347,14 @@ class _DailyDashboardScreenState extends State<DailyDashboardScreen> {
         ),
       ),
     ).animate().fadeIn(duration: 500.ms, delay: 200.ms).slideY(
-      begin: 0.1,
-      end: 0,
-      duration: 500.ms,
-      delay: 200.ms,
-      curve: Curves.easeOutQuad,
-    );
+          begin: 0.1,
+          end: 0,
+          duration: 500.ms,
+          delay: 200.ms,
+          curve: Curves.easeOutQuad,
+        );
   }
-  
+
   Widget _volatilityItem(MarketVolatility market, int index) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12.0),
@@ -421,11 +424,11 @@ class _DailyDashboardScreenState extends State<DailyDashboardScreen> {
       ),
     );
   }
-  
+
   Widget _buildStateArrivalsChart() {
     // Sort states by arrivals
     final topStates = _summary.stateArrivals.take(5).toList();
-    
+
     return Container(
       height: 300,
       padding: const EdgeInsets.all(16),
@@ -441,8 +444,8 @@ class _DailyDashboardScreenState extends State<DailyDashboardScreen> {
                 child: BarChart(
                   BarChartData(
                     alignment: BarChartAlignment.spaceAround,
-                    maxY: topStates.isEmpty 
-                        ? 100 
+                    maxY: topStates.isEmpty
+                        ? 100
                         : topStates.first.totalQuantity * 1.2,
                     gridData: FlGridData(
                       horizontalInterval: 1000,
@@ -538,12 +541,11 @@ class _DailyDashboardScreenState extends State<DailyDashboardScreen> {
         ),
       ),
     ).animate().fadeIn(duration: 500.ms, delay: 400.ms).slideY(
-      begin: 0.1,
-      end: 0,
-      duration: 500.ms,
-      delay: 400.ms,
-      curve: Curves.easeOutQuad,
-    );
+          begin: 0.1,
+          end: 0,
+          duration: 500.ms,
+          delay: 400.ms,
+          curve: Curves.easeOutQuad,
+        );
   }
 }
-

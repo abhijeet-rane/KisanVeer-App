@@ -104,11 +104,17 @@ class _AddProductScreenState extends State<AddProductScreen> {
           availableQuantity: quantity,
           category: _selectedCategory,
           imageUrls: imageUrls,
-          location: _locationController.text.isNotEmpty ? _locationController.text : null,
+          location: _locationController.text.isNotEmpty
+              ? _locationController.text
+              : null,
           unit: _selectedUnit,
           status: _selectedStatus,
-          contactPhone: _contactPhoneController.text.isNotEmpty ? _contactPhoneController.text : null,
-          contactEmail: _contactEmailController.text.isNotEmpty ? _contactEmailController.text : null,
+          contactPhone: _contactPhoneController.text.isNotEmpty
+              ? _contactPhoneController.text
+              : null,
+          contactEmail: _contactEmailController.text.isNotEmpty
+              ? _contactEmailController.text
+              : null,
         );
 
         // Reset form after success
@@ -222,7 +228,9 @@ class _AddProductScreenState extends State<AddProductScreen> {
                   prefixIcon: Icons.phone,
                   keyboardType: TextInputType.phone,
                   validator: (value) {
-                    if (value != null && value.isNotEmpty && value.length < 10) {
+                    if (value != null &&
+                        value.isNotEmpty &&
+                        value.length < 10) {
                       return 'Enter a valid phone number';
                     }
                     return null;
@@ -240,7 +248,9 @@ class _AddProductScreenState extends State<AddProductScreen> {
                   prefixIcon: Icons.email,
                   keyboardType: TextInputType.emailAddress,
                   validator: (value) {
-                    if (value != null && value.isNotEmpty && !value.contains('@')) {
+                    if (value != null &&
+                        value.isNotEmpty &&
+                        !value.contains('@')) {
                       return 'Enter a valid email';
                     }
                     return null;
@@ -260,9 +270,11 @@ class _AddProductScreenState extends State<AddProductScreen> {
                       border: OutlineInputBorder(),
                     ),
                     items: const [
-                      DropdownMenuItem(value: 'available', child: Text('Available')),
+                      DropdownMenuItem(
+                          value: 'available', child: Text('Available')),
                       DropdownMenuItem(value: 'sold', child: Text('Sold')),
-                      DropdownMenuItem(value: 'inactive', child: Text('Inactive')),
+                      DropdownMenuItem(
+                          value: 'inactive', child: Text('Inactive')),
                     ],
                     onChanged: (val) {
                       if (val != null) setState(() => _selectedStatus = val);

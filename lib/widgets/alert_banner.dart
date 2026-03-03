@@ -6,7 +6,7 @@ class AlertBanner extends StatelessWidget {
   final VoidCallback onViewAll;
 
   const AlertBanner({
-    Key? key, 
+    Key? key,
     required this.alerts,
     required this.onViewAll,
   }) : super(key: key);
@@ -16,7 +16,7 @@ class AlertBanner extends StatelessWidget {
     if (alerts.isEmpty) {
       return const SizedBox.shrink();
     }
-    
+
     return GestureDetector(
       onTap: onViewAll,
       child: Container(

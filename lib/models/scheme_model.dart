@@ -91,8 +91,10 @@ class SchemeModel {
       applicableState: json['applicable_state'] ?? '',
       applicableDistrict: json['applicable_district'] ?? '',
       category: json['category'] ?? '',
-      createdAt: DateTime.parse((json['created_at'] ?? '').replaceFirst(' ', 'T')),
-      updatedAt: DateTime.parse((json['updated_at'] ?? json['created_at'] ?? '').replaceFirst(' ', 'T')),
+      createdAt:
+          DateTime.parse((json['created_at'] ?? '').replaceFirst(' ', 'T')),
+      updatedAt: DateTime.parse((json['updated_at'] ?? json['created_at'] ?? '')
+          .replaceFirst(' ', 'T')),
     );
   }
 

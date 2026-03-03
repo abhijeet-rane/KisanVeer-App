@@ -59,7 +59,8 @@ class _FinanceScreenState extends State<FinanceScreen>
           0, (sum, loan) => sum + (loan.totalAmount - loan.remainingAmount));
 
       // Fetch monthly totals using the same logic as reports
-      final monthlyTotals = await _financialService.getMonthlyTotals(DateTime.now());
+      final monthlyTotals =
+          await _financialService.getMonthlyTotals(DateTime.now());
       final income = monthlyTotals['income'] ?? 0.0;
       final expense = monthlyTotals['expense'] ?? 0.0;
       final balance = income - expense;
@@ -343,13 +344,13 @@ class _FinanceScreenState extends State<FinanceScreen>
               ),
             ),
             const SizedBox(height: 16),
-
-            _buildLoanSummaryRow('Total Loans', _totalLoanAmount, Colors.indigo),
+            _buildLoanSummaryRow(
+                'Total Loans', _totalLoanAmount, Colors.indigo),
             const SizedBox(height: 12),
             _buildLoanSummaryRow('Total Paid', _totalPaidAmount, Colors.green),
             const SizedBox(height: 12),
-            _buildLoanSummaryRow('Remaining', _totalLoanAmount - _totalPaidAmount, Colors.red),
-
+            _buildLoanSummaryRow(
+                'Remaining', _totalLoanAmount - _totalPaidAmount, Colors.red),
             const SizedBox(height: 20),
             ElevatedButton.icon(
               onPressed: () {
@@ -363,7 +364,8 @@ class _FinanceScreenState extends State<FinanceScreen>
               icon: Icon(Icons.analytics, color: Colors.white),
               label: Text(
                 'View Credit Score',
-                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                style:
+                    TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
               ),
               style: ElevatedButton.styleFrom(
                 padding: EdgeInsets.symmetric(vertical: 14),
@@ -407,10 +409,6 @@ class _FinanceScreenState extends State<FinanceScreen>
       ),
     );
   }
-
-
-
-
 
   String _formatAmount(double amount) {
     final formatted = amount.toStringAsFixed(2);

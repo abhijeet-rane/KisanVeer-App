@@ -14,7 +14,7 @@ class CustomCard extends StatelessWidget {
   final bool hasShadow;
   final BorderRadius? customBorderRadius;
   final Gradient? gradient;
-  
+
   const CustomCard({
     Key? key,
     required this.child,
@@ -29,7 +29,7 @@ class CustomCard extends StatelessWidget {
     this.customBorderRadius,
     this.gradient,
   }) : super(key: key);
-  
+
   @override
   Widget build(BuildContext context) {
     final cardContent = Container(
@@ -38,14 +38,16 @@ class CustomCard extends StatelessWidget {
         color: backgroundColor ?? AppColors.cardBackground,
         borderRadius: customBorderRadius ?? BorderRadius.circular(borderRadius),
         border: border,
-        boxShadow: hasShadow ? [
-          BoxShadow(
-            color: Colors.black.withAlpha((0.05 * 255).round()),
-            offset: const Offset(0, 4),
-            blurRadius: 12,
-            spreadRadius: 0,
-          ),
-        ] : null,
+        boxShadow: hasShadow
+            ? [
+                BoxShadow(
+                  color: Colors.black.withAlpha((0.05 * 255).round()),
+                  offset: const Offset(0, 4),
+                  blurRadius: 12,
+                  spreadRadius: 0,
+                ),
+              ]
+            : null,
         gradient: gradient,
       ),
       child: child,
@@ -56,7 +58,8 @@ class CustomCard extends StatelessWidget {
       child: onTap != null
           ? InkWell(
               onTap: onTap,
-              borderRadius: customBorderRadius ?? BorderRadius.circular(borderRadius),
+              borderRadius:
+                  customBorderRadius ?? BorderRadius.circular(borderRadius),
               child: cardContent,
             )
           : cardContent,
@@ -79,7 +82,7 @@ class TitledCard extends StatelessWidget {
   final EdgeInsetsGeometry? margin;
   final BorderRadius? borderRadius;
   final double elevation;
-  
+
   const TitledCard({
     Key? key,
     required this.title,
@@ -91,7 +94,7 @@ class TitledCard extends StatelessWidget {
     this.borderRadius,
     this.elevation = 3,
   }) : super(key: key);
-  
+
   @override
   Widget build(BuildContext context) {
     return CustomCard(
@@ -151,7 +154,7 @@ class ExpandableCard extends StatefulWidget {
   final bool initiallyExpanded;
   final Color? backgroundColor;
   final EdgeInsetsGeometry? margin;
-  
+
   const ExpandableCard({
     Key? key,
     required this.title,
@@ -160,16 +163,17 @@ class ExpandableCard extends StatefulWidget {
     this.backgroundColor,
     this.margin = const EdgeInsets.symmetric(vertical: 8),
   }) : super(key: key);
-  
+
   @override
   State<ExpandableCard> createState() => _ExpandableCardState();
 }
 
-class _ExpandableCardState extends State<ExpandableCard> with SingleTickerProviderStateMixin {
+class _ExpandableCardState extends State<ExpandableCard>
+    with SingleTickerProviderStateMixin {
   late bool _expanded;
   late AnimationController _controller;
   late Animation<double> _heightFactor;
-  
+
   @override
   void initState() {
     super.initState();
@@ -179,18 +183,18 @@ class _ExpandableCardState extends State<ExpandableCard> with SingleTickerProvid
       vsync: this,
     );
     _heightFactor = _controller.drive(CurveTween(curve: Curves.easeInOut));
-    
+
     if (_expanded) {
       _controller.value = 1.0;
     }
   }
-  
+
   @override
   void dispose() {
     _controller.dispose();
     super.dispose();
   }
-  
+
   void _toggleExpanded() {
     setState(() {
       _expanded = !_expanded;
@@ -201,7 +205,7 @@ class _ExpandableCardState extends State<ExpandableCard> with SingleTickerProvid
       }
     });
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return CustomCard(
@@ -247,7 +251,7 @@ class _ExpandableCardState extends State<ExpandableCard> with SingleTickerProvid
               ),
             ),
           ),
-          
+
           // Expandable content
           ClipRect(
             child: AnimatedBuilder(
@@ -259,7 +263,8 @@ class _ExpandableCardState extends State<ExpandableCard> with SingleTickerProvid
                 );
               },
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: widget.content,
               ),
             ),

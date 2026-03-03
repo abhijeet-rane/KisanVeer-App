@@ -30,12 +30,12 @@ void main() async {
     url: dotenv.env['SUPABASE_URL']!,
     anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
   );
-  
+
   // Initialize auth state listener to save sessions for biometric login
   AuthService().initAuthStateListener();
-  
+
   await NotificationsService.initialize();
-  
+
   runApp(const MyApp());
 }
 
@@ -66,7 +66,7 @@ class MyApp extends StatelessWidget {
   /// Generate routes with premium transitions
   Route<dynamic>? _generateRoute(RouteSettings settings) {
     Widget page;
-    
+
     switch (settings.name) {
       case '/main':
         page = const MainScreen();

@@ -29,10 +29,39 @@ class _SchemesListingScreenState extends State<SchemesListingScreen> {
 
   // Add these lists for dropdowns
   final List<String> _states = [
-    'Maharashtra', 'Gujarat', 'Madhya Pradesh', 'Rajasthan', 'Karnataka', 'Uttar Pradesh', 'Punjab', 'Haryana', 'Bihar', 'West Bengal', 'Tamil Nadu', 'Andhra Pradesh', 'Telangana', 'Kerala', 'Odisha', 'Chhattisgarh', 'Jharkhand', 'Assam', 'Goa', 'Delhi', 'Others'
+    'Maharashtra',
+    'Gujarat',
+    'Madhya Pradesh',
+    'Rajasthan',
+    'Karnataka',
+    'Uttar Pradesh',
+    'Punjab',
+    'Haryana',
+    'Bihar',
+    'West Bengal',
+    'Tamil Nadu',
+    'Andhra Pradesh',
+    'Telangana',
+    'Kerala',
+    'Odisha',
+    'Chhattisgarh',
+    'Jharkhand',
+    'Assam',
+    'Goa',
+    'Delhi',
+    'Others'
   ];
   final Map<String, List<String>> _districtMap = {
-    'Maharashtra': ['Pune', 'Mumbai', 'Nagpur', 'Nashik', 'Aurangabad', 'Solapur', 'Kolhapur', 'Others'],
+    'Maharashtra': [
+      'Pune',
+      'Mumbai',
+      'Nagpur',
+      'Nashik',
+      'Aurangabad',
+      'Solapur',
+      'Kolhapur',
+      'Others'
+    ],
     'Gujarat': ['Ahmedabad', 'Surat', 'Vadodara', 'Rajkot', 'Others'],
     // ... add more states and districts as needed
     'Others': ['Others']
@@ -175,11 +204,14 @@ class _SchemesListingScreenState extends State<SchemesListingScreen> {
                     border: OutlineInputBorder(),
                     isDense: true,
                   ),
-                  value: _states.contains(_selectedState) ? _selectedState : null,
-                  items: _states.map((state) => DropdownMenuItem(
-                    value: state,
-                    child: Text(state),
-                  )).toList(),
+                  value:
+                      _states.contains(_selectedState) ? _selectedState : null,
+                  items: _states
+                      .map((state) => DropdownMenuItem(
+                            value: state,
+                            child: Text(state),
+                          ))
+                      .toList(),
                   onChanged: (value) {
                     setState(() {
                       _selectedState = value;
@@ -195,11 +227,15 @@ class _SchemesListingScreenState extends State<SchemesListingScreen> {
                     border: OutlineInputBorder(),
                     isDense: true,
                   ),
-                  value: _districts.contains(_selectedDistrict) ? _selectedDistrict : null,
-                  items: _districts.map((district) => DropdownMenuItem(
-                    value: district,
-                    child: Text(district),
-                  )).toList(),
+                  value: _districts.contains(_selectedDistrict)
+                      ? _selectedDistrict
+                      : null,
+                  items: _districts
+                      .map((district) => DropdownMenuItem(
+                            value: district,
+                            child: Text(district),
+                          ))
+                      .toList(),
                   onChanged: (value) {
                     setState(() {
                       _selectedDistrict = value;
@@ -255,7 +291,8 @@ class _SchemesListingScreenState extends State<SchemesListingScreen> {
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                   trailing: SizedBox(
-                                    width: 120, // Set a reasonable width for the button
+                                    width:
+                                        120, // Set a reasonable width for the button
                                     child: ElevatedButton(
                                       child: Text('View Details'),
                                       onPressed: () {

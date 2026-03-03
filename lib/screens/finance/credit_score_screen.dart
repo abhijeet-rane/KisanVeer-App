@@ -76,20 +76,20 @@ class _CreditScoreScreenState extends State<CreditScoreScreen> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : RefreshIndicator(
-        onRefresh: _loadCreditScore,
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            children: [
-              _buildScoreCard(),
-              const SizedBox(height: 24),
-              _buildScoreFactors(),
-              const SizedBox(height: 24),
-              _buildRecommendations(),
-            ],
-          ),
-        ),
-      ),
+              onRefresh: _loadCreditScore,
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  children: [
+                    _buildScoreCard(),
+                    const SizedBox(height: 24),
+                    _buildScoreFactors(),
+                    const SizedBox(height: 24),
+                    _buildRecommendations(),
+                  ],
+                ),
+              ),
+            ),
     );
   }
 
@@ -204,7 +204,8 @@ class _CreditScoreScreenState extends State<CreditScoreScreen> {
     ).animate().fadeIn().slideY(delay: 400.ms);
   }
 
-  Widget _buildRecommendationItem(String title, String subtitle, IconData icon) {
+  Widget _buildRecommendationItem(
+      String title, String subtitle, IconData icon) {
     return ListTile(
       leading: CircleAvatar(
         backgroundColor: AppColors.primary.withOpacity(0.1),

@@ -23,7 +23,7 @@ class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
   final NotificationService _notificationService = NotificationService();
   int _unreadNotificationsCount = 0;
-  
+
   // Track which screens have been visited for lazy loading
   final Set<int> _visitedScreens = {0}; // Dashboard is always loaded first
 
@@ -46,7 +46,7 @@ class _MainScreenState extends State<MainScreen> {
       _selectedIndex = index;
       _visitedScreens.add(index); // Mark as visited for lazy loading
     });
-    
+
     // Show weather notification when navigating to Weather tab
     if (index == 2) {
       WeatherNotificationManager.forceShowWeatherNotification();
@@ -58,7 +58,7 @@ class _MainScreenState extends State<MainScreen> {
     if (!_visitedScreens.contains(index)) {
       return const SizedBox.shrink(); // Not visited yet, return empty
     }
-    
+
     switch (index) {
       case 0:
         return const _KeepAliveWrapper(child: DashboardScreen());
@@ -173,7 +173,9 @@ class _MainScreenState extends State<MainScreen> {
               ),
               constraints: const BoxConstraints(minWidth: 14, minHeight: 14),
               child: Text(
-                _unreadNotificationsCount > 9 ? '9+' : '$_unreadNotificationsCount',
+                _unreadNotificationsCount > 9
+                    ? '9+'
+                    : '$_unreadNotificationsCount',
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 9,
@@ -192,7 +194,7 @@ class _MainScreenState extends State<MainScreen> {
 /// Uses AutomaticKeepAliveClientMixin for enterprise-grade performance
 class _KeepAliveWrapper extends StatefulWidget {
   final Widget child;
-  
+
   const _KeepAliveWrapper({required this.child});
 
   @override
@@ -210,4 +212,3 @@ class _KeepAliveWrapperState extends State<_KeepAliveWrapper>
     return widget.child;
   }
 }
-

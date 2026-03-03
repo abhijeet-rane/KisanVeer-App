@@ -10,25 +10,25 @@ class SyncManager {
   final ConnectivityService _connectivity = ConnectivityService();
   final OfflineStorageService _offlineStorage = OfflineStorageService();
   final SupabaseClient _supabase = Supabase.instance.client;
-  
+
   StreamSubscription<ConnectivityStatus>? _connectivitySubscription;
   bool _isSyncing = false;
-  
+
   // Callbacks
   void Function(int pending, int synced)? onSyncProgress;
   void Function()? onSyncComplete;
   void Function(String error)? onSyncError;
-  
+
   // Singleton pattern
   static final SyncManager _instance = SyncManager._internal();
   factory SyncManager() => _instance;
   SyncManager._internal();
-  
+
   /// Initialize sync manager and start monitoring
   Future<void> initialize() async {
     await _offlineStorage.initialize();
     await _connectivity.initialize();
-    
+
     // Listen for connectivity changes
     _connectivitySubscription = _connectivity.statusStream.listen((status) {
       if (status == ConnectivityStatus.online) {
@@ -36,44 +36,46 @@ class SyncManager {
         syncPendingActions();
       }
     });
-    
+
     // Initial sync if online
     if (_connectivity.isOnline) {
       await syncPendingActions();
     }
-    
+
     AppLogger.d('Sync manager initialized', tag: 'SyncManager');
   }
-  
+
   /// Sync all pending actions
   Future<SyncResult> syncPendingActions() async {
     if (_isSyncing) {
       return SyncResult(total: 0, synced: 0, failed: 0);
     }
-    
+
     if (!_connectivity.isOnline) {
-      return SyncResult(total: 0, synced: 0, failed: 0, error: 'No internet connection');
+      return SyncResult(
+          total: 0, synced: 0, failed: 0, error: 'No internet connection');
     }
-    
+
     _isSyncing = true;
-    
+
     try {
       final pendingActions = _offlineStorage.getPendingActions();
-      
+
       if (pendingActions.isEmpty) {
         _isSyncing = false;
         return SyncResult(total: 0, synced: 0, failed: 0);
       }
-      
-      AppLogger.i('Syncing ${pendingActions.length} pending actions', tag: 'SyncManager');
-      
+
+      AppLogger.i('Syncing ${pendingActions.length} pending actions',
+          tag: 'SyncManager');
+
       int synced = 0;
       int failed = 0;
-      
+
       for (final action in pendingActions) {
         try {
           final success = await _processPendingAction(action);
-          
+
           if (success) {
             await _offlineStorage.removePendingAction(action.id);
             synced++;
@@ -81,27 +83,30 @@ class SyncManager {
             action.retryCount++;
             if (action.retryCount >= 3) {
               await _offlineStorage.removePendingAction(action.id);
-              AppLogger.w('Action ${action.id} failed after 3 retries', tag: 'SyncManager');
+              AppLogger.w('Action ${action.id} failed after 3 retries',
+                  tag: 'SyncManager');
             }
             failed++;
           }
-          
+
           onSyncProgress?.call(pendingActions.length - synced, synced);
         } catch (e) {
-          AppLogger.e('Error syncing action ${action.id}', tag: 'SyncManager', error: e);
+          AppLogger.e('Error syncing action ${action.id}',
+              tag: 'SyncManager', error: e);
           failed++;
         }
       }
-      
+
       final result = SyncResult(
         total: pendingActions.length,
         synced: synced,
         failed: failed,
       );
-      
-      AppLogger.success('Sync complete: $synced/${pendingActions.length}', tag: 'SyncManager');
+
+      AppLogger.success('Sync complete: $synced/${pendingActions.length}',
+          tag: 'SyncManager');
       onSyncComplete?.call();
-      
+
       return result;
     } catch (e) {
       AppLogger.e('Sync failed', tag: 'SyncManager', error: e);
@@ -111,7 +116,7 @@ class SyncManager {
       _isSyncing = false;
     }
   }
-  
+
   /// Process individual pending action
   Future<bool> _processPendingAction(PendingAction action) async {
     switch (action.type) {
@@ -130,7 +135,7 @@ class SyncManager {
         return false;
     }
   }
-  
+
   // Sync implementations
   Future<bool> _syncCreateOrder(Map<String, dynamic> data) async {
     try {
@@ -141,18 +146,19 @@ class SyncManager {
       return false;
     }
   }
-  
+
   Future<bool> _syncUpdateProfile(Map<String, dynamic> data) async {
     try {
       final userId = data['user_id'];
       await _supabase.from('user_profiles').update(data).eq('id', userId);
       return true;
     } catch (e) {
-      AppLogger.e('Failed to sync profile update', tag: 'SyncManager', error: e);
+      AppLogger.e('Failed to sync profile update',
+          tag: 'SyncManager', error: e);
       return false;
     }
   }
-  
+
   Future<bool> _syncAddToCart(Map<String, dynamic> data) async {
     try {
       await _supabase.from('cart_items').insert(data);
@@ -162,7 +168,7 @@ class SyncManager {
       return false;
     }
   }
-  
+
   Future<bool> _syncCreatePost(Map<String, dynamic> data) async {
     try {
       await _supabase.from('community_posts').insert(data);
@@ -172,7 +178,7 @@ class SyncManager {
       return false;
     }
   }
-  
+
   Future<bool> _syncAddPriceAlert(Map<String, dynamic> data) async {
     try {
       await _supabase.from('price_alerts').insert(data);
@@ -182,13 +188,13 @@ class SyncManager {
       return false;
     }
   }
-  
+
   /// Get pending actions count
   int get pendingCount => _offlineStorage.pendingActionsCount;
-  
+
   /// Check if currently syncing
   bool get isSyncing => _isSyncing;
-  
+
   /// Dispose resources
   void dispose() {
     _connectivitySubscription?.cancel();
@@ -201,14 +207,14 @@ class SyncResult {
   final int synced;
   final int failed;
   final String? error;
-  
+
   SyncResult({
     required this.total,
     required this.synced,
     required this.failed,
     this.error,
   });
-  
+
   bool get isSuccess => error == null && failed == 0;
   bool get hasFailures => failed > 0;
 }

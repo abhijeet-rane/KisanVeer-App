@@ -25,39 +25,36 @@ class SchemesService {
     return (response as List)
         .map((scheme) => SchemeModel.fromMap(scheme))
         .where((scheme) {
-          bool matches = true;
-          
-          // Apply state filter
-          if (state != null && state.isNotEmpty) {
-            matches = matches && scheme.applicableState == state;
-          }
-          
-          // Apply district filter: show only schemes for the selected district, or those available state-wide
-          if (district != null && district.isNotEmpty) {
-            if (scheme.applicableDistrict.isNotEmpty) {
-              matches = matches && scheme.applicableDistrict == district;
-            } else {
-              matches = matches && true; // state-wide scheme
-            }
-          }
-          
-          // Apply search filter (case insensitive)
-          if (searchQuery != null && searchQuery.isNotEmpty) {
-            matches = matches && 
-                scheme.schemeName.toLowerCase().contains(searchQuery.toLowerCase());
-          }
-          
-          return matches;
-        })
-        .toList();
+      bool matches = true;
+
+      // Apply state filter
+      if (state != null && state.isNotEmpty) {
+        matches = matches && scheme.applicableState == state;
+      }
+
+      // Apply district filter: show only schemes for the selected district, or those available state-wide
+      if (district != null && district.isNotEmpty) {
+        if (scheme.applicableDistrict.isNotEmpty) {
+          matches = matches && scheme.applicableDistrict == district;
+        } else {
+          matches = matches && true; // state-wide scheme
+        }
+      }
+
+      // Apply search filter (case insensitive)
+      if (searchQuery != null && searchQuery.isNotEmpty) {
+        matches = matches &&
+            scheme.schemeName.toLowerCase().contains(searchQuery.toLowerCase());
+      }
+
+      return matches;
+    }).toList();
   }
 
   // Get a single scheme by ID
   Future<SchemeModel> getSchemeById(String id) async {
-    final response = await _supabaseClient
-        .from(_schemesTable)
-        .select();
-        
+    final response = await _supabaseClient.from(_schemesTable).select();
+
     // Find the scheme with matching ID
     final scheme = (response as List).firstWhere(
       (scheme) => scheme['id'] == id,
@@ -85,15 +82,16 @@ class SchemesService {
     if (userId == null) {
       return [];
     }
-    
+
     final response = await _supabaseClient
         .from(_applicationsTable)
         .select('*, schemes(scheme_name, department_name)')
         .order('submitted_at', ascending: false);
-        
+
     // Filter for the current user's applications
-    final userApplications = (response as List).where((app) => app['user_id'] == userId).toList();
-    
+    final userApplications =
+        (response as List).where((app) => app['user_id'] == userId).toList();
+
     return userApplications.map((app) {
       final Map<String, dynamic> flattenedMap = {
         ...app,
@@ -138,11 +136,10 @@ class SchemesService {
     if (userId == null) {
       return false;
     }
-    
-    final response = await _supabaseClient
-        .from('user_profiles')
-        .select('is_admin');
-        
+
+    final response =
+        await _supabaseClient.from('user_profiles').select('is_admin');
+
     // Filter for the current user's profile
     final userProfile = (response as List).firstWhere(
       (profile) => profile['id'] == userId,
@@ -174,27 +171,25 @@ class SchemesService {
     }
 
     // First verify the scheme exists
-    final existingSchemes = await _supabaseClient
-        .from(_schemesTable)
-        .select();
-    
+    final existingSchemes = await _supabaseClient.from(_schemesTable).select();
+
     final exists = (existingSchemes as List).any((s) => s['id'] == scheme.id);
     if (!exists) {
       throw Exception('Scheme not found');
     }
-    
+
     // Update the scheme
     final response = await _supabaseClient
         .from(_schemesTable)
         .update(scheme.toMap())
         .select();
-    
+
     // If empty response, get the updated scheme separately
     if ((response as List).isEmpty) {
       final updated = await getSchemeById(scheme.id);
       return updated;
     }
-    
+
     return SchemeModel.fromMap(response[0]);
   }
 
@@ -205,19 +200,15 @@ class SchemesService {
     }
 
     // First verify the scheme exists
-    final existingSchemes = await _supabaseClient
-        .from(_schemesTable)
-        .select();
-    
+    final existingSchemes = await _supabaseClient.from(_schemesTable).select();
+
     final exists = (existingSchemes as List).any((s) => s['id'] == id);
     if (!exists) {
       throw Exception('Scheme not found');
     }
-    
+
     // Delete the scheme
-    await _supabaseClient
-        .from(_schemesTable)
-        .delete();
+    await _supabaseClient.from(_schemesTable).delete();
   }
 
   // Admin: Get all applications
@@ -225,17 +216,18 @@ class SchemesService {
     if (!await isUserAdmin()) {
       throw Exception('Unauthorized: Only admins can access all applications');
     }
-    
+
     final response = await _supabaseClient
         .from(_applicationsTable)
-        .select('*, schemes(scheme_name, department_name), user_profiles(display_name)')
+        .select(
+            '*, schemes(scheme_name, department_name), user_profiles(display_name)')
         .order('submitted_at', ascending: false);
-    
+
     // Filter by status in Dart if specified
     final filteredApps = status != null && status.isNotEmpty
         ? (response as List).where((app) => app['status'] == status).toList()
         : response as List;
-        
+
     return filteredApps.map((app) {
       final Map<String, dynamic> flattenedMap = {
         ...app,
@@ -256,35 +248,32 @@ class SchemesService {
     }
 
     // First verify the application exists
-    final existingApplications = await _supabaseClient
-        .from(_applicationsTable)
-        .select();
-    
+    final existingApplications =
+        await _supabaseClient.from(_applicationsTable).select();
+
     final exists = (existingApplications as List).any((a) => a['id'] == id);
     if (!exists) {
       throw Exception('Application not found');
     }
-    
+
     // Update the application
-    await _supabaseClient
-        .from(_applicationsTable)
-        .update({
-          'status': status,
-          'remarks': remarks,
-          'updated_at': DateTime.now().toIso8601String(),
-        })
-        .select();
-    
+    await _supabaseClient.from(_applicationsTable).update({
+      'status': status,
+      'remarks': remarks,
+      'updated_at': DateTime.now().toIso8601String(),
+    }).select();
+
     // Get the updated application
     final updatedApplications = await _supabaseClient
         .from(_applicationsTable)
-        .select('*, schemes(scheme_name, department_name), user_profiles(display_name)');
-    
+        .select(
+            '*, schemes(scheme_name, department_name), user_profiles(display_name)');
+
     final updated = (updatedApplications as List).firstWhere(
       (a) => a['id'] == id,
       orElse: () => throw Exception('Application not found after update'),
     );
-    
+
     return ApplicationModel.fromMap(updated);
   }
 

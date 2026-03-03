@@ -5,16 +5,16 @@ import 'package:flutter/foundation.dart';
 /// that is stripped in release builds
 class AppLogger {
   static const String _appTag = 'KisanVeer';
-  
+
   // Log levels
   static const int _levelDebug = 0;
   static const int _levelInfo = 1;
   static const int _levelWarning = 2;
   static const int _levelError = 3;
-  
+
   /// Current minimum log level (debug in dev, warning in release)
   static int _minLevel = kDebugMode ? _levelDebug : _levelWarning;
-  
+
   /// Set minimum log level at runtime
   static void setLogLevel(LogLevel level) {
     switch (level) {
@@ -34,23 +34,31 @@ class AppLogger {
   }
 
   /// Debug log - only in debug mode
-  static void d(String message, {String? tag, Object? error, StackTrace? stackTrace}) {
-    _log(_levelDebug, '🔍', message, tag: tag, error: error, stackTrace: stackTrace);
+  static void d(String message,
+      {String? tag, Object? error, StackTrace? stackTrace}) {
+    _log(_levelDebug, '🔍', message,
+        tag: tag, error: error, stackTrace: stackTrace);
   }
 
   /// Info log
-  static void i(String message, {String? tag, Object? error, StackTrace? stackTrace}) {
-    _log(_levelInfo, 'ℹ️', message, tag: tag, error: error, stackTrace: stackTrace);
+  static void i(String message,
+      {String? tag, Object? error, StackTrace? stackTrace}) {
+    _log(_levelInfo, 'ℹ️', message,
+        tag: tag, error: error, stackTrace: stackTrace);
   }
 
   /// Warning log
-  static void w(String message, {String? tag, Object? error, StackTrace? stackTrace}) {
-    _log(_levelWarning, '⚠️', message, tag: tag, error: error, stackTrace: stackTrace);
+  static void w(String message,
+      {String? tag, Object? error, StackTrace? stackTrace}) {
+    _log(_levelWarning, '⚠️', message,
+        tag: tag, error: error, stackTrace: stackTrace);
   }
 
   /// Error log
-  static void e(String message, {String? tag, Object? error, StackTrace? stackTrace}) {
-    _log(_levelError, '❌', message, tag: tag, error: error, stackTrace: stackTrace);
+  static void e(String message,
+      {String? tag, Object? error, StackTrace? stackTrace}) {
+    _log(_levelError, '❌', message,
+        tag: tag, error: error, stackTrace: stackTrace);
   }
 
   /// Success log (uses info level)
@@ -69,7 +77,8 @@ class AppLogger {
   /// Performance log (uses debug level)
   static void performance(String message, {Duration? duration, String? tag}) {
     if (kDebugMode && _minLevel <= _levelDebug) {
-      final durationStr = duration != null ? ' (${duration.inMilliseconds}ms)' : '';
+      final durationStr =
+          duration != null ? ' (${duration.inMilliseconds}ms)' : '';
       _log(_levelDebug, '⚡', '$message$durationStr', tag: tag ?? 'Perf');
     }
   }
@@ -85,21 +94,21 @@ class AppLogger {
   }) {
     // Skip if below minimum level
     if (level < _minLevel) return;
-    
+
     // Skip all logging in release mode except errors
     if (!kDebugMode && level < _levelError) return;
-    
+
     final timestamp = DateTime.now().toIso8601String().substring(11, 23);
     final tagStr = tag ?? _appTag;
     final logMessage = '[$timestamp] $emoji [$tagStr] $message';
-    
+
     // Use debugPrint for better handling of long messages
     debugPrint(logMessage);
-    
+
     if (error != null) {
       debugPrint('  Error: $error');
     }
-    
+
     if (stackTrace != null && level >= _levelError) {
       debugPrint('  StackTrace:\n$stackTrace');
     }
@@ -124,10 +133,10 @@ extension LoggerExtension on Object {
 /// Mixin for classes that need logging
 mixin Loggable {
   String get logTag => runtimeType.toString();
-  
+
   void logDebug(String message) => AppLogger.d(message, tag: logTag);
   void logInfo(String message) => AppLogger.i(message, tag: logTag);
   void logWarning(String message) => AppLogger.w(message, tag: logTag);
-  void logError(String message, {Object? error, StackTrace? stackTrace}) => 
+  void logError(String message, {Object? error, StackTrace? stackTrace}) =>
       AppLogger.e(message, tag: logTag, error: error, stackTrace: stackTrace);
 }

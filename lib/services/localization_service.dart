@@ -7,7 +7,7 @@ class LocalizationService {
   static final LocalizationService _instance = LocalizationService._internal();
   factory LocalizationService() => _instance;
   LocalizationService._internal();
-  
+
   // Supported locales
   static final List<Locale> supportedLocales = [
     const Locale('en', 'US'), // English
@@ -20,10 +20,11 @@ class LocalizationService {
     const Locale('kn', 'IN'), // Kannada
     const Locale('bn', 'IN'), // Bengali
   ];
-  
+
   // Locale delegate
-  static const LocalizationsDelegate<AppLocalizations> delegate = AppLocalizationsDelegate();
-  
+  static const LocalizationsDelegate<AppLocalizations> delegate =
+      AppLocalizationsDelegate();
+
   // Localization delegates
   static const List<LocalizationsDelegate<dynamic>> localizationsDelegates = [
     delegate,
@@ -31,59 +32,71 @@ class LocalizationService {
     GlobalCupertinoLocalizations.delegate,
     GlobalWidgetsLocalizations.delegate,
   ];
-  
+
   // Locale resolution
-  static Locale? localeResolutionCallback(Locale? locale, Iterable<Locale> supportedLocales) {
+  static Locale? localeResolutionCallback(
+      Locale? locale, Iterable<Locale> supportedLocales) {
     for (final supportedLocale in supportedLocales) {
       if (supportedLocale.languageCode == locale?.languageCode &&
           supportedLocale.countryCode == locale?.countryCode) {
         return supportedLocale;
       }
     }
-    
+
     // Default to English if not supported
     return supportedLocales.first;
   }
-  
+
   // Current locale
   Locale _currentLocale = const Locale('en', 'US');
   Locale get currentLocale => _currentLocale;
-  
+
   // Storage service
   final StorageService _storageService = StorageService();
-  
+
   // Initialize service
   Future<void> init() async {
     final languageCode = _storageService.getString('language_code');
     final countryCode = _storageService.getString('country_code');
-    
+
     if (languageCode != null && countryCode != null) {
       _currentLocale = Locale(languageCode, countryCode);
     }
   }
-  
+
   // Change locale
   Future<void> changeLocale(Locale locale) async {
     if (supportedLocales.contains(locale)) {
       _currentLocale = locale;
       await _storageService.saveString('language_code', locale.languageCode);
-      await _storageService.saveString('country_code', locale.countryCode ?? '');
+      await _storageService.saveString(
+          'country_code', locale.countryCode ?? '');
     }
   }
-  
+
   // Get language name from locale
   String getLanguageName(Locale locale) {
     switch (locale.languageCode) {
-      case 'en': return 'English';
-      case 'hi': return 'हिंदी';
-      case 'mr': return 'मराठी';
-      case 'pa': return 'ਪੰਜਾਬੀ';
-      case 'gu': return 'ગુજરાતી';
-      case 'ta': return 'தமிழ்';
-      case 'te': return 'తెలుగు';
-      case 'kn': return 'ಕನ್ನಡ';
-      case 'bn': return 'বাংলা';
-      default: return 'English';
+      case 'en':
+        return 'English';
+      case 'hi':
+        return 'हिंदी';
+      case 'mr':
+        return 'मराठी';
+      case 'pa':
+        return 'ਪੰਜਾਬੀ';
+      case 'gu':
+        return 'ગુજરાતી';
+      case 'ta':
+        return 'தமிழ்';
+      case 'te':
+        return 'తెలుగు';
+      case 'kn':
+        return 'ಕನ್ನಡ';
+      case 'bn':
+        return 'বাংলা';
+      default:
+        return 'English';
     }
   }
 }
@@ -91,19 +104,19 @@ class LocalizationService {
 // App localizations class
 class AppLocalizations {
   final Locale locale;
-  
+
   AppLocalizations(this.locale);
-  
+
   // Helper method to get localized strings
   static AppLocalizations of(BuildContext context) {
     return Localizations.of<AppLocalizations>(context, AppLocalizations)!;
   }
-  
+
   // Static method to load localization
   static Future<AppLocalizations> load(Locale locale) {
     return SynchronousFuture<AppLocalizations>(AppLocalizations(locale));
   }
-  
+
   // Translation maps for different languages
   static final Map<String, Map<String, String>> _localizedValues = {
     'en': {
@@ -122,7 +135,7 @@ class AppLocalizations {
       'done': 'Done',
       'error': 'Error',
       'success': 'Success',
-      
+
       // Auth
       'login': 'Login',
       'signup': 'Sign Up',
@@ -135,14 +148,14 @@ class AppLocalizations {
       'name': 'Name',
       'phone': 'Phone Number',
       'profile': 'Profile',
-      
+
       // Home
       'home': 'Home',
       'dashboard': 'Dashboard',
       'welcome': 'Welcome',
       'recent_activity': 'Recent Activity',
       'view_all': 'View All',
-      
+
       // Weather
       'weather': 'Weather',
       'temperature': 'Temperature',
@@ -158,7 +171,7 @@ class AppLocalizations {
       'hourly_forecast': 'Hourly Forecast',
       'daily_forecast': 'Daily Forecast',
       'farming_advice': 'Farming Advice',
-      
+
       // Marketplace
       'marketplace': 'Marketplace',
       'buy': 'Buy',
@@ -174,7 +187,7 @@ class AppLocalizations {
       'product_details': 'Product Details',
       'contact_seller': 'Contact Seller',
       'location': 'Location',
-      
+
       // Finance
       'finance': 'Finance',
       'transactions': 'Transactions',
@@ -188,7 +201,7 @@ class AppLocalizations {
       'date': 'Date',
       'notes': 'Notes',
       'balance': 'Balance',
-      
+
       // Community
       'community': 'Community',
       'posts': 'Posts',
@@ -200,7 +213,7 @@ class AppLocalizations {
       'communities': 'Communities',
       'join': 'Join',
       'members': 'Members',
-      
+
       // Settings
       'settings': 'Settings',
       'account_settings': 'Account Settings',
@@ -216,14 +229,14 @@ class AppLocalizations {
       'help': 'Help',
       'contact_us': 'Contact Us',
       'version': 'Version',
-      
+
       // Notifications
       'notifications': 'Notifications',
       'no_notifications': 'No notifications',
       'mark_all_read': 'Mark All as Read',
       'clear_all': 'Clear All',
     },
-    
+
     'hi': {
       // Common
       'app_name': 'किसान वीर',
@@ -240,7 +253,7 @@ class AppLocalizations {
       'done': 'हो गया',
       'error': 'त्रुटि',
       'success': 'सफलता',
-      
+
       // Auth
       'login': 'लॉगिन',
       'signup': 'साइन अप',
@@ -253,14 +266,14 @@ class AppLocalizations {
       'name': 'नाम',
       'phone': 'फ़ोन नंबर',
       'profile': 'प्रोफ़ाइल',
-      
+
       // Home
       'home': 'होम',
       'dashboard': 'डैशबोर्ड',
       'welcome': 'स्वागत है',
       'recent_activity': 'हाल की गतिविधि',
       'view_all': 'सभी देखें',
-      
+
       // Weather
       'weather': 'मौसम',
       'temperature': 'तापमान',
@@ -276,7 +289,7 @@ class AppLocalizations {
       'hourly_forecast': 'घंटों का पूर्वानुमान',
       'daily_forecast': 'दैनिक पूर्वानुमान',
       'farming_advice': 'खेती की सलाह',
-      
+
       // Marketplace
       'marketplace': 'बाज़ार',
       'buy': 'खरीदें',
@@ -292,7 +305,7 @@ class AppLocalizations {
       'product_details': 'उत्पाद विवरण',
       'contact_seller': 'विक्रेता से संपर्क करें',
       'location': 'स्थान',
-      
+
       // Finance
       'finance': 'वित्त',
       'transactions': 'लेनदेन',
@@ -306,7 +319,7 @@ class AppLocalizations {
       'date': 'तारीख',
       'notes': 'नोट्स',
       'balance': 'शेष राशि',
-      
+
       // Community
       'community': 'समुदाय',
       'posts': 'पोस्ट',
@@ -318,7 +331,7 @@ class AppLocalizations {
       'communities': 'समुदाय',
       'join': 'जुड़ें',
       'members': 'सदस्य',
-      
+
       // Settings
       'settings': 'सेटिंग्स',
       'account_settings': 'खाता सेटिंग्स',
@@ -334,38 +347,39 @@ class AppLocalizations {
       'help': 'सहायता',
       'contact_us': 'संपर्क करें',
       'version': 'संस्करण',
-      
+
       // Notifications
       'notifications': 'सूचनाएं',
       'no_notifications': 'कोई सूचना नहीं',
       'mark_all_read': 'सभी को पढ़ा हुआ मार्क करें',
       'clear_all': 'सभी हटाएं',
     },
-    
+
     // Add more languages as needed
   };
-  
+
   String translate(String key) {
-    return _localizedValues[locale.languageCode]?[key] ?? 
-           _localizedValues['en']?[key] ?? 
-           key;
+    return _localizedValues[locale.languageCode]?[key] ??
+        _localizedValues['en']?[key] ??
+        key;
   }
 }
 
 // Localizations delegate
 class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
   const AppLocalizationsDelegate();
-  
+
   @override
   bool isSupported(Locale locale) {
-    return ['en', 'hi', 'mr', 'pa', 'gu', 'ta', 'te', 'kn', 'bn'].contains(locale.languageCode);
+    return ['en', 'hi', 'mr', 'pa', 'gu', 'ta', 'te', 'kn', 'bn']
+        .contains(locale.languageCode);
   }
-  
+
   @override
   Future<AppLocalizations> load(Locale locale) {
     return AppLocalizations.load(locale);
   }
-  
+
   @override
   bool shouldReload(AppLocalizationsDelegate old) => false;
 }

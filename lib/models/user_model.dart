@@ -13,7 +13,7 @@ class UserModel {
   final String state;
   final String pincode;
   final List<String> crops; // Array of crops the user is growing
-  
+
   UserModel({
     required this.uid,
     required this.email,
@@ -29,7 +29,7 @@ class UserModel {
     this.pincode = '',
     this.crops = const [],
   });
-  
+
   /// Create empty user
   factory UserModel.empty() {
     return UserModel(
@@ -47,7 +47,7 @@ class UserModel {
       crops: const [],
     );
   }
-  
+
   /// Convert JSON to UserModel
   factory UserModel.fromJson(Map<String, dynamic> json) {
     List<String> cropsList = [];
@@ -70,12 +70,12 @@ class UserModel {
       // Prefer profile_image_url if present, else photoUrl, else ''
       photoUrl: json['profile_image_url'] ?? json['photoUrl'] ?? '',
       userType: json['userType'] ?? 'farmer',
-      createdAt: json['createdAt'] != null 
-        ? DateTime.parse(json['createdAt']) 
-        : DateTime.now(),
-      lastActive: json['lastActive'] != null 
-        ? DateTime.parse(json['lastActive']) 
-        : DateTime.now(),
+      createdAt: json['createdAt'] != null
+          ? DateTime.parse(json['createdAt'])
+          : DateTime.now(),
+      lastActive: json['lastActive'] != null
+          ? DateTime.parse(json['lastActive'])
+          : DateTime.now(),
       address: json['address'] ?? '',
       city: json['city'] ?? '',
       state: json['state'] ?? 'Maharashtra',
@@ -83,10 +83,10 @@ class UserModel {
       crops: cropsList,
     );
   }
-  
+
   // Getter for profile image URL to maintain UI compatibility
   String get profileImageUrl => photoUrl;
-  
+
   /// Convert UserModel to JSON
   Map<String, dynamic> toJson() {
     return {
@@ -105,7 +105,7 @@ class UserModel {
       'crops': crops,
     };
   }
-  
+
   /// Create a copy of this UserModel with modified fields
   UserModel copyWith({
     String? uid,

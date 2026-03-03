@@ -14,8 +14,8 @@ class UserProfile {
   final String? about;
   final DateTime? createdAt;
   final DateTime? updatedAt;
-  final String? location;  // Added for product details screen
-  
+  final String? location; // Added for product details screen
+
   // Getters for compatibility with existing code
   String? get avatarUrl => avatar;
   String? get displayName => fullName;
@@ -50,8 +50,12 @@ class UserProfile {
       pincode: json['pincode']?.toString(),
       isSeller: json['is_seller'] as bool?,
       about: json['about']?.toString(),
-      createdAt: json['created_at'] != null ? DateTime.tryParse(json['created_at']) : null,
-      updatedAt: json['updated_at'] != null ? DateTime.tryParse(json['updated_at']) : null,
+      createdAt: json['created_at'] != null
+          ? DateTime.tryParse(json['created_at'])
+          : null,
+      updatedAt: json['updated_at'] != null
+          ? DateTime.tryParse(json['updated_at'])
+          : null,
       location: json['location']?.toString(),
     );
   }
@@ -60,7 +64,7 @@ class UserProfile {
     final Map<String, dynamic> data = {
       'id': id,
     };
-    
+
     if (fullName != null) data['full_name'] = fullName;
     if (phone != null) data['phone'] = phone;
     if (email != null) data['email'] = email;
@@ -73,7 +77,7 @@ class UserProfile {
     if (about != null) data['about'] = about;
     if (createdAt != null) data['created_at'] = createdAt!.toIso8601String();
     if (updatedAt != null) data['updated_at'] = updatedAt!.toIso8601String();
-    
+
     return data;
   }
 }

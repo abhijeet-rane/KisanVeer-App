@@ -39,7 +39,9 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
         });
         return;
       }
-      setState(() { _isAdmin = true; });
+      setState(() {
+        _isAdmin = true;
+      });
       await _loadSchemes();
       await _loadApplications();
     } catch (e) {
@@ -48,40 +50,61 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
         _loading = false;
       });
     }
-    setState(() { _loading = false; });
+    setState(() {
+      _loading = false;
+    });
   }
 
   Future<void> _loadSchemes() async {
     try {
       final schemes = await _schemesService.getSchemes();
-      setState(() { _schemes = schemes; });
+      setState(() {
+        _schemes = schemes;
+      });
     } catch (e) {
-      setState(() { _error = 'Failed to load schemes: $e'; });
+      setState(() {
+        _error = 'Failed to load schemes: $e';
+      });
     }
   }
 
   Future<void> _loadApplications() async {
     try {
       final apps = await _schemesService.getAllApplications();
-      setState(() { _applications = apps; });
+      setState(() {
+        _applications = apps;
+      });
     } catch (e) {
-      setState(() { _error = 'Failed to load applications: $e'; });
+      setState(() {
+        _error = 'Failed to load applications: $e';
+      });
     }
   }
 
   void _showSchemeDialog({SchemeModel? scheme}) {
     final formKey = GlobalKey<FormState>();
-    final nameController = TextEditingController(text: scheme?.schemeName ?? '');
-    final deptController = TextEditingController(text: scheme?.departmentName ?? '');
-    final overviewController = TextEditingController(text: scheme?.overview ?? '');
-    final benefitsController = TextEditingController(text: scheme?.benefits ?? '');
-    final eligibilityController = TextEditingController(text: scheme?.eligibility ?? '');
-    final docsController = TextEditingController(text: scheme?.requiredDocuments ?? '');
-    final viewLinkController = TextEditingController(text: scheme?.viewBenefitsLink ?? '');
-    final mahadbtLinkController = TextEditingController(text: scheme?.mahadbtApplyLink ?? '');
-    final stateController = TextEditingController(text: scheme?.applicableState ?? '');
-    final districtController = TextEditingController(text: scheme?.applicableDistrict ?? '');
-    final categoryController = TextEditingController(text: scheme?.category ?? '');
+    final nameController =
+        TextEditingController(text: scheme?.schemeName ?? '');
+    final deptController =
+        TextEditingController(text: scheme?.departmentName ?? '');
+    final overviewController =
+        TextEditingController(text: scheme?.overview ?? '');
+    final benefitsController =
+        TextEditingController(text: scheme?.benefits ?? '');
+    final eligibilityController =
+        TextEditingController(text: scheme?.eligibility ?? '');
+    final docsController =
+        TextEditingController(text: scheme?.requiredDocuments ?? '');
+    final viewLinkController =
+        TextEditingController(text: scheme?.viewBenefitsLink ?? '');
+    final mahadbtLinkController =
+        TextEditingController(text: scheme?.mahadbtApplyLink ?? '');
+    final stateController =
+        TextEditingController(text: scheme?.applicableState ?? '');
+    final districtController =
+        TextEditingController(text: scheme?.applicableDistrict ?? '');
+    final categoryController =
+        TextEditingController(text: scheme?.category ?? '');
 
     showDialog(
       context: context,
@@ -93,23 +116,60 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                TextFormField(controller: nameController, decoration: InputDecoration(labelText: 'Scheme Name'), validator: (v) => v == null || v.isEmpty ? 'Required' : null),
-                TextFormField(controller: deptController, decoration: InputDecoration(labelText: 'Department'), validator: (v) => v == null || v.isEmpty ? 'Required' : null),
-                TextFormField(controller: overviewController, decoration: InputDecoration(labelText: 'Overview'), validator: (v) => v == null || v.isEmpty ? 'Required' : null),
-                TextFormField(controller: benefitsController, decoration: InputDecoration(labelText: 'Benefits'), validator: (v) => v == null || v.isEmpty ? 'Required' : null),
-                TextFormField(controller: eligibilityController, decoration: InputDecoration(labelText: 'Eligibility'), validator: (v) => v == null || v.isEmpty ? 'Required' : null),
-                TextFormField(controller: docsController, decoration: InputDecoration(labelText: 'Required Documents (comma separated)'), validator: (v) => v == null || v.isEmpty ? 'Required' : null),
-                TextFormField(controller: viewLinkController, decoration: InputDecoration(labelText: 'Benefits Link')),                
-                TextFormField(controller: mahadbtLinkController, decoration: InputDecoration(labelText: 'MahaDBT Link')),
-                TextFormField(controller: stateController, decoration: InputDecoration(labelText: 'Applicable State')),
-                TextFormField(controller: districtController, decoration: InputDecoration(labelText: 'Applicable District')),
-                TextFormField(controller: categoryController, decoration: InputDecoration(labelText: 'Category')),
+                TextFormField(
+                    controller: nameController,
+                    decoration: InputDecoration(labelText: 'Scheme Name'),
+                    validator: (v) =>
+                        v == null || v.isEmpty ? 'Required' : null),
+                TextFormField(
+                    controller: deptController,
+                    decoration: InputDecoration(labelText: 'Department'),
+                    validator: (v) =>
+                        v == null || v.isEmpty ? 'Required' : null),
+                TextFormField(
+                    controller: overviewController,
+                    decoration: InputDecoration(labelText: 'Overview'),
+                    validator: (v) =>
+                        v == null || v.isEmpty ? 'Required' : null),
+                TextFormField(
+                    controller: benefitsController,
+                    decoration: InputDecoration(labelText: 'Benefits'),
+                    validator: (v) =>
+                        v == null || v.isEmpty ? 'Required' : null),
+                TextFormField(
+                    controller: eligibilityController,
+                    decoration: InputDecoration(labelText: 'Eligibility'),
+                    validator: (v) =>
+                        v == null || v.isEmpty ? 'Required' : null),
+                TextFormField(
+                    controller: docsController,
+                    decoration: InputDecoration(
+                        labelText: 'Required Documents (comma separated)'),
+                    validator: (v) =>
+                        v == null || v.isEmpty ? 'Required' : null),
+                TextFormField(
+                    controller: viewLinkController,
+                    decoration: InputDecoration(labelText: 'Benefits Link')),
+                TextFormField(
+                    controller: mahadbtLinkController,
+                    decoration: InputDecoration(labelText: 'MahaDBT Link')),
+                TextFormField(
+                    controller: stateController,
+                    decoration: InputDecoration(labelText: 'Applicable State')),
+                TextFormField(
+                    controller: districtController,
+                    decoration:
+                        InputDecoration(labelText: 'Applicable District')),
+                TextFormField(
+                    controller: categoryController,
+                    decoration: InputDecoration(labelText: 'Category')),
               ],
             ),
           ),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: Text('Cancel')),
+          TextButton(
+              onPressed: () => Navigator.pop(context), child: Text('Cancel')),
           ElevatedButton(
             child: Text(scheme == null ? 'Add' : 'Update'),
             onPressed: () async {
@@ -139,7 +199,9 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
                 }
                 await _loadSchemes();
               } catch (e) {
-                setState(() { _error = 'Failed to save scheme: $e'; });
+                setState(() {
+                  _error = 'Failed to save scheme: $e';
+                });
               }
             },
           ),
@@ -155,7 +217,8 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
         title: Text('Delete Scheme'),
         content: Text('Are you sure you want to delete this scheme?'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: Text('Cancel')),
+          TextButton(
+              onPressed: () => Navigator.pop(context), child: Text('Cancel')),
           ElevatedButton(
             child: Text('Delete'),
             onPressed: () async {
@@ -164,7 +227,9 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
                 await _schemesService.deleteScheme(scheme.id);
                 await _loadSchemes();
               } catch (e) {
-                setState(() { _error = 'Failed to delete scheme: $e'; });
+                setState(() {
+                  _error = 'Failed to delete scheme: $e';
+                });
               }
             },
           ),
@@ -186,24 +251,32 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
           children: [
             DropdownButtonFormField<String>(
               value: selectedStatus,
-              items: statusOptions.map((s) => DropdownMenuItem(value: s, child: Text(s))).toList(),
+              items: statusOptions
+                  .map((s) => DropdownMenuItem(value: s, child: Text(s)))
+                  .toList(),
               onChanged: (v) => selectedStatus = v,
               decoration: InputDecoration(labelText: 'Status'),
             ),
-            TextFormField(controller: remarksController, decoration: InputDecoration(labelText: 'Remarks')),
+            TextFormField(
+                controller: remarksController,
+                decoration: InputDecoration(labelText: 'Remarks')),
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: Text('Cancel')),
+          TextButton(
+              onPressed: () => Navigator.pop(context), child: Text('Cancel')),
           ElevatedButton(
             child: Text('Update'),
             onPressed: () async {
               Navigator.pop(context);
               try {
-                await _schemesService.updateApplicationStatus(app.id, selectedStatus ?? 'Pending', remarksController.text);
+                await _schemesService.updateApplicationStatus(app.id,
+                    selectedStatus ?? 'Pending', remarksController.text);
                 await _loadApplications();
               } catch (e) {
-                setState(() { _error = 'Failed to update status: $e'; });
+                setState(() {
+                  _error = 'Failed to update status: $e';
+                });
               }
             },
           ),
@@ -214,8 +287,14 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (_loading) return Scaffold(appBar: AppBar(title: Text('Admin Panel')), body: Center(child: CircularProgressIndicator()));
-    if (!_isAdmin) return Scaffold(appBar: AppBar(title: Text('Admin Panel')), body: Center(child: Text(_error)));
+    if (_loading)
+      return Scaffold(
+          appBar: AppBar(title: Text('Admin Panel')),
+          body: Center(child: CircularProgressIndicator()));
+    if (!_isAdmin)
+      return Scaffold(
+          appBar: AppBar(title: Text('Admin Panel')),
+          body: Center(child: Text(_error)));
     return Scaffold(
       appBar: AppBar(title: Text('Admin Panel')),
       body: Column(
@@ -254,15 +333,22 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
                         itemBuilder: (context, i) {
                           final scheme = _schemes[i];
                           return Card(
-                            margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            margin: EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 8),
                             child: ListTile(
                               title: Text(scheme.schemeName),
                               subtitle: Text(scheme.departmentName),
                               trailing: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  IconButton(icon: Icon(Icons.edit), onPressed: () => _showSchemeDialog(scheme: scheme)),
-                                  IconButton(icon: Icon(Icons.delete), onPressed: () => _showDeleteSchemeDialog(scheme)),
+                                  IconButton(
+                                      icon: Icon(Icons.edit),
+                                      onPressed: () =>
+                                          _showSchemeDialog(scheme: scheme)),
+                                  IconButton(
+                                      icon: Icon(Icons.delete),
+                                      onPressed: () =>
+                                          _showDeleteSchemeDialog(scheme)),
                                 ],
                               ),
                             ),
@@ -286,8 +372,10 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
                           children: [
                             Text('Applicant: ${app.name}'),
                             Text('Status: ${app.status}'),
-                            if (app.remarks != null && app.remarks!.isNotEmpty) Text('Remarks: ${app.remarks!}'),
-                            Text('Submitted: ${app.submittedAt.toLocal().toString().split(".")[0]}'),
+                            if (app.remarks != null && app.remarks!.isNotEmpty)
+                              Text('Remarks: ${app.remarks!}'),
+                            Text(
+                                'Submitted: ${app.submittedAt.toLocal().toString().split(".")[0]}'),
                           ],
                         ),
                         trailing: IconButton(

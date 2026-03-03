@@ -7,7 +7,7 @@ import 'package:kisan_veer/services/sync_manager.dart';
 /// Displays a banner when offline with pending sync count
 class OfflineIndicator extends StatefulWidget {
   final Widget child;
-  
+
   const OfflineIndicator({
     Key? key,
     required this.child,
@@ -21,13 +21,13 @@ class _OfflineIndicatorState extends State<OfflineIndicator>
     with SingleTickerProviderStateMixin {
   final ConnectivityService _connectivity = ConnectivityService();
   final SyncManager _syncManager = SyncManager();
-  
+
   late AnimationController _animationController;
   late Animation<double> _slideAnimation;
-  
+
   bool _isOffline = false;
   int _pendingCount = 0;
-  
+
   @override
   void initState() {
     super.initState();
@@ -35,7 +35,7 @@ class _OfflineIndicatorState extends State<OfflineIndicator>
     _listenToConnectivity();
     _updatePendingCount();
   }
-  
+
   void _initAnimation() {
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 300),
@@ -45,35 +45,35 @@ class _OfflineIndicatorState extends State<OfflineIndicator>
       CurvedAnimation(parent: _animationController, curve: Curves.easeOut),
     );
   }
-  
+
   void _listenToConnectivity() {
     _isOffline = _connectivity.isOffline;
     if (_isOffline) _animationController.forward();
-    
+
     _connectivity.statusStream.listen((status) {
       final isOffline = status == ConnectivityStatus.offline;
-      
+
       if (isOffline != _isOffline) {
         setState(() => _isOffline = isOffline);
-        
+
         if (isOffline) {
           _animationController.forward();
         } else {
           _animationController.reverse();
         }
       }
-      
+
       _updatePendingCount();
     });
   }
-  
+
   void _updatePendingCount() {
     final count = _syncManager.pendingCount;
     if (count != _pendingCount) {
       setState(() => _pendingCount = count);
     }
   }
-  
+
   @override
   void dispose() {
     _animationController.dispose();
@@ -95,13 +95,13 @@ class _OfflineIndicatorState extends State<OfflineIndicator>
           },
           child: _isOffline ? _buildOfflineBanner() : const SizedBox.shrink(),
         ),
-        
+
         // Main content
         Expanded(child: widget.child),
       ],
     );
   }
-  
+
   Widget _buildOfflineBanner() {
     return Container(
       width: double.infinity,
@@ -189,7 +189,7 @@ class ConnectivityIndicator extends StatefulWidget {
 class _ConnectivityIndicatorState extends State<ConnectivityIndicator> {
   final ConnectivityService _connectivity = ConnectivityService();
   ConnectivityStatus _status = ConnectivityStatus.unknown;
-  
+
   @override
   void initState() {
     super.initState();
@@ -204,7 +204,7 @@ class _ConnectivityIndicatorState extends State<ConnectivityIndicator> {
     if (_status == ConnectivityStatus.online) {
       return const SizedBox.shrink();
     }
-    
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(

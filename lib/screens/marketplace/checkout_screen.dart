@@ -37,7 +37,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   final _stateController = TextEditingController();
   final _pincodeController = TextEditingController();
   final _phoneController = TextEditingController();
-  
+
   List<Address> _savedAddresses = [];
   Address? _selectedAddress;
   bool _isLoading = true;
@@ -97,7 +97,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   Future<void> _loadProfileAddressIfNeeded() async {
     if (_savedAddresses.isNotEmpty) return;
     final userProfile = await _profileService.getUserProfile();
-    if (userProfile != null && (userProfile.address.isNotEmpty || userProfile.city.isNotEmpty || userProfile.pincode.isNotEmpty)) {
+    if (userProfile != null &&
+        (userProfile.address.isNotEmpty ||
+            userProfile.city.isNotEmpty ||
+            userProfile.pincode.isNotEmpty)) {
       final profileAddress = Address(
         id: const Uuid().v4(),
         userId: userProfile.uid,
@@ -191,7 +194,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     if (apiKey == null) {
       setState(() => _processingPayment = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Error: Unable to retrieve payment API key')),
+        const SnackBar(
+            content: Text('Error: Unable to retrieve payment API key')),
       );
       return;
     }
@@ -199,11 +203,13 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     // Setup Razorpay options
     var options = {
       'key': apiKey,
-      'amount': (widget.totalAmount * 100).toInt(), // Razorpay accepts amount in paisa
+      'amount': (widget.totalAmount * 100)
+          .toInt(), // Razorpay accepts amount in paisa
       'name': 'Kisan Veer',
       'description': 'Payment for marketplace order',
       'prefill': {
-        'contact': _useNewAddress ? _phoneController.text : _selectedAddress!.phone,
+        'contact':
+            _useNewAddress ? _phoneController.text : _selectedAddress!.phone,
       },
       'external': {
         'wallets': ['paytm']
@@ -226,7 +232,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
   Future<void> _handlePaymentSuccess(PaymentSuccessResponse response) async {
     print('Payment success: ${response.paymentId}');
-    
+
     try {
       // Determine which address to use
       Address address;
@@ -243,14 +249,14 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           phone: _phoneController.text,
           isDefault: false,
         );
-        
+
         // Save the address for future use
         await _marketplaceService.saveAddress(address);
       } else {
         // Use selected address
         address = _selectedAddress!;
       }
-      
+
       // Create order using our updated service method
       final order = await _marketplaceService.createOrderFromCart(
         totalAmount: widget.totalAmount,
@@ -374,7 +380,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.primary,
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           ),
           child: const Text('Add New Address'),
         ),
@@ -394,7 +401,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               children: [
                 Text(
                   address.name,
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: 16),
                 ),
                 const SizedBox(height: 2),
                 Text(
@@ -537,7 +545,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
               padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8)),
             ),
             child: const Text('Save Address'),
           ),
@@ -571,7 +580,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 final item = widget.cartItems[index];
                 final product = item.product;
                 if (product == null) return const SizedBox();
-                
+
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 8),
                   child: Row(
@@ -726,7 +735,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 ],
               ),
             ),
-            if (_razorpayError != null) ...[              
+            if (_razorpayError != null) ...[
               const SizedBox(height: 16),
               Container(
                 padding: const EdgeInsets.all(8),

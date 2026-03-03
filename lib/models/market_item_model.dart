@@ -44,7 +44,7 @@ class MarketItemModel {
       updatedAt: DateTime.now(),
     );
   }
-  
+
   // Convert from JSON for local storage
   factory MarketItemModel.fromJson(Map<String, dynamic> json) {
     return MarketItemModel(
@@ -58,11 +58,11 @@ class MarketItemModel {
       quantity: (json['quantity'] ?? 0.0).toDouble(),
       unit: json['unit'] ?? 'kg',
       status: json['status'] ?? 'pending',
-      createdAt: json['createdAt'] != null 
-          ? DateTime.parse(json['createdAt']) 
+      createdAt: json['createdAt'] != null
+          ? DateTime.parse(json['createdAt'])
           : DateTime.now(),
-      updatedAt: json['updatedAt'] != null 
-          ? DateTime.parse(json['updatedAt']) 
+      updatedAt: json['updatedAt'] != null
+          ? DateTime.parse(json['updatedAt'])
           : DateTime.now(),
     );
   }

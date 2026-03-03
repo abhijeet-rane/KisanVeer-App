@@ -24,7 +24,7 @@ class _SplashScreenState extends State<SplashScreen>
   late Animation<double> _logoScale;
   late Animation<double> _logoRotation;
   late Animation<double> _pulseAnimation;
-  
+
   bool _showContent = false;
   bool _showLoader = false;
   bool _isNavigating = false;
@@ -34,7 +34,7 @@ class _SplashScreenState extends State<SplashScreen>
     super.initState();
     _initializeAnimations();
     _startAnimationSequence();
-    
+
     // Set status bar style
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
@@ -113,7 +113,7 @@ class _SplashScreenState extends State<SplashScreen>
 
     // Check if user is logged in
     final session = Supabase.instance.client.auth.currentSession;
-    
+
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(
         pageBuilder: (context, animation, secondaryAnimation) =>
@@ -155,10 +155,10 @@ class _SplashScreenState extends State<SplashScreen>
         children: [
           // Animated gradient background
           _buildAnimatedBackground(size),
-          
+
           // Floating particles
           _buildFloatingParticles(size),
-          
+
           // Main content
           SafeArea(
             child: Center(
@@ -166,30 +166,30 @@ class _SplashScreenState extends State<SplashScreen>
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Spacer(flex: 2),
-                  
+
                   // Animated logo with glow
                   _buildAnimatedLogo(),
-                  
+
                   const SizedBox(height: 40),
-                  
+
                   // App name with gradient
                   if (_showContent) _buildAppName(),
-                  
+
                   const SizedBox(height: 12),
-                  
+
                   // Tagline
                   if (_showContent) _buildTagline(),
-                  
+
                   const Spacer(flex: 2),
-                  
+
                   // Premium loader
                   if (_showLoader) _buildPremiumLoader(),
-                  
+
                   const SizedBox(height: 40),
-                  
+
                   // Version info
                   if (_showContent) _buildVersionInfo(),
-                  
+
                   const SizedBox(height: 20),
                 ],
               ),
@@ -325,10 +325,8 @@ class _SplashScreenState extends State<SplashScreen>
           letterSpacing: 2,
         ),
       ),
-    )
-        .animate()
-        .fadeIn(duration: 600.ms, delay: 200.ms)
-        .slideY(begin: 0.3, end: 0, duration: 600.ms, curve: Curves.easeOutCubic);
+    ).animate().fadeIn(duration: 600.ms, delay: 200.ms).slideY(
+        begin: 0.3, end: 0, duration: 600.ms, curve: Curves.easeOutCubic);
   }
 
   Widget _buildTagline() {
@@ -342,10 +340,8 @@ class _SplashScreenState extends State<SplashScreen>
         fontWeight: FontWeight.w400,
         letterSpacing: 0.5,
       ),
-    )
-        .animate()
-        .fadeIn(duration: 600.ms, delay: 400.ms)
-        .slideY(begin: 0.3, end: 0, duration: 600.ms, curve: Curves.easeOutCubic);
+    ).animate().fadeIn(duration: 600.ms, delay: 400.ms).slideY(
+        begin: 0.3, end: 0, duration: 600.ms, curve: Curves.easeOutCubic);
   }
 
   Widget _buildPremiumLoader() {
@@ -392,9 +388,8 @@ class _SplashScreenState extends State<SplashScreen>
           Colors.white.withValues(alpha: 0.8 - delay),
         ),
       ),
-    )
-        .animate(onPlay: (controller) => controller.repeat())
-        .rotate(duration: Duration(milliseconds: (1500 + delay * 1000).toInt()));
+    ).animate(onPlay: (controller) => controller.repeat()).rotate(
+        duration: Duration(milliseconds: (1500 + delay * 1000).toInt()));
   }
 
   Widget _buildVersionInfo() {
@@ -413,7 +408,7 @@ class _SplashScreenState extends State<SplashScreen>
 class ParticlesPainter extends CustomPainter {
   final double animation;
   final List<Particle> particles;
-  
+
   ParticlesPainter({required this.animation})
       : particles = List.generate(30, (index) => Particle(index));
 
@@ -425,11 +420,11 @@ class ParticlesPainter extends CustomPainter {
       final progress = (animation + particle.offset) % 1.0;
       final x = particle.x * size.width;
       final y = (particle.y + progress) % 1.0 * size.height;
-      
+
       paint.color = Colors.white.withValues(
         alpha: particle.opacity * (1 - progress) * 0.3,
       );
-      
+
       canvas.drawCircle(
         Offset(x, y),
         particle.size,

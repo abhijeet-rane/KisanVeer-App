@@ -409,11 +409,10 @@ class _WeatherScreenState extends State<WeatherScreen> {
                 children: [
                   const SizedBox(height: 8),
                   _buildLocationHeader(),
-
                   if (_alerts.isNotEmpty) _buildAlertBanner(),
-
                   Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    margin: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 12),
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
@@ -447,7 +446,8 @@ class _WeatherScreenState extends State<WeatherScreen> {
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
-                            const Icon(Icons.location_on_outlined, color: Colors.white, size: 20),
+                            const Icon(Icons.location_on_outlined,
+                                color: Colors.white, size: 20),
                           ],
                         ),
                         const SizedBox(height: 20),
@@ -484,7 +484,8 @@ class _WeatherScreenState extends State<WeatherScreen> {
 
                                 // Feels Like
                                 Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 12, vertical: 6),
                                   decoration: BoxDecoration(
                                     color: Colors.white.withOpacity(0.2),
                                     borderRadius: BorderRadius.circular(14),
@@ -515,16 +516,19 @@ class _WeatherScreenState extends State<WeatherScreen> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            _buildWeatherDetail('💨 Wind', '${currentWeather['windSpeed']} km/h'),
-                            _buildWeatherDetail('💧 Humidity', '${currentWeather['humidity']}%'),
-                            _buildWeatherDetail('🔆 UV Index', _getUVIndexDescription(currentWeather['uvIndex'])),
+                            _buildWeatherDetail('💨 Wind',
+                                '${currentWeather['windSpeed']} km/h'),
+                            _buildWeatherDetail('💧 Humidity',
+                                '${currentWeather['humidity']}%'),
+                            _buildWeatherDetail(
+                                '🔆 UV Index',
+                                _getUVIndexDescription(
+                                    currentWeather['uvIndex'])),
                           ],
                         ),
                       ],
                     ),
                   ),
-
-
                   const SizedBox(height: 24),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -575,7 +579,6 @@ class _WeatherScreenState extends State<WeatherScreen> {
                       );
                     },
                   ),
-
                   const SizedBox(height: 24),
                 ],
               ),

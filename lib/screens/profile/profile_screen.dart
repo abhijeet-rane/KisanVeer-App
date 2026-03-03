@@ -37,7 +37,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   bool _biometricAvailable = false;
   final ScrollController _scrollController = ScrollController();
   final GlobalKey _settingsKey = GlobalKey();
-  
+
   final List<String> _languages = [
     'English',
     'Hindi',
@@ -79,13 +79,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   void _scrollToSettings() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final RenderObject? renderObject = _settingsKey.currentContext
-          ?.findRenderObject();
+      final RenderObject? renderObject =
+          _settingsKey.currentContext?.findRenderObject();
       if (renderObject is RenderBox) {
         _scrollController.animateTo(
           renderObject
-              .localToGlobal(Offset.zero, ancestor: context.findRenderObject())
-              .dy + _scrollController.offset,
+                  .localToGlobal(Offset.zero,
+                      ancestor: context.findRenderObject())
+                  .dy +
+              _scrollController.offset,
           duration: Duration(milliseconds: 500),
           curve: Curves.easeInOut,
         );
@@ -104,7 +106,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     setState(() {
       _isLoading = true;
     });
-    
+
     try {
       final user = await _authService.getCurrentUserModel();
       if (user == null) {
@@ -124,11 +126,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
       });
     }
   }
-  
+
   Future<void> _signOut() async {
     try {
       await _authService.signOut();
-      
+
       if (mounted) {
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(
@@ -155,17 +157,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
       appBar: AppBar(
         backgroundColor: AppColors.primary,
         elevation: 0,
-          leading: IconButton(
-            icon: const Icon(Icons.settings, color: Colors.white),
-            onPressed: () {
-              Scrollable.ensureVisible(
-                _settingsKey.currentContext!,
-                duration: Duration(milliseconds: 800), // Smooth scroll effect
-                curve: Curves.easeInOut,
-              );
-            },
-          ),
-
+        leading: IconButton(
+          icon: const Icon(Icons.settings, color: Colors.white),
+          onPressed: () {
+            Scrollable.ensureVisible(
+              _settingsKey.currentContext!,
+              duration: Duration(milliseconds: 800), // Smooth scroll effect
+              curve: Curves.easeInOut,
+            );
+          },
+        ),
         title: const Text(
           'Profile',
           style: TextStyle(
@@ -175,15 +176,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.notifications, color: Colors.white),
+              icon: const Icon(Icons.notifications, color: Colors.white),
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => NotificationsScreen()),
+                  MaterialPageRoute(
+                      builder: (context) => NotificationsScreen()),
                 );
-              }
-
-          ),
+              }),
         ],
       ),
       body: _isLoading
@@ -203,10 +203,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const SizedBox(height: 10),
-
                         Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 5.0),
-
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 12.0, horizontal: 5.0),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -231,16 +230,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ],
                           ),
                         ),
-                        
                         const SizedBox(height: 12),
-                        
                         _buildSettingsList().animate().fadeIn(
-                          duration: const Duration(milliseconds: 500),
-                          delay: const Duration(milliseconds: 600),
-                        ),
-                        
+                              duration: const Duration(milliseconds: 500),
+                              delay: const Duration(milliseconds: 600),
+                            ),
                         const SizedBox(height: 24),
-                        
                         CustomButton(
                           text: 'Sign Out',
                           onPressed: _signOut,
@@ -248,10 +243,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           buttonType: ButtonType.outlined,
                           leadingIcon: Icons.logout,
                         ).animate().fadeIn(
-                          duration: const Duration(milliseconds: 500),
-                          delay: const Duration(milliseconds: 700),
-                        ),
-                        
+                              duration: const Duration(milliseconds: 500),
+                              delay: const Duration(milliseconds: 700),
+                            ),
                         const SizedBox(height: 24),
                       ],
                     ),
@@ -261,7 +255,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
     );
   }
-  
+
   Widget _buildProfileHeader() {
     return Container(
       width: double.infinity,
@@ -276,7 +270,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Column(
         children: [
           const SizedBox(height: 16),
-          
           CircleAvatar(
             radius: 50,
             backgroundColor: Colors.white,
@@ -296,11 +289,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   )
                 : null,
           ).animate().fadeIn(
-            duration: const Duration(milliseconds: 500),
-          ),
-          
+                duration: const Duration(milliseconds: 500),
+              ),
           const SizedBox(height: 16),
-          
           Text(
             _currentUser?.name ?? 'User',
             style: const TextStyle(
@@ -309,12 +300,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
               fontWeight: FontWeight.bold,
             ),
           ).animate().fadeIn(
-            duration: const Duration(milliseconds: 500),
-            delay: const Duration(milliseconds: 100),
-          ),
-          
+                duration: const Duration(milliseconds: 500),
+                delay: const Duration(milliseconds: 100),
+              ),
           const SizedBox(height: 8),
-          
           Text(
             _currentUser?.email ?? 'user@example.com',
             style: TextStyle(
@@ -322,9 +311,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               fontSize: 16,
             ),
           ).animate().fadeIn(
-            duration: const Duration(milliseconds: 500),
-            delay: const Duration(milliseconds: 200),
-          ),
+                duration: const Duration(milliseconds: 500),
+                delay: const Duration(milliseconds: 200),
+              ),
           const SizedBox(height: 10),
         ],
       ),
@@ -337,12 +326,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
         _settingsSections.length,
         (sectionIndex) {
           final section = _settingsSections[sectionIndex];
-          
+
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                 child: Row(
                   children: [
                     Icon(
@@ -367,15 +357,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: section['items'].length,
-                  separatorBuilder: (context, index) => const Divider(height: 1),
+                  separatorBuilder: (context, index) =>
+                      const Divider(height: 1),
                   itemBuilder: (context, index) {
                     final item = section['items'][index];
-                    
+
                     // Use BiometricSettingsToggle for biometric setting
                     if (item['title'] == 'Biometric Login') {
                       return const BiometricSettingsToggle();
                     }
-                    
+
                     return ListTile(
                       leading: Icon(
                         item['icon'],
@@ -402,7 +393,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
     );
   }
-  
+
   Widget? _buildSettingControl(String settingTitle) {
     switch (settingTitle) {
       case 'Dark Mode':
@@ -453,7 +444,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         );
     }
   }
-  
+
   void _handleSettingTap(String settingTitle) {
     // Handle different settings
     switch (settingTitle) {
@@ -536,7 +527,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         break;
     }
   }
-  
+
   void _showLanguageDialog() {
     showDialog(
       context: context,
@@ -576,7 +567,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
     );
   }
-  
+
   void _showClearCacheDialog() {
     showDialog(
       context: context,

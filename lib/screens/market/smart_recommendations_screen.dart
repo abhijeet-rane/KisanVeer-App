@@ -11,46 +11,48 @@ class SmartRecommendationsScreen extends StatefulWidget {
   const SmartRecommendationsScreen({Key? key}) : super(key: key);
 
   @override
-  State<SmartRecommendationsScreen> createState() => _SmartRecommendationsScreenState();
+  State<SmartRecommendationsScreen> createState() =>
+      _SmartRecommendationsScreenState();
 }
 
-class _SmartRecommendationsScreenState extends State<SmartRecommendationsScreen> {
+class _SmartRecommendationsScreenState
+    extends State<SmartRecommendationsScreen> {
   final MarketService _marketService = MarketService();
-  
+
   bool _isLoading = true;
   String? _errorMessage;
-  
+
   // User preferences
   String? _selectedState;
   List<String> _selectedCrops = [];
-  
+
   // Data lists
   List<String> _states = [];
   List<String> _availableCrops = [];
-  
+
   // Recommendations
   List<CropRecommendation> _recommendations = [];
-  
+
   @override
   void initState() {
     super.initState();
     _loadInitialData();
   }
-  
+
   Future<void> _loadInitialData() async {
     try {
       setState(() {
         _isLoading = true;
         _errorMessage = null;
       });
-      
+
       // Get states and user preferences
       final states = await _marketService.getStates();
       final userPrefs = await _marketService.getUserPreferences();
-      
+
       setState(() {
         _states = states;
-        
+
         // Set default state to user's state or Maharashtra if available
         final preferredState = userPrefs['preferred_state'] as String?;
         if (preferredState != null && preferredState.isNotEmpty) {
@@ -60,18 +62,18 @@ class _SmartRecommendationsScreenState extends State<SmartRecommendationsScreen>
         } else if (states.isNotEmpty) {
           _selectedState = states.first;
         }
-        
+
         // Set user's selected crops
         _selectedCrops = List<String>.from(userPrefs['preferred_crops'] ?? []);
-        
+
         _isLoading = false;
       });
-      
+
       // Load available crops for the selected state
       if (_selectedState != null) {
         _loadAvailableCrops();
       }
-      
+
       // Generate recommendations if state is selected
       if (_selectedState != null) {
         _generateRecommendations();
@@ -83,17 +85,17 @@ class _SmartRecommendationsScreenState extends State<SmartRecommendationsScreen>
       });
     }
   }
-  
+
   Future<void> _loadAvailableCrops() async {
     if (_selectedState == null) return;
-    
+
     try {
       setState(() {
         _isLoading = true;
       });
-      
+
       final crops = await _marketService.getCommodities(state: _selectedState);
-      
+
       setState(() {
         _availableCrops = crops;
         _isLoading = false;
@@ -105,7 +107,7 @@ class _SmartRecommendationsScreenState extends State<SmartRecommendationsScreen>
       });
     }
   }
-  
+
   Future<void> _generateRecommendations() async {
     if (_selectedState == null) {
       setState(() {
@@ -113,18 +115,18 @@ class _SmartRecommendationsScreenState extends State<SmartRecommendationsScreen>
       });
       return;
     }
-    
+
     try {
       setState(() {
         _isLoading = true;
         _errorMessage = null;
       });
-      
+
       final recommendations = await _marketService.getCropRecommendations(
         state: _selectedState!,
         userCrops: _selectedCrops,
       );
-      
+
       setState(() {
         _recommendations = recommendations;
         _isLoading = false;
@@ -136,7 +138,7 @@ class _SmartRecommendationsScreenState extends State<SmartRecommendationsScreen>
       });
     }
   }
-  
+
   Future<void> _savePreferences() async {
     try {
       await _marketService.updateUserPreferences(
@@ -144,7 +146,7 @@ class _SmartRecommendationsScreenState extends State<SmartRecommendationsScreen>
         preferredCrops: _selectedCrops,
         priceSensitivity: 'medium',
       );
-      
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Preferences saved successfully'),
@@ -183,7 +185,7 @@ class _SmartRecommendationsScreenState extends State<SmartRecommendationsScreen>
           : _buildBody(),
     );
   }
-  
+
   Widget _buildBody() {
     return RefreshIndicator(
       onRefresh: _generateRecommendations,
@@ -194,7 +196,7 @@ class _SmartRecommendationsScreenState extends State<SmartRecommendationsScreen>
           children: [
             // Preferences card
             _buildPreferencesCard(),
-            
+
             // Error message if any
             if (_errorMessage != null)
               Padding(
@@ -224,7 +226,7 @@ class _SmartRecommendationsScreenState extends State<SmartRecommendationsScreen>
                   ),
                 ),
               ),
-            
+
             // Recommendations
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
@@ -236,14 +238,14 @@ class _SmartRecommendationsScreenState extends State<SmartRecommendationsScreen>
             _recommendations.isEmpty
                 ? _buildNoRecommendationsView()
                 : _buildRecommendationsList(),
-            
+
             const SizedBox(height: 32),
           ],
         ),
       ),
     );
   }
-  
+
   Widget _buildPreferencesCard() {
     return Card(
       margin: const EdgeInsets.all(16.0),
@@ -261,7 +263,7 @@ class _SmartRecommendationsScreenState extends State<SmartRecommendationsScreen>
               style: AppTextStyles.bodySmall.copyWith(color: Colors.grey),
             ),
             const SizedBox(height: 16),
-            
+
             // State dropdown
             DropdownButtonFormField<String>(
               decoration: InputDecoration(
@@ -290,7 +292,7 @@ class _SmartRecommendationsScreenState extends State<SmartRecommendationsScreen>
               hint: const Text('Select your state'),
             ),
             const SizedBox(height: 16),
-            
+
             // Crops selection
             Text('Your Crops of Interest', style: AppTextStyles.bodyMedium),
             const SizedBox(height: 8),
@@ -326,7 +328,7 @@ class _SmartRecommendationsScreenState extends State<SmartRecommendationsScreen>
                 }).toList(),
               ),
             const SizedBox(height: 16),
-            
+
             // Save button
             Row(
               children: [
@@ -364,13 +366,13 @@ class _SmartRecommendationsScreenState extends State<SmartRecommendationsScreen>
         ),
       ),
     ).animate().fadeIn(duration: 300.ms).slideY(
-      begin: 0.1,
-      end: 0,
-      duration: 300.ms,
-      curve: Curves.easeOutQuad,
-    );
+          begin: 0.1,
+          end: 0,
+          duration: 300.ms,
+          curve: Curves.easeOutQuad,
+        );
   }
-  
+
   Widget _buildNoRecommendationsView() {
     return Padding(
       padding: const EdgeInsets.all(32.0),
@@ -400,7 +402,7 @@ class _SmartRecommendationsScreenState extends State<SmartRecommendationsScreen>
       ),
     );
   }
-  
+
   Widget _buildRecommendationsList() {
     return ListView.builder(
       shrinkWrap: true,
@@ -412,10 +414,11 @@ class _SmartRecommendationsScreenState extends State<SmartRecommendationsScreen>
       },
     );
   }
-  
-  Widget _buildRecommendationCard(CropRecommendation recommendation, int index) {
+
+  Widget _buildRecommendationCard(
+      CropRecommendation recommendation, int index) {
     final isPositiveTrend = _isPositivePriceTrend(recommendation.priceTrend);
-    
+
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
       elevation: 2,
@@ -436,7 +439,7 @@ class _SmartRecommendationsScreenState extends State<SmartRecommendationsScreen>
                 // Pin button
                 SizedBox(
                   width: 91,
-                  height: 35,// Fixed width to prevent layout issues
+                  height: 35, // Fixed width to prevent layout issues
                   child: OutlinedButton.icon(
                     onPressed: () {
                       // Implement pinning functionality
@@ -461,7 +464,7 @@ class _SmartRecommendationsScreenState extends State<SmartRecommendationsScreen>
               ],
             ),
             const SizedBox(height: 8),
-            
+
             // Confidence tag
             Container(
               padding: const EdgeInsets.symmetric(
@@ -469,22 +472,26 @@ class _SmartRecommendationsScreenState extends State<SmartRecommendationsScreen>
                 vertical: 4,
               ),
               decoration: BoxDecoration(
-                color: _getConfidenceColor(recommendation.confidenceScore ?? 0.0).withOpacity(0.1),
+                color:
+                    _getConfidenceColor(recommendation.confidenceScore ?? 0.0)
+                        .withOpacity(0.1),
                 borderRadius: BorderRadius.circular(4),
                 border: Border.all(
-                  color: _getConfidenceColor(recommendation.confidenceScore ?? 0.0),
+                  color: _getConfidenceColor(
+                      recommendation.confidenceScore ?? 0.0),
                 ),
               ),
               child: Text(
                 'Confidence: ${_getConfidenceLabel(recommendation.confidenceScore ?? 0.0)}',
                 style: AppTextStyles.bodySmall.copyWith(
-                  color: _getConfidenceColor(recommendation.confidenceScore ?? 0.0),
+                  color: _getConfidenceColor(
+                      recommendation.confidenceScore ?? 0.0),
                   fontWeight: FontWeight.bold,
                 ),
               ),
             ),
             const SizedBox(height: 16),
-            
+
             // Price trend
             Row(
               children: [
@@ -523,18 +530,15 @@ class _SmartRecommendationsScreenState extends State<SmartRecommendationsScreen>
                             isPositiveTrend
                                 ? Icons.trending_up
                                 : Icons.trending_down,
-                            color: isPositiveTrend
-                                ? Colors.green
-                                : Colors.red,
+                            color: isPositiveTrend ? Colors.green : Colors.red,
                           ),
                           const SizedBox(width: 4),
                           Text(
                             '${isPositiveTrend ? '+' : ''}${_formatPriceTrend(recommendation.priceTrend)}%',
                             style: AppTextStyles.bodyLarge.copyWith(
                               fontWeight: FontWeight.bold,
-                              color: isPositiveTrend
-                                  ? Colors.green
-                                  : Colors.red,
+                              color:
+                                  isPositiveTrend ? Colors.green : Colors.red,
                             ),
                           ),
                         ],
@@ -545,14 +549,14 @@ class _SmartRecommendationsScreenState extends State<SmartRecommendationsScreen>
               ],
             ),
             const SizedBox(height: 16),
-            
+
             // Mini chart
             SizedBox(
               height: 100,
               child: _buildMiniTrendChart(recommendation),
             ),
             const SizedBox(height: 16),
-            
+
             // Recommendation
             Container(
               padding: const EdgeInsets.all(12),
@@ -569,7 +573,8 @@ class _SmartRecommendationsScreenState extends State<SmartRecommendationsScreen>
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      recommendation.recommendationText ?? 'No recommendation available',
+                      recommendation.recommendationText ??
+                          'No recommendation available',
                       style: AppTextStyles.bodyMedium.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -579,7 +584,7 @@ class _SmartRecommendationsScreenState extends State<SmartRecommendationsScreen>
               ),
             ),
             const SizedBox(height: 16),
-            
+
             // Reasoning
             Text(
               'Market Analysis',
@@ -593,31 +598,35 @@ class _SmartRecommendationsScreenState extends State<SmartRecommendationsScreen>
           ],
         ),
       ),
-    ).animate().fadeIn(
-      duration: 300.ms,
-      delay: Duration(milliseconds: 100 * index),
-    ).slideY(
-      begin: 0.1,
-      end: 0,
-      duration: 300.ms,
-      delay: Duration(milliseconds: 100 * index),
-      curve: Curves.easeOutQuad,
-    );
+    )
+        .animate()
+        .fadeIn(
+          duration: 300.ms,
+          delay: Duration(milliseconds: 100 * index),
+        )
+        .slideY(
+          begin: 0.1,
+          end: 0,
+          duration: 300.ms,
+          delay: Duration(milliseconds: 100 * index),
+          curve: Curves.easeOutQuad,
+        );
   }
-  
+
   bool _isPositivePriceTrend(dynamic priceTrend) {
     if (priceTrend == null) return false;
-    
+
     if (priceTrend is double) {
       return priceTrend > 0;
     } else if (priceTrend is int) {
       return priceTrend > 0;
     } else if (priceTrend is String) {
       // Check for 'up' or 'positive' strings
-      if (priceTrend.toLowerCase() == 'up' || priceTrend.toLowerCase() == 'positive') {
+      if (priceTrend.toLowerCase() == 'up' ||
+          priceTrend.toLowerCase() == 'positive') {
         return true;
       }
-      
+
       // Try to parse as double
       try {
         return double.parse(priceTrend) > 0;
@@ -626,13 +635,13 @@ class _SmartRecommendationsScreenState extends State<SmartRecommendationsScreen>
         return false;
       }
     }
-    
+
     return false;
   }
 
   String _formatPriceTrend(dynamic priceTrend) {
     if (priceTrend == null) return '0.00';
-    
+
     if (priceTrend is double) {
       return priceTrend.toStringAsFixed(2);
     } else if (priceTrend is int) {
@@ -646,7 +655,7 @@ class _SmartRecommendationsScreenState extends State<SmartRecommendationsScreen>
         return priceTrend;
       }
     }
-    
+
     return '0.00';
   }
 
@@ -681,16 +690,20 @@ class _SmartRecommendationsScreenState extends State<SmartRecommendationsScreen>
         ),
         borderData: FlBorderData(show: false),
         minX: 0,
-        maxX: recommendation.priceHistory?.isNotEmpty == true ? (recommendation.priceHistory!.length - 1.0) : 0,
-        minY: recommendation.priceHistory?.isNotEmpty == true 
-            ? (recommendation.priceHistory!.reduce((a, b) => a < b ? a : b) * 0.9)
+        maxX: recommendation.priceHistory?.isNotEmpty == true
+            ? (recommendation.priceHistory!.length - 1.0)
             : 0,
-        maxY: recommendation.priceHistory?.isNotEmpty == true 
-            ? (recommendation.priceHistory!.reduce((a, b) => a > b ? a : b) * 1.1)
+        minY: recommendation.priceHistory?.isNotEmpty == true
+            ? (recommendation.priceHistory!.reduce((a, b) => a < b ? a : b) *
+                0.9)
+            : 0,
+        maxY: recommendation.priceHistory?.isNotEmpty == true
+            ? (recommendation.priceHistory!.reduce((a, b) => a > b ? a : b) *
+                1.1)
             : 100,
         lineBarsData: [
           LineChartBarData(
-            spots: recommendation.priceHistory?.isNotEmpty == true 
+            spots: recommendation.priceHistory?.isNotEmpty == true
                 ? List.generate(recommendation.priceHistory!.length, (index) {
                     return FlSpot(
                       index.toDouble(),
@@ -714,7 +727,7 @@ class _SmartRecommendationsScreenState extends State<SmartRecommendationsScreen>
       // Animation duration parameter removed as it's not supported in this version
     );
   }
-  
+
   Color _getConfidenceColor(double confidence) {
     if (confidence >= 0.8) {
       return Colors.green.shade700;
@@ -726,7 +739,7 @@ class _SmartRecommendationsScreenState extends State<SmartRecommendationsScreen>
       return Colors.red.shade500;
     }
   }
-  
+
   String _getConfidenceLabel(double confidence) {
     if (confidence >= 0.8) {
       return 'Very High';
@@ -738,7 +751,7 @@ class _SmartRecommendationsScreenState extends State<SmartRecommendationsScreen>
       return 'Low';
     }
   }
-  
+
   Color _getBackgroundColor(String recommendation) {
     switch (recommendation.toLowerCase()) {
       case 'buy':
@@ -753,7 +766,7 @@ class _SmartRecommendationsScreenState extends State<SmartRecommendationsScreen>
         return Colors.grey.shade50;
     }
   }
-  
+
   Color _getIconColor(String recommendation) {
     switch (recommendation.toLowerCase()) {
       case 'buy':
@@ -768,7 +781,7 @@ class _SmartRecommendationsScreenState extends State<SmartRecommendationsScreen>
         return Colors.grey.shade700;
     }
   }
-  
+
   IconData _getRecommendationIcon(String recommendation) {
     switch (recommendation.toLowerCase()) {
       case 'buy':

@@ -528,7 +528,8 @@ class _PriceFinderScreenState extends State<PriceFinderScreen> {
                       initialState: _selectedState,
                       initialDistrict: _selectedDistrict,
                       initialMarket: _selectedMarket,
-                      initialCommodity: _selectedCommodity ?? _searchController.text,
+                      initialCommodity:
+                          _selectedCommodity ?? _searchController.text,
                     ),
                   ),
                 );

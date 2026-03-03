@@ -8,7 +8,7 @@ class PremiumRefreshIndicator extends StatelessWidget {
   final Future<void> Function() onRefresh;
   final Color? color;
   final double displacement;
-  
+
   const PremiumRefreshIndicator({
     Key? key,
     required this.child,
@@ -38,7 +38,7 @@ class PremiumRefreshIndicator extends StatelessWidget {
 class AnimatedRefreshIndicator extends StatefulWidget {
   final Widget child;
   final Future<void> Function() onRefresh;
-  
+
   const AnimatedRefreshIndicator({
     Key? key,
     required this.child,
@@ -46,18 +46,19 @@ class AnimatedRefreshIndicator extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<AnimatedRefreshIndicator> createState() => _AnimatedRefreshIndicatorState();
+  State<AnimatedRefreshIndicator> createState() =>
+      _AnimatedRefreshIndicatorState();
 }
 
 class _AnimatedRefreshIndicatorState extends State<AnimatedRefreshIndicator> {
   bool _isRefreshing = false;
-  
+
   Future<void> _handleRefresh() async {
     if (_isRefreshing) return;
-    
+
     setState(() => _isRefreshing = true);
     HapticUtils.pullRefresh();
-    
+
     try {
       await widget.onRefresh();
       HapticUtils.success();
@@ -67,7 +68,7 @@ class _AnimatedRefreshIndicatorState extends State<AnimatedRefreshIndicator> {
       }
     }
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return RefreshIndicator.adaptive(
@@ -85,7 +86,7 @@ class EmptyStateWidget extends StatelessWidget {
   final String? subtitle;
   final String? buttonText;
   final VoidCallback? onButtonPressed;
-  
+
   const EmptyStateWidget({
     Key? key,
     required this.icon,
@@ -130,8 +131,8 @@ class EmptyStateWidget extends StatelessWidget {
             Text(
               title,
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
               textAlign: TextAlign.center,
             ),
             if (subtitle != null) ...[
@@ -139,8 +140,8 @@ class EmptyStateWidget extends StatelessWidget {
               Text(
                 subtitle!,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppColors.textSecondary,
-                ),
+                      color: AppColors.textSecondary,
+                    ),
                 textAlign: TextAlign.center,
               ),
             ],
@@ -172,7 +173,7 @@ class EmptyStateWidget extends StatelessWidget {
 class ErrorStateWidget extends StatelessWidget {
   final String message;
   final VoidCallback onRetry;
-  
+
   const ErrorStateWidget({
     Key? key,
     required this.message,
@@ -194,7 +195,7 @@ class ErrorStateWidget extends StatelessWidget {
 /// No internet state widget
 class NoConnectionWidget extends StatelessWidget {
   final VoidCallback onRetry;
-  
+
   const NoConnectionWidget({
     Key? key,
     required this.onRetry,

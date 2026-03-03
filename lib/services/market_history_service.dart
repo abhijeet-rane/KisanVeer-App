@@ -7,7 +7,7 @@ import 'package:intl/intl.dart';
 class MarketHistoryService {
   final String _baseUrl =
       'https://api.data.gov.in/resource/9ef84268-d588-465a-a308-a864a43d0070'; // AGMARKNET API base URL
-    // https://script.google.com/macros/s/AKfycbx7bWOZ45Z7NUc4YQu05bio8gBk3lMNf6kqDHKyAY3dU8Rv49Xm9UkZeAoI3Gy1dk-dNA/exec
+  // https://script.google.com/macros/s/AKfycbx7bWOZ45Z7NUc4YQu05bio8gBk3lMNf6kqDHKyAY3dU8Rv49Xm9UkZeAoI3Gy1dk-dNA/exec
 
   // Fetch historical market data
   Future<List<MarketRecord>> fetchHistoricalData({

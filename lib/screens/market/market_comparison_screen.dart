@@ -8,7 +8,6 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
 
-
 class MarketComparisonScreen extends StatefulWidget {
   const MarketComparisonScreen({Key? key}) : super(key: key);
 
@@ -18,47 +17,47 @@ class MarketComparisonScreen extends StatefulWidget {
 
 class _MarketComparisonScreenState extends State<MarketComparisonScreen> {
   final MarketService _marketService = MarketService();
-  
+
   bool _isLoading = true;
   bool _isSearching = false;
   String? _errorMessage;
-  
+
   // Selected values
   String? _selectedCommodity;
   String? _selectedState;
   late List<String> _selectedMarkets = [];
-  
+
   // Data lists
   List<String> _commodities = [];
   List<String> _availableMarkets = [];
-  
+
   // Comparison data
   List<MarketComparison> _comparisonData = [];
-  
+
   @override
   void initState() {
     super.initState();
     _loadInitialData();
   }
-  
+
   Future<void> _loadInitialData() async {
     try {
       setState(() {
         _isLoading = true;
         _errorMessage = null;
       });
-      
+
       // Get list of states
       final states = await _marketService.getStates();
-      
+
       // Set default state if available
       if (states.isNotEmpty) {
         _selectedState = states.first;
       }
-      
+
       // Get list of commodities
       final commodities = await _marketService.getCommodities();
-      
+
       setState(() {
         _commodities = commodities;
         _isLoading = false;
@@ -70,19 +69,20 @@ class _MarketComparisonScreenState extends State<MarketComparisonScreen> {
       });
     }
   }
-  
+
   Future<void> _loadMarketsForCommodity() async {
     if (_selectedCommodity == null) return;
-    
+
     try {
       setState(() {
         _isLoading = true;
         _selectedMarkets.clear();
         _availableMarkets = [];
       });
-      
-      final markets = await _marketService.getMarketsForCommodity(_selectedCommodity!);
-      
+
+      final markets =
+          await _marketService.getMarketsForCommodity(_selectedCommodity!);
+
       setState(() {
         _availableMarkets = markets;
         _isLoading = false;
@@ -94,7 +94,7 @@ class _MarketComparisonScreenState extends State<MarketComparisonScreen> {
       });
     }
   }
-  
+
   Future<void> _compareMarkets() async {
     if (_selectedCommodity == null || _selectedMarkets.length < 2) {
       setState(() {
@@ -102,19 +102,19 @@ class _MarketComparisonScreenState extends State<MarketComparisonScreen> {
       });
       return;
     }
-    
+
     try {
       setState(() {
         _isSearching = true;
         _errorMessage = null;
       });
-      
+
       final comparison = await _marketService.compareMarkets(
         commodity: _selectedCommodity!,
         markets: _selectedMarkets,
         state: _selectedState!, // Added missing required parameter
       );
-      
+
       setState(() {
         _comparisonData = comparison;
         _isSearching = false;
@@ -142,7 +142,7 @@ class _MarketComparisonScreenState extends State<MarketComparisonScreen> {
           : _buildBody(),
     );
   }
-  
+
   Widget _buildBody() {
     return SingleChildScrollView(
       child: Column(
@@ -150,7 +150,7 @@ class _MarketComparisonScreenState extends State<MarketComparisonScreen> {
         children: [
           // Selection card
           _buildSelectionCard(),
-          
+
           // Error message if any
           if (_errorMessage != null)
             Padding(
@@ -180,7 +180,7 @@ class _MarketComparisonScreenState extends State<MarketComparisonScreen> {
                 ),
               ),
             ),
-          
+
           // Results
           if (_isSearching)
             const Center(
@@ -197,7 +197,7 @@ class _MarketComparisonScreenState extends State<MarketComparisonScreen> {
       ),
     );
   }
-  
+
   Widget _buildSelectionCard() {
     return Card(
       margin: const EdgeInsets.all(16.0),
@@ -210,7 +210,7 @@ class _MarketComparisonScreenState extends State<MarketComparisonScreen> {
           children: [
             Text('Compare Commodity Prices', style: AppTextStyles.subtitle),
             const SizedBox(height: 16),
-            
+
             // Commodity dropdown
             DropdownButtonFormField<String>(
               decoration: InputDecoration(
@@ -241,7 +241,7 @@ class _MarketComparisonScreenState extends State<MarketComparisonScreen> {
               hint: const Text('Select a commodity'),
             ),
             const SizedBox(height: 24),
-            
+
             // Markets section
             if (_availableMarkets.isNotEmpty) ...[
               Text('Select Markets to Compare', style: AppTextStyles.subtitle),
@@ -251,10 +251,12 @@ class _MarketComparisonScreenState extends State<MarketComparisonScreen> {
                 style: AppTextStyles.bodySmall.copyWith(color: Colors.grey),
               ),
               const SizedBox(height: 12),
-              
+
               // Markets selection
               MultiSelectDialogField(
-                items: _availableMarkets.map((market) => MultiSelectItem(market, market)).toList(),
+                items: _availableMarkets
+                    .map((market) => MultiSelectItem(market, market))
+                    .toList(),
                 title: const Text("Markets"),
                 selectedColor: AppColors.primary,
                 decoration: BoxDecoration(
@@ -285,12 +287,13 @@ class _MarketComparisonScreenState extends State<MarketComparisonScreen> {
               ),
 
               const SizedBox(height: 24),
-              
+
               // Compare button
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: _selectedMarkets.length >= 2 ? _compareMarkets : null,
+                  onPressed:
+                      _selectedMarkets.length >= 2 ? _compareMarkets : null,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
                     padding: const EdgeInsets.symmetric(vertical: 12),
@@ -312,13 +315,13 @@ class _MarketComparisonScreenState extends State<MarketComparisonScreen> {
         ),
       ),
     ).animate().fadeIn(duration: 300.ms).slideY(
-      begin: 0.1,
-      end: 0,
-      duration: 300.ms,
-      curve: Curves.easeOutQuad,
-    );
+          begin: 0.1,
+          end: 0,
+          duration: 300.ms,
+          curve: Curves.easeOutQuad,
+        );
   }
-  
+
   Widget _buildComparisonResults() {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
@@ -335,31 +338,31 @@ class _MarketComparisonScreenState extends State<MarketComparisonScreen> {
             style: AppTextStyles.bodySmall.copyWith(color: Colors.grey),
           ),
           const SizedBox(height: 24),
-          
+
           // Price comparison chart
           _buildPriceChart(),
           const SizedBox(height: 24),
-          
+
           // Comparison table
           _buildComparisonTable(),
-          
+
           // Best market recommendation
           const SizedBox(height: 24),
           _buildBestMarketCard(),
         ],
       ),
     ).animate().fadeIn(duration: 500.ms).slideY(
-      begin: 0.1,
-      end: 0,
-      duration: 500.ms,
-      curve: Curves.easeOutQuad,
-    );
+          begin: 0.1,
+          end: 0,
+          duration: 500.ms,
+          curve: Curves.easeOutQuad,
+        );
   }
-  
+
   Widget _buildPriceChart() {
     // Filter out markets with no data
     final marketsWithData = _comparisonData.where((m) => m.hasData).toList();
-    
+
     // If no markets have data, show a message instead of a chart
     if (marketsWithData.isEmpty) {
       return Container(
@@ -398,12 +401,12 @@ class _MarketComparisonScreenState extends State<MarketComparisonScreen> {
         ),
       );
     }
-    
+
     // Calculate min and max prices for Y axis
     final prices = marketsWithData.map((e) => e.modalPrice).toList();
     final minPrice = prices.reduce((a, b) => a < b ? a : b) * 0.9;
     final maxPrice = prices.reduce((a, b) => a > b ? a : b) * 1.1;
-    
+
     return Container(
       height: 250,
       decoration: BoxDecoration(
@@ -537,7 +540,7 @@ class _MarketComparisonScreenState extends State<MarketComparisonScreen> {
       ),
     );
   }
-  
+
   Color _getBarColor(int index) {
     final colors = [
       AppColors.primary,
@@ -549,10 +552,10 @@ class _MarketComparisonScreenState extends State<MarketComparisonScreen> {
       Colors.orange.shade600,
       Colors.pink.shade300,
     ];
-    
+
     return colors[index % colors.length];
   }
-  
+
   Widget _buildComparisonTable() {
     return Card(
       elevation: 2,
@@ -564,7 +567,7 @@ class _MarketComparisonScreenState extends State<MarketComparisonScreen> {
           children: [
             Text('Detailed Comparison', style: AppTextStyles.subtitle),
             const SizedBox(height: 16),
-            
+
             // Table header
             Container(
               padding: const EdgeInsets.symmetric(vertical: 8),
@@ -614,7 +617,7 @@ class _MarketComparisonScreenState extends State<MarketComparisonScreen> {
                 ],
               ),
             ),
-            
+
             // Table rows
             ...List.generate(
               _comparisonData.length,
@@ -625,7 +628,7 @@ class _MarketComparisonScreenState extends State<MarketComparisonScreen> {
       ),
     );
   }
-  
+
   Widget _buildTableRow(MarketComparison market, int index) {
     // If market has no data, display a special row
     if (!market.hasData) {
@@ -678,23 +681,23 @@ class _MarketComparisonScreenState extends State<MarketComparisonScreen> {
         ),
       );
     }
-    
+
     // For markets with data, sort by modal price
     final marketsWithData = _comparisonData.where((m) => m.hasData).toList();
     marketsWithData.sort((a, b) => a.modalPrice.compareTo(b.modalPrice));
-    
+
     // Find the index of the current market among markets with data
     int sortedIndex = marketsWithData.indexOf(market);
     bool isLowest = sortedIndex == 0;
     bool isHighest = sortedIndex == marketsWithData.length - 1;
-    
+
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12),
       decoration: BoxDecoration(
-        color: isLowest 
-            ? Colors.green.shade50 
-            : isHighest 
-                ? Colors.red.shade50 
+        color: isLowest
+            ? Colors.green.shade50
+            : isHighest
+                ? Colors.red.shade50
                 : null,
         border: Border(
           bottom: BorderSide(color: Colors.grey.shade200, width: 1),
@@ -753,10 +756,10 @@ class _MarketComparisonScreenState extends State<MarketComparisonScreen> {
               '₹${market.modalPrice.toStringAsFixed(0)}',
               style: AppTextStyles.bodyMedium.copyWith(
                 fontWeight: FontWeight.bold,
-                color: isLowest 
-                    ? Colors.green 
-                    : isHighest 
-                        ? Colors.red 
+                color: isLowest
+                    ? Colors.green
+                    : isHighest
+                        ? Colors.red
                         : null,
               ),
               textAlign: TextAlign.center,
@@ -766,11 +769,11 @@ class _MarketComparisonScreenState extends State<MarketComparisonScreen> {
       ),
     );
   }
-  
+
   Widget _buildBestMarketCard() {
     // Filter out markets with no data
     final marketsWithData = _comparisonData.where((m) => m.hasData).toList();
-    
+
     // If no markets have data, show a special card
     if (marketsWithData.isEmpty) {
       return Card(
@@ -805,22 +808,24 @@ class _MarketComparisonScreenState extends State<MarketComparisonScreen> {
               const SizedBox(height: 16),
               Text(
                 'Try selecting different markets or check back later for updated price information.',
-                style: AppTextStyles.bodySmall.copyWith(color: Colors.grey.shade600),
+                style: AppTextStyles.bodySmall
+                    .copyWith(color: Colors.grey.shade600),
               ),
             ],
           ),
         ),
       );
     }
-    
+
     // Sort the comparisons by modal price to find the highest (best for selling)
     marketsWithData.sort((a, b) => b.modalPrice.compareTo(a.modalPrice));
     final highestMarket = marketsWithData.first;
     final lowestMarket = marketsWithData.last;
-    
+
     final priceDifference = highestMarket.modalPrice - lowestMarket.modalPrice;
-    final percentageDifference = (priceDifference / lowestMarket.modalPrice) * 100;
-    
+    final percentageDifference =
+        (priceDifference / lowestMarket.modalPrice) * 100;
+
     return Card(
       elevation: 2,
       color: Colors.amber.shade50,
@@ -960,7 +965,8 @@ class _MarketComparisonScreenState extends State<MarketComparisonScreen> {
                             ),
                           ),
                           const TextSpan(
-                            text: ') more by selling at the highest-priced market!',
+                            text:
+                                ') more by selling at the highest-priced market!',
                           ),
                         ],
                       ),
@@ -974,7 +980,7 @@ class _MarketComparisonScreenState extends State<MarketComparisonScreen> {
       ),
     );
   }
-  
+
   Widget _buildNoDataView() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 32.0),

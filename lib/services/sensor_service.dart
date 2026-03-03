@@ -9,7 +9,8 @@ class SensorService {
 
   /// Fetch the latest sensor data (most recent row)
   static Future<Map<String, dynamic>?> fetchLatestSensorData() async {
-    final url = Uri.parse('$_supabaseUrl/rest/v1/$_table?order=created_at.desc&limit=1');
+    final url = Uri.parse(
+        '$_supabaseUrl/rest/v1/$_table?order=created_at.desc&limit=1');
     final response = await http.get(
       url,
       headers: {
@@ -29,8 +30,10 @@ class SensorService {
   }
 
   /// Fetch the last [count] sensor data records (for history/graph)
-  static Future<List<Map<String, dynamic>>> fetchSensorHistory({int count = 10}) async {
-    final url = Uri.parse('$_supabaseUrl/rest/v1/$_table?order=created_at.desc&limit=$count');
+  static Future<List<Map<String, dynamic>>> fetchSensorHistory(
+      {int count = 10}) async {
+    final url = Uri.parse(
+        '$_supabaseUrl/rest/v1/$_table?order=created_at.desc&limit=$count');
     final response = await http.get(
       url,
       headers: {

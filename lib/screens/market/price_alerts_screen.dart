@@ -33,7 +33,8 @@ class _PriceAlertsScreenState extends State<PriceAlertsScreen> {
   @override
   void initState() {
     super.initState();
-    _commodityController = TextEditingController(text: widget.initialCommodity ?? '');
+    _commodityController =
+        TextEditingController(text: widget.initialCommodity ?? '');
     _selectedState = widget.initialState;
     _selectedDistrict = widget.initialDistrict;
     _selectedMarket = widget.initialMarket;
@@ -43,13 +44,15 @@ class _PriceAlertsScreenState extends State<PriceAlertsScreen> {
       // Ensure selected state is valid and exists in the list
       if (_selectedState != null && _states.contains(_selectedState)) {
         _loadDistricts().then((_) {
-          if (_selectedDistrict != null && _districts.contains(_selectedDistrict)) {
+          if (_selectedDistrict != null &&
+              _districts.contains(_selectedDistrict)) {
             _loadMarkets();
           }
         });
       }
     });
   }
+
   final MarketService _marketService = MarketService();
 
   bool _isLoading = true;
@@ -67,7 +70,6 @@ class _PriceAlertsScreenState extends State<PriceAlertsScreen> {
   List<String> _states = [];
   List<String> _districts = [];
   List<String> _markets = [];
-
 
   @override
   void dispose() {
@@ -126,13 +128,12 @@ class _PriceAlertsScreenState extends State<PriceAlertsScreen> {
         _districts = districts;
 
         // Only reset district if it wasn't pre-selected
-        if (_selectedDistrict == null || !_districts.contains(_selectedDistrict)) {
+        if (_selectedDistrict == null ||
+            !_districts.contains(_selectedDistrict)) {
           _selectedDistrict = null;
           _markets = [];
           _selectedMarket = null;
         }
-
-
       });
     } catch (e) {
       print('Error loading districts: $e');
@@ -604,7 +605,8 @@ class _PriceAlertsScreenState extends State<PriceAlertsScreen> {
 
                 // State dropdown
                 DropdownButtonFormField<String>(
-                  value: _states.contains(_selectedState) ? _selectedState : null,
+                  value:
+                      _states.contains(_selectedState) ? _selectedState : null,
                   items: _states.map((state) {
                     return DropdownMenuItem<String>(
                       value: state,

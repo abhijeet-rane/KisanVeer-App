@@ -103,7 +103,7 @@ class OrderConfirmationScreen extends StatelessWidget {
 
   Widget _buildOrderDetails() {
     final dateFormat = DateFormat('dd MMM yyyy, hh:mm a');
-    
+
     return Card(
       elevation: 4,
       shape: RoundedRectangleBorder(
@@ -126,7 +126,8 @@ class OrderConfirmationScreen extends StatelessWidget {
             _buildInfoRow('Date', dateFormat.format(order.createdAt)),
             _buildInfoRow('Payment Method', order.paymentMethod ?? 'Online'),
             _buildInfoRow('Order Items', '${order.items?.length ?? 0} items'),
-            _buildInfoRow('Total Amount', '₹${order.totalAmount.toStringAsFixed(2)}'),
+            _buildInfoRow(
+                'Total Amount', '₹${order.totalAmount.toStringAsFixed(2)}'),
             _buildInfoRow('Status', _getStatusText(order.status)),
           ],
         ),
@@ -257,7 +258,8 @@ class OrderConfirmationScreen extends StatelessWidget {
   void _navigateToMarketplace(BuildContext context) {
     Navigator.of(context).pushAndRemoveUntil(
       MaterialPageRoute(
-        builder: (context) => const MarketplaceScreen(initialTabIndex: 0), // 0 for Buy tab
+        builder: (context) =>
+            const MarketplaceScreen(initialTabIndex: 0), // 0 for Buy tab
       ),
       (route) => false,
     );

@@ -40,7 +40,7 @@ class TransactionModel {
       updatedAt: DateTime.now(),
     );
   }
-  
+
   // Convert from JSON for local storage
   factory TransactionModel.fromJson(Map<String, dynamic> json) {
     return TransactionModel(
@@ -50,16 +50,15 @@ class TransactionModel {
       amount: (json['amount'] ?? 0.0).toDouble(),
       type: json['type'] ?? 'expense',
       category: json['category'] ?? 'other',
-      date: json['date'] != null 
-          ? DateTime.parse(json['date']) 
-          : DateTime.now(),
+      date:
+          json['date'] != null ? DateTime.parse(json['date']) : DateTime.now(),
       userId: json['userId'] ?? '',
       attachmentUrl: json['attachmentUrl'] ?? '',
-      createdAt: json['createdAt'] != null 
-          ? DateTime.parse(json['createdAt']) 
+      createdAt: json['createdAt'] != null
+          ? DateTime.parse(json['createdAt'])
           : DateTime.now(),
-      updatedAt: json['updatedAt'] != null 
-          ? DateTime.parse(json['updatedAt']) 
+      updatedAt: json['updatedAt'] != null
+          ? DateTime.parse(json['updatedAt'])
           : DateTime.now(),
     );
   }

@@ -60,20 +60,18 @@ class PostModel {
       userName: json['userName'] ?? '',
       userPhotoUrl: json['userPhotoUrl'] ?? '',
       category: json['category'] ?? 'general',
-      imageUrls: json['imageUrls'] != null 
-          ? List<String>.from(json['imageUrls']) 
-          : [],
+      imageUrls:
+          json['imageUrls'] != null ? List<String>.from(json['imageUrls']) : [],
       likeCount: json['likeCount'] ?? 0,
       commentCount: json['commentCount'] ?? 0,
       viewCount: json['viewCount'] ?? 0,
-      likedBy: json['likedBy'] != null 
-          ? List<String>.from(json['likedBy']) 
-          : [],
-      createdAt: json['createdAt'] != null 
-          ? DateTime.parse(json['createdAt']) 
+      likedBy:
+          json['likedBy'] != null ? List<String>.from(json['likedBy']) : [],
+      createdAt: json['createdAt'] != null
+          ? DateTime.parse(json['createdAt'])
           : DateTime.now(),
-      updatedAt: json['updatedAt'] != null 
-          ? DateTime.parse(json['updatedAt']) 
+      updatedAt: json['updatedAt'] != null
+          ? DateTime.parse(json['updatedAt'])
           : DateTime.now(),
     );
   }

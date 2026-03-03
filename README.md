@@ -10,6 +10,7 @@ A comprehensive Flutter mobile application that connects farmers to markets, wea
 [![Dart](https://img.shields.io/badge/Dart-3.x-0175C2?logo=dart)](https://dart.dev)
 [![Supabase](https://img.shields.io/badge/Supabase-Backend-3ECF8E?logo=supabase)](https://supabase.com)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Download APK](https://img.shields.io/github/v/release/Abhijit-B-7/KisanVeer-App?label=Download%20APK&logo=android&color=brightgreen)](https://github.com/Abhijit-B-7/KisanVeer-App/releases/latest)
 
 </div>
 

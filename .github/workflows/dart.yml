@@ -20,6 +20,11 @@ jobs:
           channel: stable
           cache: true
 
+      - name: Create .env file
+        run: |
+          echo "SUPABASE_URL=https://placeholder.supabase.co" > .env
+          echo "SUPABASE_ANON_KEY=placeholder_key" >> .env
+
       - name: Install dependencies
         run: flutter pub get
 

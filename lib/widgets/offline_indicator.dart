@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:kisan_veer/constants/app_colors.dart';
 import 'package:kisan_veer/services/connectivity_service.dart';
 import 'package:kisan_veer/services/sync_manager.dart';
 

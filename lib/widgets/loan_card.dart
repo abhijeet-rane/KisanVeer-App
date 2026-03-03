@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:kisan_veer/models/financial_models.dart';
 import 'package:kisan_veer/screens/finance/loan_details_screen.dart';
 import 'package:kisan_veer/screens/finance/loan_payment_screen.dart';
-import 'package:kisan_veer/constants/app_colors.dart';
 
 class LoanCard extends StatelessWidget {
   final Loan loan;

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+// Financial data models
 
 class FinancialTransaction {
   final String id;

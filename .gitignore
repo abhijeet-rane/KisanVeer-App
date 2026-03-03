@@ -74,8 +74,11 @@ app.*.map.json
 # Linux
 /linux/flutter/ephemeral/
 
-# Web
-/web/favicon.png
+# Supabase
+supabase/.temp/
+supabase/functions/.env
+supabase/functions/*/node_modules/
+favicon.png
 
 # Misc
 .atom/

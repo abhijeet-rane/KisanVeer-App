@@ -111,19 +111,25 @@ assets/                        # Images, icons, fonts, animations
 - Android Studio / VS Code
 - A [Supabase](https://supabase.com) project
 
-### Setup
+### 🔑 Security & Environment
 
-1. **Clone the repository**
+This project uses **GitHub Actions Secrets** to securely build the application without exposing sensitive keys. To fork and build this project, add these secrets to your repository settings:
+
+- `SUPABASE_URL`: Your Supabase Project URL
+- `SUPABASE_ANON_KEY`: Your Supabase Anonymous Key
+
+### 🛠️ Local Development Setup
+
+1. **Clone the repository:**
    ```bash
-   git clone https://github.com/abhijeet-rane/KisanVeer-App.git
-   cd KisanVeer-App
+   git clone https://github.com/Abhijit-B-7/KisanVeer-App.git
    ```
 
-2. **Create environment file**
-   Create a `.env` file in the project root:
+2. **Configure Environment:**
+   Create a `.env` file in the root directory:
    ```env
-   SUPABASE_URL=your_supabase_url
-   SUPABASE_ANON_KEY=your_supabase_anon_key
+   SUPABASE_URL=your_project_url
+   SUPABASE_ANON_KEY=your_anon_key
    ```
 
 3. **Install dependencies**

@@ -3,8 +3,8 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js'
 
 serve(async (req) => {
     const supabase = createClient(
-        Deno.env.get('https://wmqpftdxdduhbdsjybzu.supabase.co') ?? '',
-        Deno.env.get('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndtcXBmdGR4ZGR1aGJkc2p5Ynp1Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0MjA0NTEzNSwiZXhwIjoyMDU3NjIxMTM1fQ.tz5vPpc0EyR057ZpatIjDmM85Wt9k58_EZX_0w1bp5I') ?? ''
+        Deno.env.get('SUPABASE_URL') ?? '',
+        Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
     const { event, session } = await req.json();

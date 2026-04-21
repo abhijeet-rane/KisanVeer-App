@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:kisan_veer/models/user_model.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:kisan_veer/services/analytics_service.dart';
 import 'package:kisan_veer/utils/app_logger.dart';
 import 'package:kisan_veer/services/secure_storage_service.dart';
 
@@ -29,10 +30,12 @@ class AuthService {
       if (event == AuthChangeEvent.signedIn && session != null) {
         // Save session for biometric on ANY sign in
         _saveSessionForBiometric(session);
+        AnalyticsService().setUserId(session.user.id);
         AppLogger.d('Session saved on auth state change', tag: 'Auth');
       } else if (event == AuthChangeEvent.signedOut) {
         // Clear tokens on sign out
         _secureStorage.clearAuthTokens();
+        AnalyticsService().clearUser();
         AppLogger.d('Tokens cleared on sign out', tag: 'Auth');
       }
     });
@@ -84,6 +87,8 @@ class AuthService {
         'crops': [],
         'updated_at': DateTime.now().toIso8601String(),
       });
+
+      AnalyticsService().logSignUp('email');
     } catch (e) {
       throw _handleAuthException(e);
     }
@@ -132,6 +137,8 @@ class AuthService {
       if (response.session != null) {
         await _saveSessionForBiometric(response.session!);
       }
+
+      AnalyticsService().logLogin('email');
     } catch (e) {
       throw _handleAuthException(e);
     }

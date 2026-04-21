@@ -200,9 +200,9 @@ class Community {
       name: json['name'] as String? ?? 'Unknown',
       description: json['description'] as String? ?? '',
       admin: admin ??
-          (adminJson != null && adminJson is Map<String, dynamic>
+          (adminJson != null
               ? UserProfile.fromJson(adminJson)
-              : UserProfile.defaultProfile()), // Use default if null
+              : UserProfile.defaultProfile()),
       isPrivate: json['is_private'] as bool? ?? false,
       memberCount: json['member_count'] as int? ?? 0,
       postCount: json['post_count'] as int? ?? 0,

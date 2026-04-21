@@ -84,16 +84,12 @@ class _AddProductScreenState extends State<AddProductScreen> {
           description = "[ORGANIC] $description";
         }
 
-        // Try to upload images - if this fails, we'll still create the product with empty image URLs
+        // Upload images first; abort product creation if this fails
+        // so we never persist a product with broken/missing image URLs.
         List<String> imageUrls = [];
-        try {
-          if (_selectedImages.isNotEmpty) {
-            imageUrls =
-                await _marketplaceService.uploadProductImages(_selectedImages);
-          }
-        } catch (imageError) {
-          print('Warning: Image upload failed: $imageError');
-          // Continue with product creation anyway
+        if (_selectedImages.isNotEmpty) {
+          imageUrls =
+              await _marketplaceService.uploadProductImages(_selectedImages);
         }
 
         // Add the product to database

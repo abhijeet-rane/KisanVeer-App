@@ -5,6 +5,7 @@ import 'package:kisan_veer/constants/app_colors.dart';
 import 'package:kisan_veer/models/marketplace_models.dart';
 import 'package:kisan_veer/models/user_models.dart';
 import 'package:kisan_veer/screens/marketplace/cart_screen.dart';
+import 'package:kisan_veer/services/analytics_service.dart';
 import 'package:kisan_veer/services/marketplace_service.dart';
 import 'package:kisan_veer/widgets/custom_button.dart';
 import 'package:kisan_veer/widgets/marketplace/product_image_gallery.dart';
@@ -157,6 +158,12 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
 
     try {
       await _marketplaceService.addToCart(product.id, _quantity);
+
+      AnalyticsService().logAddToCart(
+        product.id,
+        product.price,
+        quantity: _quantity,
+      );
 
       await _loadCartCount();
 
@@ -686,8 +693,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    seller?.displayName != null &&
-                            seller!.displayName!.isNotEmpty
+                    (seller?.displayName?.isNotEmpty ?? false)
                         ? seller!.displayName!
                         : 'Seller',
                     style: const TextStyle(
@@ -697,7 +703,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    seller?.location != null && seller!.location!.isNotEmpty
+                    (seller?.location?.isNotEmpty ?? false)
                         ? seller!.location!
                         : 'Location not available',
                     style: TextStyle(

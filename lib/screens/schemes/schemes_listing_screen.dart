@@ -266,14 +266,7 @@ class _SchemesListingScreenState extends State<SchemesListingScreen> {
                         : ListView.builder(
                             itemCount: _schemes.length,
                             itemBuilder: (context, index) {
-                              final scheme = (_schemes.isNotEmpty &&
-                                      index < _schemes.length &&
-                                      _schemes[index] != null)
-                                  ? _schemes[index]
-                                  : null;
-                              if (scheme == null) {
-                                return SizedBox.shrink();
-                              }
+                              final scheme = _schemes[index];
                               return Card(
                                 margin: EdgeInsets.symmetric(
                                     horizontal: 16, vertical: 8),
@@ -281,18 +274,17 @@ class _SchemesListingScreenState extends State<SchemesListingScreen> {
                                 child: ListTile(
                                   isThreeLine: true,
                                   title: Text(
-                                    scheme.schemeName ?? '',
+                                    scheme.schemeName,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                   subtitle: Text(
-                                    scheme.departmentName ?? '',
+                                    scheme.departmentName,
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                   trailing: SizedBox(
-                                    width:
-                                        120, // Set a reasonable width for the button
+                                    width: 120,
                                     child: ElevatedButton(
                                       child: Text('View Details'),
                                       onPressed: () {
@@ -301,7 +293,7 @@ class _SchemesListingScreenState extends State<SchemesListingScreen> {
                                           MaterialPageRoute(
                                             builder: (context) =>
                                                 SchemeDetailsScreen(
-                                                    schemeId: scheme.id ?? ''),
+                                                    schemeId: scheme.id),
                                           ),
                                         );
                                       },

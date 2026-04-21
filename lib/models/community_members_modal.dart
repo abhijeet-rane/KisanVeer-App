@@ -27,14 +27,13 @@ class CommunityMembersModal extends StatelessWidget {
             child: ListView.builder(
               itemCount: members.length,
               itemBuilder: (context, index) {
+                final photoUrl = members[index].photoUrl;
+                final hasPhoto = photoUrl.isNotEmpty;
                 return ListTile(
                   leading: CircleAvatar(
-                    backgroundImage: members[index].photoUrl != null
-                        ? NetworkImage(members[index].photoUrl!)
-                        : null,
-                    child: members[index].photoUrl == null
-                        ? const Icon(Icons.person)
-                        : null,
+                    backgroundImage:
+                        hasPhoto ? NetworkImage(photoUrl) : null,
+                    child: hasPhoto ? null : const Icon(Icons.person),
                   ),
                   title: Text(
                     members[index].name,

@@ -149,9 +149,9 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                   subtitle: Text(timeago.format(widget.post.createdAt)),
-                  trailing: widget.post.category != null
+                  trailing: widget.post.category.isNotEmpty
                       ? Chip(
-                          label: Text(widget.post.category!),
+                          label: Text(widget.post.category),
                           backgroundColor:
                               Theme.of(context).colorScheme.secondaryContainer,
                           labelStyle: TextStyle(

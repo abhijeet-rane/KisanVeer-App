@@ -73,10 +73,10 @@ class PostCard extends StatelessWidget {
                       onPressed: onPin,
                       tooltip: post.isPinned ? 'Unpin post' : 'Pin post',
                     ),
-                  if (post.category != null)
+                  if (post.category.isNotEmpty)
                     Chip(
                       label: Text(
-                        post.category!,
+                        post.category,
                         style: const TextStyle(fontSize: 12),
                       ),
                       padding: EdgeInsets.zero,

@@ -592,10 +592,9 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
   }
 
   Widget _buildShippingDetails() {
-    if (_order == null || _order!.address == null) {
+    if (_order == null) {
       return const SizedBox();
     }
-    // Removed unused local variable 'address' as all references use _order!.address directly.
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(

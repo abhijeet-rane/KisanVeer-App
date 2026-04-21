@@ -1,42 +1,62 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:kisan_veer/utils/app_logger.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-/// Analytics service for tracking user events and behavior
-/// Works without Firebase - stores locally and syncs with Supabase
+/// Analytics service for tracking user events and behavior.
+/// Events are queued in memory and batch-inserted into the Supabase
+/// `analytics_events` table.
 class AnalyticsService {
-  // Event queue for batch sending
+  final SupabaseClient _supabase = Supabase.instance.client;
+
+  /// In-memory queue that is drained by [flushEvents].
   final List<AnalyticsEvent> _eventQueue = [];
 
-  // Max batch size before auto-flush
+  /// Auto-flush when the queue hits this size.
   static const int _maxQueueSize = 50;
 
-  // User properties
-  String? _userId;
-  Map<String, dynamic> _userProperties = {};
+  /// Periodic flush cadence so small event batches still reach the backend.
+  static const Duration _flushInterval = Duration(minutes: 2);
 
-  // Singleton pattern
+  Timer? _flushTimer;
+  String? _userId;
+  final Map<String, dynamic> _userProperties = {};
+
+  // Singleton
   static final AnalyticsService _instance = AnalyticsService._internal();
   factory AnalyticsService() => _instance;
   AnalyticsService._internal();
 
-  /// Initialize analytics with user info
+  /// Wire the service at app startup. Safe to call multiple times.
   void initialize({String? userId}) {
     _userId = userId;
+    _flushTimer ??= Timer.periodic(_flushInterval, (_) => flushEvents());
     AppLogger.d('Analytics initialized for user: $userId', tag: 'Analytics');
   }
 
-  /// Set user ID (call after login)
+  /// Release the periodic flush timer (e.g. on app teardown / logout).
+  void dispose() {
+    _flushTimer?.cancel();
+    _flushTimer = null;
+  }
+
+  /// Call after login.
   void setUserId(String userId) {
     _userId = userId;
     _logEvent('user_identified', {'user_id': userId});
   }
 
-  /// Set user properties
+  /// Call after logout.
+  void clearUser() {
+    _userId = null;
+    _userProperties.clear();
+  }
+
   void setUserProperties(Map<String, dynamic> properties) {
     _userProperties.addAll(properties);
   }
 
-  /// Log screen view
   void logScreenView(String screenName, {Map<String, dynamic>? parameters}) {
     _logEvent('screen_view', {
       'screen_name': screenName,
@@ -44,7 +64,6 @@ class AnalyticsService {
     });
   }
 
-  /// Log button click
   void logButtonClick(String buttonName,
       {String? screenName, Map<String, dynamic>? parameters}) {
     _logEvent('button_click', {
@@ -54,7 +73,6 @@ class AnalyticsService {
     });
   }
 
-  /// Log search
   void logSearch(String searchTerm, {int resultCount = 0}) {
     _logEvent('search', {
       'search_term': searchTerm,
@@ -62,7 +80,6 @@ class AnalyticsService {
     });
   }
 
-  /// Log add to cart
   void logAddToCart(String productId, double price, {int quantity = 1}) {
     _logEvent('add_to_cart', {
       'product_id': productId,
@@ -72,7 +89,6 @@ class AnalyticsService {
     });
   }
 
-  /// Log purchase
   void logPurchase(String orderId, double totalAmount,
       {List<String>? productIds}) {
     _logEvent('purchase', {
@@ -83,60 +99,59 @@ class AnalyticsService {
     });
   }
 
-  /// Log sign up
   void logSignUp(String method) {
     _logEvent('sign_up', {'method': method});
   }
 
-  /// Log login
   void logLogin(String method) {
     _logEvent('login', {'method': method});
   }
 
-  /// Log feature usage
-  void logFeatureUsage(String featureName, {Map<String, dynamic>? parameters}) {
+  void logFeatureUsage(String featureName,
+      {Map<String, dynamic>? parameters}) {
     _logEvent('feature_usage', {
       'feature_name': featureName,
       ...?parameters,
     });
   }
 
-  /// Log error
   void logError(String errorType, String message, {StackTrace? stackTrace}) {
     _logEvent('error', {
       'error_type': errorType,
       'message': message,
       if (stackTrace != null)
-        'stack_trace': stackTrace.toString().substring(0, 500),
+        'stack_trace': stackTrace.toString().substring(
+              0,
+              stackTrace.toString().length > 500
+                  ? 500
+                  : stackTrace.toString().length,
+            ),
     });
   }
 
-  /// Core event logging
   void _logEvent(String eventName, Map<String, dynamic> parameters) {
     final event = AnalyticsEvent(
       name: eventName,
       parameters: {
         ...parameters,
-        'timestamp': DateTime.now().toIso8601String(),
-        if (_userId != null) 'user_id': _userId,
+        if (_userProperties.isNotEmpty) 'user_properties': _userProperties,
       },
+      userId: _userId,
       timestamp: DateTime.now(),
     );
 
     _eventQueue.add(event);
 
-    // Debug logging
     if (kDebugMode) {
-      AppLogger.d('Event: $eventName', tag: 'Analytics');
+      AppLogger.d('Event queued: $eventName', tag: 'Analytics');
     }
 
-    // Auto-flush if queue is full
     if (_eventQueue.length >= _maxQueueSize) {
       flushEvents();
     }
   }
 
-  /// Flush events to Supabase
+  /// Drain the queue into Supabase. Failed sends are re-queued.
   Future<void> flushEvents() async {
     if (_eventQueue.isEmpty) return;
 
@@ -144,52 +159,50 @@ class AnalyticsService {
     _eventQueue.clear();
 
     try {
-      // In production, send to Supabase analytics table
-      // For now, just log in debug mode
-      if (kDebugMode) {
-        AppLogger.d('Flushing ${eventsToSend.length} events', tag: 'Analytics');
-      }
+      await _supabase
+          .from('analytics_events')
+          .insert(eventsToSend.map((e) => e.toRow()).toList());
 
-      // TODO: Implement Supabase batch insert
-      // await _supabase.from('analytics_events').insert(
-      //   eventsToSend.map((e) => e.toMap()).toList()
-      // );
-    } catch (e) {
-      // Re-add failed events to queue
+      if (kDebugMode) {
+        AppLogger.d('Flushed ${eventsToSend.length} events',
+            tag: 'Analytics');
+      }
+    } catch (e, s) {
+      // Re-queue so the next flush retries them.
       _eventQueue.insertAll(0, eventsToSend);
-      AppLogger.e('Failed to flush analytics', tag: 'Analytics', error: e);
+      AppLogger.e('Failed to flush analytics',
+          tag: 'Analytics', error: e, stackTrace: s);
     }
   }
 
-  /// Get event count in queue
   int get pendingEventCount => _eventQueue.length;
 
-  /// Clear all queued events
-  void clearEvents() {
-    _eventQueue.clear();
-  }
+  void clearEvents() => _eventQueue.clear();
 }
 
-/// Analytics event model
 class AnalyticsEvent {
   final String name;
   final Map<String, dynamic> parameters;
+  final String? userId;
   final DateTime timestamp;
 
   AnalyticsEvent({
     required this.name,
     required this.parameters,
     required this.timestamp,
+    this.userId,
   });
 
-  Map<String, dynamic> toMap() => {
+  /// Shape matches the `analytics_events` Supabase table.
+  Map<String, dynamic> toRow() => {
         'event_name': name,
         'parameters': parameters,
-        'timestamp': timestamp.toIso8601String(),
+        'user_id': userId,
+        'occurred_at': timestamp.toUtc().toIso8601String(),
       };
 }
 
-/// Common event names
+/// Common event-name constants so callers stay consistent.
 class AnalyticsEvents {
   static const String screenView = 'screen_view';
   static const String buttonClick = 'button_click';

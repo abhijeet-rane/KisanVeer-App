@@ -773,17 +773,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               style: AppTextStyles.bodyLarge
                                   .copyWith(fontWeight: FontWeight.bold),
                             ),
-                            if ((pinned.market != null &&
-                                pinned.market!.isNotEmpty))
+                            if (pinned.market != null &&
+                                pinned.market!.isNotEmpty)
                               Text(
                                 pinned.market!,
                                 style: AppTextStyles.bodySmall
                                     .copyWith(color: Colors.grey[700]),
                               ),
-                            if ((pinned.state != null &&
-                                pinned.state.isNotEmpty))
+                            if (pinned.state.isNotEmpty)
                               Text(
-                                pinned.state!,
+                                pinned.state,
                                 style: AppTextStyles.bodySmall
                                     .copyWith(color: Colors.grey[500]),
                               ),

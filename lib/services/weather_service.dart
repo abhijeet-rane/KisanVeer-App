@@ -7,6 +7,7 @@ import 'package:geocoding/geocoding.dart';
 import 'package:kisan_veer/services/cache_service.dart';
 import 'package:kisan_veer/services/weather_alert_service.dart';
 import 'package:kisan_veer/services/crop_advice_service.dart';
+import 'package:kisan_veer/utils/app_logger.dart';
 
 class WeatherService {
   final SupabaseClient _client = Supabase.instance.client;
@@ -48,16 +49,17 @@ class WeatherService {
           .from('secrets')
           .select('key_value')
           .eq('key_name', 'openweather_api_key')
-          .single(); // Ensures only one row is fetched
+          .maybeSingle();
 
-      if (response == null || response['key_value'] == null) {
-        throw Exception('API key not found in Supabase.');
+      final key = response?['key_value'] as String?;
+      if (key == null || key.isEmpty) {
+        throw Exception('Weather API key not found in Supabase secrets.');
       }
-
-      return response['key_value'];
-    } catch (e) {
-      print('Error getting API key: $e');
-      throw Exception('Failed to get API key');
+      return key;
+    } catch (e, s) {
+      AppLogger.e('Error getting weather API key',
+          tag: 'Weather', error: e, stackTrace: s);
+      throw Exception('Failed to get weather API key');
     }
   }
 

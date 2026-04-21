@@ -371,17 +371,16 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen>
                       fontWeight: FontWeight.w500,
                     ),
                   ),
-                  if (order.address != null)
-                    Flexible(
-                      child: Text(
-                        '${order.address!.city}, ${order.address!.state}',
-                        style: TextStyle(
-                          color: Colors.grey[700],
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                        textAlign: TextAlign.right,
+                  Flexible(
+                    child: Text(
+                      '${order.address.city}, ${order.address.state}',
+                      style: TextStyle(
+                        color: Colors.grey[700],
                       ),
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.right,
                     ),
+                  ),
                 ],
               ),
               const SizedBox(height: 16),

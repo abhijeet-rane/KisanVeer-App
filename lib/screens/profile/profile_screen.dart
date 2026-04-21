@@ -12,6 +12,7 @@ import 'package:kisan_veer/screens/profile/report_problem_screen.dart';
 import 'package:kisan_veer/screens/profile/terms_of_service_screen.dart';
 import 'package:kisan_veer/screens/profile/privacy_policy_screen.dart';
 import 'package:kisan_veer/services/auth_service.dart';
+import 'package:kisan_veer/utils/app_logger.dart';
 import 'package:kisan_veer/widgets/custom_button.dart';
 import 'package:kisan_veer/widgets/custom_card.dart';
 import 'package:kisan_veer/widgets/biometric_login_button.dart';
@@ -98,8 +99,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
-    _scrollController.dispose();
     _loadUserData();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadUserData() async {
@@ -109,18 +115,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     try {
       final user = await _authService.getCurrentUserModel();
-      if (user == null) {
-        print("❌ No user data retrieved. User might not be logged in.");
-      } else {
-        print("✅ User data retrieved: ${user.name}, ${user.email}");
-      }
-
       setState(() {
         _currentUser = user;
         _isLoading = false;
       });
     } catch (e) {
-      print('Error loading user data: $e');
+      AppLogger.e('Error loading user data', tag: 'Profile', error: e);
       setState(() {
         _isLoading = false;
       });
@@ -140,7 +140,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         );
       }
     } catch (e) {
-      print('Error signing out: $e');
+      AppLogger.e('Error signing out', tag: 'Profile', error: e);
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Error signing out: ${e.toString()}'),

@@ -180,11 +180,9 @@ class _MarketplaceScreenState extends State<MarketplaceScreen>
         .select('order_id')
         .eq('seller_id', userId);
     final pendingOrderIds = <String>{};
-    if (pendingOrdersResp != null && pendingOrdersResp is List) {
-      for (final item in pendingOrdersResp) {
-        final orderId = item['order_id']?.toString();
-        if (orderId != null) pendingOrderIds.add(orderId);
-      }
+    for (final item in pendingOrdersResp) {
+      final orderId = item['order_id']?.toString();
+      if (orderId != null) pendingOrderIds.add(orderId);
     }
     int pendingOrders = 0;
     if (pendingOrderIds.isNotEmpty) {
@@ -193,9 +191,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen>
           .select('id, status')
           .inFilter('id', pendingOrderIds.toList())
           .not('status', 'in', ['completed', 'cancelled']);
-      if (ordersResp != null && ordersResp is List) {
-        pendingOrders = ordersResp.length;
-      }
+      pendingOrders = ordersResp.length;
     }
     // Total Sales: sum order_items.total_price where seller_id=userId and parent order is delivered
     final completedOrderItemsResp = await Supabase.instance.client
@@ -203,21 +199,16 @@ class _MarketplaceScreenState extends State<MarketplaceScreen>
         .select('total_price, order_id')
         .eq('seller_id', userId);
     double totalSales = 0.0;
-    if (completedOrderItemsResp != null && completedOrderItemsResp is List) {
-      final deliveredOrderIdsResp = await Supabase.instance.client
-          .from('orders')
-          .select('id')
-          .eq('status', 'delivered');
-      final deliveredOrderIds = <String>{};
-      if (deliveredOrderIdsResp != null && deliveredOrderIdsResp is List) {
-        for (final row in deliveredOrderIdsResp) {
-          deliveredOrderIds.add(row['id'].toString());
-        }
-      }
-      for (final item in completedOrderItemsResp) {
-        if (deliveredOrderIds.contains(item['order_id'].toString())) {
-          totalSales += (item['total_price'] as num?)?.toDouble() ?? 0.0;
-        }
+    final deliveredOrderIdsResp = await Supabase.instance.client
+        .from('orders')
+        .select('id')
+        .eq('status', 'delivered');
+    final deliveredOrderIds = <String>{
+      for (final row in deliveredOrderIdsResp) row['id'].toString(),
+    };
+    for (final item in completedOrderItemsResp) {
+      if (deliveredOrderIds.contains(item['order_id'].toString())) {
+        totalSales += (item['total_price'] as num?)?.toDouble() ?? 0.0;
       }
     }
     setState(() {

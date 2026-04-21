@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:kisan_veer/constants/app_colors.dart';
 import 'package:kisan_veer/models/marketplace_models.dart';
 import 'package:kisan_veer/screens/marketplace/order_confirmation_screen.dart';
+import 'package:kisan_veer/services/analytics_service.dart';
 import 'package:kisan_veer/services/marketplace_service.dart';
 import 'package:kisan_veer/services/profile_service.dart';
 import 'package:kisan_veer/services/supabase_service.dart';
@@ -263,6 +264,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         address: address,
         paymentMethod: 'razorpay',
         paymentId: response.paymentId,
+      );
+
+      AnalyticsService().logPurchase(
+        order.id,
+        widget.totalAmount,
+        productIds: widget.cartItems.map((c) => c.productId).toList(),
       );
 
       if (mounted) {

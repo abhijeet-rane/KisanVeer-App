@@ -40,13 +40,12 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
 
   Future<void> _pickImages() async {
     final images = await _imagePicker.pickMultiImage();
-    if (images != null) {
-      setState(() {
-        _selectedImages.addAll(
-          images.map((xFile) => File(xFile.path)).toList(),
-        );
-      });
-    }
+    if (images.isEmpty) return;
+    setState(() {
+      _selectedImages.addAll(
+        images.map((xFile) => File(xFile.path)).toList(),
+      );
+    });
   }
 
   void _removeImage(int index) {

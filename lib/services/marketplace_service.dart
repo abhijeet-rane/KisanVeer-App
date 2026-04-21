@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:kisan_veer/models/marketplace_models.dart';
 import 'package:kisan_veer/models/user_models.dart';
+import 'package:kisan_veer/utils/app_logger.dart';
 import 'package:path/path.dart' as path;
 import 'package:uuid/uuid.dart';
 
@@ -84,58 +85,38 @@ class MarketplaceService {
     );
   }
 
+  static const String _productImagesBucket = 'product-images';
+
   Future<List<String>> uploadProductImages(List<File> images) async {
     final userId = _supabase.auth.currentUser?.id;
     if (userId == null) {
       throw Exception('User not authenticated');
     }
+    if (images.isEmpty) return const [];
 
     final imageUrls = <String>[];
-
     try {
-      // Get list of available buckets to find the correct one
-      final buckets = await _supabase.storage.listBuckets();
-      String bucketName = '';
-
-      // Use the first available bucket, or default to 'storage'
-      if (buckets.isNotEmpty) {
-        bucketName = buckets.first.name;
-      } else {
-        bucketName = 'storage'; // Default Supabase bucket
-      }
-
-      print('Using bucket: $bucketName');
-
       for (var image in images) {
         final fileExt = path.extension(image.path);
         final fileName = '${_uuid.v4()}$fileExt';
         final filePath = 'products/$userId/$fileName';
 
-        await _supabase.storage.from(bucketName).upload(
+        await _supabase.storage.from(_productImagesBucket).upload(
               filePath,
               image,
               fileOptions:
                   const FileOptions(cacheControl: '3600', upsert: false),
             );
 
-        final imageUrl =
-            _supabase.storage.from(bucketName).getPublicUrl(filePath);
-        imageUrls.add(imageUrl);
+        imageUrls.add(
+          _supabase.storage.from(_productImagesBucket).getPublicUrl(filePath),
+        );
       }
-
       return imageUrls;
-    } catch (e) {
-      print('Error uploading images: $e');
-
-      // If we can't upload images, create placeholder URLs for now
-      if (imageUrls.isEmpty && images.isNotEmpty) {
-        // Create placeholder image URLs so we can still create the product
-        for (int i = 0; i < images.length; i++) {
-          imageUrls.add('placeholder_image_${i + 1}');
-        }
-      }
-
-      return imageUrls;
+    } catch (e, s) {
+      AppLogger.e('Product image upload failed',
+          tag: 'Marketplace', error: e, stackTrace: s);
+      throw Exception('Failed to upload product images: $e');
     }
   }
 
@@ -1241,9 +1222,11 @@ class MarketplaceService {
             data.map<Product>((row) => Product.fromJson(row)).toList());
   }
 
-  /// Checks if the current user can review the given product (i.e., has a delivered order for it)
+  /// Checks if the current user can review the given product
+  /// (i.e., has a delivered order for it). Returns false when the user
+  /// is signed out rather than throwing.
   Future<bool> canUserReviewProduct(String productId) async {
-    final userId = await getCurrentUserId();
+    final userId = _supabase.auth.currentUser?.id;
     if (userId == null) return false;
     final response = await _supabase
         .from('order_items')

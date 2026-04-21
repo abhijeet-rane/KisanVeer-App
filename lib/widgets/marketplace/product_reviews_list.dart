@@ -8,10 +8,14 @@ import 'package:intl/intl.dart';
 
 class ProductReviewsList extends StatelessWidget {
   final Future<List<ProductReview>> reviewsFuture;
+  final int? maxCount;
+  final VoidCallback? onSeeAll;
 
   const ProductReviewsList({
     Key? key,
     required this.reviewsFuture,
+    this.maxCount = 3,
+    this.onSeeAll,
   }) : super(key: key);
 
   @override
@@ -32,24 +36,23 @@ class ProductReviewsList extends StatelessWidget {
           return _buildEmptyReviews();
         }
 
-        // Show first 3 reviews only in this list
-        final displayReviews =
-            reviews.length > 3 ? reviews.sublist(0, 3) : reviews;
+        final displayReviews = maxCount != null && reviews.length > maxCount!
+            ? reviews.sublist(0, maxCount!)
+            : reviews;
+        final hasMore = maxCount != null && reviews.length > maxCount!;
 
         return Column(
           children: [
             ...displayReviews.map((review) => _buildReviewItem(review)),
-            if (reviews.length > 3)
+            if (hasMore && onSeeAll != null)
               Padding(
                 padding: const EdgeInsets.only(top: 16.0),
                 child: OutlinedButton(
-                  onPressed: () {
-                    // Navigate to all reviews screen
-                  },
+                  onPressed: onSeeAll,
                   style: OutlinedButton.styleFrom(
                     minimumSize: const Size(double.infinity, 44),
                   ),
-                  child: const Text('View All Reviews'),
+                  child: Text('View All ${reviews.length} Reviews'),
                 ),
               ),
           ],

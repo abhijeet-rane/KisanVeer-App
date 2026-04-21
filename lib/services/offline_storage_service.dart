@@ -225,7 +225,12 @@ class OfflineStorageService {
         try {
           final box = Hive.box<Map>(boxName);
           await box.delete(itemKey);
-        } catch (_) {}
+        } catch (e) {
+          AppLogger.w(
+              'Failed to delete stale cache entry $boxName/$itemKey',
+              tag: 'OfflineStorage',
+              error: e);
+        }
       }
       await metaBox.delete(key);
     }

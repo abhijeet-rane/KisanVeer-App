@@ -113,6 +113,60 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     if (mounted) setState(() {});
   }
 
+  void _showAllReviews(Product product) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.85,
+        minChildSize: 0.5,
+        maxChildSize: 0.95,
+        expand: false,
+        builder: (context, scrollController) {
+          return Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'All Reviews (${product.reviewCount})',
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.close),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                  ],
+                ),
+                const Divider(),
+                Expanded(
+                  child: SingleChildScrollView(
+                    controller: scrollController,
+                    child: ProductReviewsList(
+                      reviewsFuture: _reviewsFuture,
+                      maxCount: null,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
   Future<void> _addToCart(Product product) async {
     if (_quantity <= 0) return;
 
@@ -728,15 +782,16 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
             ),
             if (product.reviewCount > 0)
               TextButton(
-                onPressed: () {
-                  // Show all reviews
-                },
+                onPressed: () => _showAllReviews(product),
                 child: const Text('See All'),
               ),
           ],
         ),
         const SizedBox(height: 8),
-        ProductReviewsList(reviewsFuture: _reviewsFuture),
+        ProductReviewsList(
+          reviewsFuture: _reviewsFuture,
+          onSeeAll: () => _showAllReviews(product),
+        ),
         if (_canReviewProduct && !_hasReviewedProduct)
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 16.0),
@@ -812,7 +867,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
                                       content:
-                                          Text('Failed to submit review: \$e')),
+                                          Text('Failed to submit review: $e')),
                                 );
                               }
                             }

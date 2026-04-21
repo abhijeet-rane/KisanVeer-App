@@ -1,5 +1,6 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'dart:async';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:kisan_veer/models/user_model.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -98,8 +99,15 @@ class AuthService {
   Future<void> _sendUserToSupabase(Session? session) async {
     if (session == null) return;
 
-    final url = Uri.parse(
-        'https://wmqpftdxdduhbdsjybzu.supabase.co/functions/v1/handle-new-user');
+    final supabaseUrl = dotenv.env['SUPABASE_URL'];
+    if (supabaseUrl == null || supabaseUrl.isEmpty) {
+      AppLogger.w(
+          'SUPABASE_URL is not set — skipping handle-new-user webhook',
+          tag: 'Auth');
+      return;
+    }
+
+    final url = Uri.parse('$supabaseUrl/functions/v1/handle-new-user');
 
     final response = await http.post(
       url,

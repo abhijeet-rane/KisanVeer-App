@@ -5,6 +5,7 @@ import 'package:kisan_veer/constants/app_colors.dart';
 import 'package:kisan_veer/constants/app_text_styles.dart';
 import 'package:kisan_veer/models/marketplace_models.dart';
 import 'package:kisan_veer/models/user_model.dart';
+import 'package:kisan_veer/screens/auth/login_screen.dart';
 import 'package:kisan_veer/screens/marketplace/add_product_screen.dart';
 import 'package:kisan_veer/screens/marketplace/admin_panel_screen.dart';
 import 'package:kisan_veer/screens/marketplace/cart_screen.dart';
@@ -721,7 +722,12 @@ class _MarketplaceScreenState extends State<MarketplaceScreen>
               child: CustomButton(
                 text: 'Login',
                 onPressed: () {
-                  // Navigate to login screen
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const LoginScreen(),
+                    ),
+                  );
                 },
               ),
             ),

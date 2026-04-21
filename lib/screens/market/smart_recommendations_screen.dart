@@ -146,6 +146,7 @@ class _SmartRecommendationsScreenState
         priceSensitivity: 'medium',
       );
 
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Preferences saved successfully'),
@@ -153,9 +154,48 @@ class _SmartRecommendationsScreenState
         ),
       );
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Failed to save preferences: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  Future<void> _pinRecommendation(CropRecommendation recommendation) async {
+    if (_selectedState == null || _selectedState!.isEmpty) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Select a state before pinning a commodity'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    try {
+      await _marketService.pinCommodity(
+        commodity: recommendation.commodity,
+        state: _selectedState!,
+        currentPrice: recommendation.currentPrice ?? recommendation.endPrice,
+      );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+              'Pinned ${recommendation.commodityName ?? recommendation.commodity}'),
+          backgroundColor: Colors.green,
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to pin commodity: $e'),
           backgroundColor: Colors.red,
         ),
       );
@@ -440,15 +480,7 @@ class _SmartRecommendationsScreenState
                   width: 91,
                   height: 35, // Fixed width to prevent layout issues
                   child: OutlinedButton.icon(
-                    onPressed: () {
-                      // Implement pinning functionality
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Commodity pinned successfully'),
-                          duration: Duration(seconds: 2),
-                        ),
-                      );
-                    },
+                    onPressed: () => _pinRecommendation(recommendation),
                     icon: const Icon(Icons.push_pin_outlined, size: 17),
                     label: const Text('Pin'),
                     style: OutlinedButton.styleFrom(

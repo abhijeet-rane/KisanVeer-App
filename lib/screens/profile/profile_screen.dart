@@ -12,6 +12,8 @@ import 'package:kisan_veer/screens/profile/report_problem_screen.dart';
 import 'package:kisan_veer/screens/profile/terms_of_service_screen.dart';
 import 'package:kisan_veer/screens/profile/privacy_policy_screen.dart';
 import 'package:kisan_veer/services/auth_service.dart';
+import 'package:kisan_veer/services/cache_service.dart';
+import 'package:kisan_veer/services/offline_storage_service.dart';
 import 'package:kisan_veer/utils/app_logger.dart';
 import 'package:kisan_veer/widgets/custom_button.dart';
 import 'package:kisan_veer/widgets/custom_card.dart';
@@ -552,31 +554,48 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void _showClearCacheDialog() {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         title: const Text('Clear Cache'),
         content: const Text(
-          'This will clear all cached data and may sign you out. Are you sure you want to continue?',
+          'This will clear cached market data, product listings, and other temporary files. Your account stays signed in.',
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.pop(dialogContext),
             child: const Text('Cancel'),
           ),
           TextButton(
-            onPressed: () {
-              // Clear cache logic
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Cache cleared successfully'),
-                  backgroundColor: Colors.green,
-                ),
-              );
+            onPressed: () async {
+              Navigator.pop(dialogContext);
+              await _clearAppCache();
             },
             child: const Text('Clear'),
           ),
         ],
       ),
     );
+  }
+
+  Future<void> _clearAppCache() async {
+    try {
+      await CacheService().clearCache();
+      await OfflineStorageService().clearAll();
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Cache cleared successfully'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } catch (e) {
+      AppLogger.e('Failed to clear cache', tag: 'Profile', error: e);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to clear cache: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 }

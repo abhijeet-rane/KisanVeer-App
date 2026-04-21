@@ -234,8 +234,29 @@ class _CommunityDetailsScreenState extends State<CommunityDetailsScreen>
                       },
                     ),
                     IconButton(
-                        icon: const Icon(Icons.close, color: Colors.red),
-                        onPressed: () {}),
+                      icon: const Icon(Icons.close, color: Colors.red),
+                      onPressed: () async {
+                        try {
+                          await _communityService.processJoinRequest(
+                              request.id, false);
+                          if (!mounted) return;
+                          setState(() {
+                            _pendingRequests.removeAt(index);
+                          });
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text('Join request rejected')),
+                          );
+                        } catch (e) {
+                          if (!mounted) return;
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                                content:
+                                    Text('Failed to reject request: $e')),
+                          );
+                        }
+                      },
+                    ),
                   ]),
                 ),
               );

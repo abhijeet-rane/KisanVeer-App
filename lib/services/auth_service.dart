@@ -102,8 +102,9 @@ class AuthService {
     final supabaseUrl = dotenv.env['SUPABASE_URL'];
     if (supabaseUrl == null || supabaseUrl.isEmpty) {
       AppLogger.w(
-          'SUPABASE_URL is not set — skipping handle-new-user webhook',
-          tag: 'Auth');
+        'SUPABASE_URL is not set — skipping handle-new-user webhook',
+        tag: 'Auth',
+      );
       return;
     }
 
@@ -117,10 +118,7 @@ class AuthService {
       },
       body: jsonEncode({
         'event': 'INSERT',
-        'session': {
-          'user_id': session.user.id,
-          'email': session.user.email,
-        },
+        'session': {'user_id': session.user.id, 'email': session.user.email},
       }),
     );
 
@@ -164,8 +162,11 @@ class AuthService {
       );
       AppLogger.d('Session saved for biometric login', tag: 'Auth');
     } catch (e) {
-      AppLogger.e('Failed to save session for biometric',
-          tag: 'Auth', error: e);
+      AppLogger.e(
+        'Failed to save session for biometric',
+        tag: 'Auth',
+        error: e,
+      );
     }
   }
 
@@ -193,8 +194,11 @@ class AuthService {
 
       return false;
     } catch (e) {
-      AppLogger.e('Failed to restore session for biometric',
-          tag: 'Auth', error: e);
+      AppLogger.e(
+        'Failed to restore session for biometric',
+        tag: 'Auth',
+        error: e,
+      );
       return false;
     }
   }
@@ -278,10 +282,13 @@ class AuthService {
       final userId = supabase.auth.currentUser?.id;
       if (userId == null) throw 'User not logged in';
 
-      await supabase.from('user_preferences').update({
-        'crops': crops,
-        'updated_at': DateTime.now().toIso8601String(),
-      }).eq('user_id', userId);
+      await supabase
+          .from('user_preferences')
+          .update({
+            'crops': crops,
+            'updated_at': DateTime.now().toIso8601String(),
+          })
+          .eq('user_id', userId);
 
       // Notify listeners that crops have been updated
       _notifyUserDataChange();

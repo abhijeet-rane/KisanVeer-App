@@ -80,16 +80,19 @@ class ProductModel {
         if (val is List) {
           // Defensive: convert all elements to String and cast to List<String>
           return List<String>.from(
-              val.map((e) => e?.toString() ?? '').where((e) => e.isNotEmpty));
+            val.map((e) => e?.toString() ?? '').where((e) => e.isNotEmpty),
+          );
         }
         if (val is String) {
           // Try to parse as JSON array string
           if (val.startsWith('[') && val.endsWith(']')) {
             final trimmed = val.substring(1, val.length - 1);
-            return List<String>.from(trimmed
-                .split(',')
-                .map((e) => e.trim().replaceAll('"', ''))
-                .where((e) => e.isNotEmpty));
+            return List<String>.from(
+              trimmed
+                  .split(',')
+                  .map((e) => e.trim().replaceAll('"', ''))
+                  .where((e) => e.isNotEmpty),
+            );
           }
           return <String>[val];
         }

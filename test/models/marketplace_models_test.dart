@@ -40,9 +40,12 @@ void main() {
 
     test('parses a Postgres-style stringified array', () {
       final p = Product.fromJson(
-          _productJson(imageUrls: '["https://cdn/a.png","https://cdn/b.png"]'));
-      expect(p.imageUrls,
-          containsAllInOrder(['https://cdn/a.png', 'https://cdn/b.png']));
+        _productJson(imageUrls: '["https://cdn/a.png","https://cdn/b.png"]'),
+      );
+      expect(
+        p.imageUrls,
+        containsAllInOrder(['https://cdn/a.png', 'https://cdn/b.png']),
+      );
     });
 
     test('returns empty list when image_urls is null', () {
@@ -70,8 +73,7 @@ void main() {
     });
 
     test('defaults invalid numeric values to 0', () {
-      final p =
-          Product.fromJson(_productJson(price: 'abc', quantity: 'xyz'));
+      final p = Product.fromJson(_productJson(price: 'abc', quantity: 'xyz'));
       expect(p.price, 0.0);
       expect(p.availableQuantity, 0);
     });
@@ -89,7 +91,9 @@ void main() {
     test('accepts string "true"/"false"', () {
       expect(Product.fromJson(_productJson(isActive: 'true')).isActive, isTrue);
       expect(
-          Product.fromJson(_productJson(isActive: 'false')).isActive, isFalse);
+        Product.fromJson(_productJson(isActive: 'false')).isActive,
+        isFalse,
+      );
     });
 
     test('defaults to true when field is null', () {
@@ -109,13 +113,13 @@ void main() {
 
   group('CartItem.fromJson', () {
     Map<String, dynamic> cartJson(dynamic qty) => {
-          'id': 'c1',
-          'user_id': 'u1',
-          'product_id': 'p1',
-          'quantity': qty,
-          'created_at': '2026-04-21T10:00:00.000Z',
-          'updated_at': '2026-04-21T10:00:00.000Z',
-        };
+      'id': 'c1',
+      'user_id': 'u1',
+      'product_id': 'p1',
+      'quantity': qty,
+      'created_at': '2026-04-21T10:00:00.000Z',
+      'updated_at': '2026-04-21T10:00:00.000Z',
+    };
 
     test('coerces quantity from int/double/string', () {
       expect(CartItem.fromJson(cartJson(3)).quantity, 3);
@@ -141,16 +145,16 @@ void main() {
 
   group('Order.fromJson', () {
     Map<String, dynamic> orderJson({dynamic total = 1500.0}) => {
-          'id': 'o1',
-          'user_id': 'u1',
-          'status': 'confirmed',
-          'total_amount': total,
-          'address_id': 'a1',
-          'created_at': '2026-04-21T10:00:00.000Z',
-          'updated_at': '2026-04-21T11:00:00.000Z',
-          'payment_id': 'pay_123',
-          'payment_method': 'razorpay',
-        };
+      'id': 'o1',
+      'user_id': 'u1',
+      'status': 'confirmed',
+      'total_amount': total,
+      'address_id': 'a1',
+      'created_at': '2026-04-21T10:00:00.000Z',
+      'updated_at': '2026-04-21T11:00:00.000Z',
+      'payment_id': 'pay_123',
+      'payment_method': 'razorpay',
+    };
 
     test('parses double total_amount', () {
       final o = Order.fromJson(orderJson(total: 1500.0));

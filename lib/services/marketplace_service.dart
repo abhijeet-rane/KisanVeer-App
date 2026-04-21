@@ -23,8 +23,9 @@ class MarketplaceService {
         .eq('is_active', true);
 
     if (searchQuery != null && searchQuery.isNotEmpty) {
-      query = query
-          .or('name.ilike.%$searchQuery%,description.ilike.%$searchQuery%');
+      query = query.or(
+        'name.ilike.%$searchQuery%,description.ilike.%$searchQuery%',
+      );
     }
 
     if (category != null && category.isNotEmpty && category != 'All') {
@@ -62,10 +63,12 @@ class MarketplaceService {
     final response = await query;
 
     return (response as List)
-        .map((row) => Product.fromJson(
-              row,
-              seller: UserProfile.fromJson(row['user_profiles']),
-            ))
+        .map(
+          (row) => Product.fromJson(
+            row,
+            seller: UserProfile.fromJson(row['user_profiles']),
+          ),
+        )
         .toList();
   }
 
@@ -73,7 +76,8 @@ class MarketplaceService {
     final response = await _supabase
         .from('products')
         .select(
-            '*, user_profiles:seller_id(id, display_name, location, phone, email)')
+          '*, user_profiles:seller_id(id, display_name, location, phone, email)',
+        )
         .eq('id', productId)
         .single();
 
@@ -101,11 +105,15 @@ class MarketplaceService {
         final fileName = '${_uuid.v4()}$fileExt';
         final filePath = 'products/$userId/$fileName';
 
-        await _supabase.storage.from(_productImagesBucket).upload(
+        await _supabase.storage
+            .from(_productImagesBucket)
+            .upload(
               filePath,
               image,
-              fileOptions:
-                  const FileOptions(cacheControl: '3600', upsert: false),
+              fileOptions: const FileOptions(
+                cacheControl: '3600',
+                upsert: false,
+              ),
             );
 
         imageUrls.add(
@@ -114,8 +122,12 @@ class MarketplaceService {
       }
       return imageUrls;
     } catch (e, s) {
-      AppLogger.e('Product image upload failed',
-          tag: 'Marketplace', error: e, stackTrace: s);
+      AppLogger.e(
+        'Product image upload failed',
+        tag: 'Marketplace',
+        error: e,
+        stackTrace: s,
+      );
       throw Exception('Failed to upload product images: $e');
     }
   }
@@ -159,8 +171,11 @@ class MarketplaceService {
     data.removeWhere((k, v) => v == null);
 
     try {
-      final response =
-          await _supabase.from('products').insert(data).select('*').single();
+      final response = await _supabase
+          .from('products')
+          .insert(data)
+          .select('*')
+          .single();
 
       final userProfile = await _supabase
           .from('user_profiles')
@@ -173,8 +188,12 @@ class MarketplaceService {
         seller: UserProfile.fromJson(userProfile),
       );
     } catch (e, stack) {
-      AppLogger.e('Error adding product',
-          tag: 'Marketplace', error: e, stackTrace: stack);
+      AppLogger.e(
+        'Error adding product',
+        tag: 'Marketplace',
+        error: e,
+        stackTrace: stack,
+      );
       rethrow;
     }
   }
@@ -309,7 +328,9 @@ class MarketplaceService {
   }
 
   Future<CartItem> updateCartItemQuantity(
-      String cartItemId, int quantity) async {
+    String cartItemId,
+    int quantity,
+  ) async {
     final userId = _supabase.auth.currentUser?.id;
     if (userId == null) {
       throw Exception('User not authenticated');
@@ -384,7 +405,8 @@ class MarketplaceService {
     if (address.isDefault) {
       await _supabase
           .from('addresses')
-          .update({'is_default': false}).eq('user_id', userId);
+          .update({'is_default': false})
+          .eq('user_id', userId);
     }
 
     final data = await _supabase
@@ -460,15 +482,17 @@ class MarketplaceService {
       for (var item in itemsResponse) {
         // Convert OrderItem to CartItem for UI consistency
         final product = Product.fromJson(item['products']);
-        items.add(CartItem(
-          id: item['id'],
-          userId: userId,
-          productId: item['product_id'],
-          quantity: item['quantity'],
-          createdAt: item['created_at'],
-          updatedAt: DateTime.now(),
-          product: product,
-        ));
+        items.add(
+          CartItem(
+            id: item['id'],
+            userId: userId,
+            productId: item['product_id'],
+            quantity: item['quantity'],
+            createdAt: item['created_at'],
+            updatedAt: DateTime.now(),
+            product: product,
+          ),
+        );
       }
 
       // Update the order with its items
@@ -516,15 +540,17 @@ class MarketplaceService {
     final items = <CartItem>[];
     for (var item in itemsResponse) {
       final product = Product.fromJson(item['products']);
-      items.add(CartItem(
-        id: item['id'],
-        userId: userId,
-        productId: item['product_id'],
-        quantity: item['quantity'],
-        createdAt: DateTime.parse(item['created_at']),
-        updatedAt: DateTime.parse(item['created_at']),
-        product: product,
-      ));
+      items.add(
+        CartItem(
+          id: item['id'],
+          userId: userId,
+          productId: item['product_id'],
+          quantity: item['quantity'],
+          createdAt: DateTime.parse(item['created_at']),
+          updatedAt: DateTime.parse(item['created_at']),
+          product: product,
+        ),
+      );
     }
 
     return Order(
@@ -616,7 +642,10 @@ class MarketplaceService {
   }
 
   Future<void> updateOrderPayment(
-      String orderId, String paymentId, String status) async {
+    String orderId,
+    String paymentId,
+    String status,
+  ) async {
     final userId = _supabase.auth.currentUser?.id;
     if (userId == null) {
       throw Exception('User not authenticated');
@@ -701,15 +730,17 @@ class MarketplaceService {
 
     // Convert OrderItem list to CartItem list for Order constructor
     final cartItems = orderItems
-        .map((item) => CartItem(
-              id: item.id,
-              userId: orderData['user_id'],
-              productId: item.productId,
-              quantity: item.quantity,
-              createdAt: item.createdAt,
-              updatedAt: DateTime.now(),
-              product: item.product,
-            ))
+        .map(
+          (item) => CartItem(
+            id: item.id,
+            userId: orderData['user_id'],
+            productId: item.productId,
+            quantity: item.quantity,
+            createdAt: item.createdAt,
+            updatedAt: DateTime.now(),
+            product: item.product,
+          ),
+        )
         .toList();
 
     return Order(
@@ -719,7 +750,8 @@ class MarketplaceService {
       totalAmount: (orderData['total_amount'] is String)
           ? double.tryParse(orderData['total_amount']) ?? 0.0
           : (orderData['total_amount'] ?? 0.0),
-      address: address ??
+      address:
+          address ??
           Address(
             id: '',
             userId: '',
@@ -767,7 +799,8 @@ class MarketplaceService {
     // Determine if order can be cancelled based on status
     if (!_isOrderCancellable(order.status)) {
       throw Exception(
-          'Order cannot be cancelled in its current state: ${order.status}');
+        'Order cannot be cancelled in its current state: ${order.status}',
+      );
     }
 
     // Update order status to cancelled
@@ -833,8 +866,7 @@ class MarketplaceService {
 
       return null;
     } catch (e) {
-      AppLogger.w('Error getting delivery date',
-          tag: 'Marketplace', error: e);
+      AppLogger.w('Error getting delivery date', tag: 'Marketplace', error: e);
       return null;
     }
   }
@@ -852,15 +884,19 @@ class MarketplaceService {
         final updatedOrder = await getOrderWithItems(orderId);
         yield updatedOrder;
       } catch (e) {
-        AppLogger.w('Error polling order updates',
-          tag: 'Marketplace', error: e);
+        AppLogger.w(
+          'Error polling order updates',
+          tag: 'Marketplace',
+          error: e,
+        );
       }
     }
   }
 
   // Create a stream for order status history updates
   Stream<List<OrderStatusHistory>> getOrderStatusHistoryStream(
-      String orderId) async* {
+    String orderId,
+  ) async* {
     // Initial fetch
     final statusHistory = await getOrderStatusHistory(orderId);
     yield statusHistory;
@@ -872,8 +908,11 @@ class MarketplaceService {
         final updatedStatusHistory = await getOrderStatusHistory(orderId);
         yield updatedStatusHistory;
       } catch (e) {
-        AppLogger.w('Error polling status history updates',
-            tag: 'Marketplace', error: e);
+        AppLogger.w(
+          'Error polling status history updates',
+          tag: 'Marketplace',
+          error: e,
+        );
       }
     }
   }
@@ -887,10 +926,12 @@ class MarketplaceService {
         .order('created_at', ascending: false);
 
     return response
-        .map((row) => ProductReview.fromJson(
-              row,
-              user: UserProfile.fromJson(row['user_profiles']),
-            ))
+        .map(
+          (row) => ProductReview.fromJson(
+            row,
+            user: UserProfile.fromJson(row['user_profiles']),
+          ),
+        )
         .toList();
   }
 
@@ -964,8 +1005,11 @@ class MarketplaceService {
 
     while (true) {
       try {
-        final data =
-            await _supabase.from('orders').select().eq('id', orderId).single();
+        final data = await _supabase
+            .from('orders')
+            .select()
+            .eq('id', orderId)
+            .single();
 
         // Only yield if data has changed
         if (lastData == null || !_mapsEqual(lastData, data)) {
@@ -973,8 +1017,11 @@ class MarketplaceService {
           yield data;
         }
       } catch (e) {
-        AppLogger.w('Error polling order updates',
-          tag: 'Marketplace', error: e);
+        AppLogger.w(
+          'Error polling order updates',
+          tag: 'Marketplace',
+          error: e,
+        );
       }
 
       // Wait before polling again
@@ -984,7 +1031,8 @@ class MarketplaceService {
 
   // Polling-based subscription for notifications
   Stream<List<Map<String, dynamic>>> subscribeToNewNotifications(
-      String userId) async* {
+    String userId,
+  ) async* {
     List<String> processedIds = [];
 
     while (true) {
@@ -1016,8 +1064,11 @@ class MarketplaceService {
           processedIds = processedIds.sublist(processedIds.length - 100);
         }
       } catch (e) {
-        AppLogger.w('Error polling notifications',
-            tag: 'Marketplace', error: e);
+        AppLogger.w(
+          'Error polling notifications',
+          tag: 'Marketplace',
+          error: e,
+        );
       }
 
       // Wait before polling again
@@ -1038,23 +1089,30 @@ class MarketplaceService {
     return true;
   }
 
-  Future<bool> updateOrderStatus(String orderId, String newStatus,
-      {String? notes}) async {
+  Future<bool> updateOrderStatus(
+    String orderId,
+    String newStatus, {
+    String? notes,
+  }) async {
     final userId = await getCurrentUserId();
 
     try {
       // Update the order status
-      await _supabase.from('orders').update({
-        'status': newStatus,
-        'updated_at': DateTime.now().toIso8601String(),
-      }).eq('id', orderId);
+      await _supabase
+          .from('orders')
+          .update({
+            'status': newStatus,
+            'updated_at': DateTime.now().toIso8601String(),
+          })
+          .eq('id', orderId);
 
       // Add entry to status history
       await _supabase.from('order_status_history').insert({
         'id': _uuid.v4(),
         'order_id': orderId,
         'status': newStatus,
-        'notes': (newStatus == 'pending' ||
+        'notes':
+            (newStatus == 'pending' ||
                 newStatus == 'confirmed' ||
                 newStatus == 'packed' ||
                 newStatus == 'shipped' ||
@@ -1068,8 +1126,7 @@ class MarketplaceService {
 
       return true;
     } catch (e) {
-      AppLogger.e('Error updating order status',
-          tag: 'Marketplace', error: e);
+      AppLogger.e('Error updating order status', tag: 'Marketplace', error: e);
       return false;
     }
   }
@@ -1100,16 +1157,21 @@ class MarketplaceService {
 
   // Mark a product as sold
   Future<void> markProductAsSold(String productId) async {
-    await _supabase.from('products').update({
-      'status': 'sold',
-      'is_active': false,
-      'updated_at': DateTime.now().toIso8601String()
-    }).eq('id', productId);
+    await _supabase
+        .from('products')
+        .update({
+          'status': 'sold',
+          'is_active': false,
+          'updated_at': DateTime.now().toIso8601String(),
+        })
+        .eq('id', productId);
   }
 
   // Interested Buyers CRUD
-  Future<void> markInterested(
-      {required String productId, String? contactMessage}) async {
+  Future<void> markInterested({
+    required String productId,
+    String? contactMessage,
+  }) async {
     final userId = _supabase.auth.currentUser?.id;
     if (userId == null) throw Exception('User not authenticated');
     await _supabase.from('interested_buyers').upsert({
@@ -1147,8 +1209,12 @@ class MarketplaceService {
         .eq('status', status)
         .order('created_at', ascending: false);
     return response
-        .map((row) => Product.fromJson(row,
-            seller: UserProfile.fromJson(row['user_profiles'])))
+        .map(
+          (row) => Product.fromJson(
+            row,
+            seller: UserProfile.fromJson(row['user_profiles']),
+          ),
+        )
         .toList();
   }
 
@@ -1159,8 +1225,12 @@ class MarketplaceService {
         .select('*, user_profiles!inner(*)')
         .order('created_at', ascending: false);
     return response
-        .map((row) => Product.fromJson(row,
-            seller: UserProfile.fromJson(row['user_profiles'])))
+        .map(
+          (row) => Product.fromJson(
+            row,
+            seller: UserProfile.fromJson(row['user_profiles']),
+          ),
+        )
         .toList();
   }
 
@@ -1171,8 +1241,9 @@ class MarketplaceService {
         .stream(primaryKey: ['id'])
         .eq('is_active', true)
         .order('created_at', ascending: false)
-        .map((data) =>
-            data.map<Product>((row) => Product.fromJson(row)).toList());
+        .map(
+          (data) => data.map<Product>((row) => Product.fromJson(row)).toList(),
+        );
   }
 
   /// Checks if the current user can review the given product
@@ -1235,13 +1306,12 @@ class MarketplaceService {
         'orders_count': ordersCount.length,
       };
     } catch (e) {
-      AppLogger.e('Error fetching marketplace stats',
-          tag: 'Marketplace', error: e);
-      return {
-        'top_categories': [],
-        'products_count': 0,
-        'orders_count': 0,
-      };
+      AppLogger.e(
+        'Error fetching marketplace stats',
+        tag: 'Marketplace',
+        error: e,
+      );
+      return {'top_categories': [], 'products_count': 0, 'orders_count': 0};
     }
   }
 
@@ -1257,8 +1327,11 @@ class MarketplaceService {
 
       return response.map((row) => Product.fromJson(row)).toList();
     } catch (e) {
-      AppLogger.e('Error fetching seller products',
-          tag: 'Marketplace', error: e);
+      AppLogger.e(
+        'Error fetching seller products',
+        tag: 'Marketplace',
+        error: e,
+      );
       return [];
     }
   }
@@ -1302,10 +1375,12 @@ class MarketplaceService {
     final response = await dbQuery.order('created_at', ascending: false);
 
     return (response as List)
-        .map((row) => Product.fromJson(
-              row,
-              seller: UserProfile.fromJson(row['user_profiles']),
-            ))
+        .map(
+          (row) => Product.fromJson(
+            row,
+            seller: UserProfile.fromJson(row['user_profiles']),
+          ),
+        )
         .toList();
   }
 }

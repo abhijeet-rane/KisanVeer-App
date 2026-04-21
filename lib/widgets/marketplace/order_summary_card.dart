@@ -8,11 +8,8 @@ class OrderSummaryCard extends StatelessWidget {
   final Order order;
   final VoidCallback? onTap;
 
-  const OrderSummaryCard({
-    Key? key,
-    required this.order,
-    this.onTap,
-  }) : super(key: key);
+  const OrderSummaryCard({Key? key, required this.order, this.onTap})
+    : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -70,10 +67,14 @@ class OrderSummaryCard extends StatelessWidget {
                   ),
                   // Order Status
                   Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
                     decoration: BoxDecoration(
-                      color: _getStatusColor(order.status).withValues(alpha: 0.1),
+                      color: _getStatusColor(
+                        order.status,
+                      ).withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
@@ -112,12 +113,13 @@ class OrderSummaryCard extends StatelessWidget {
                               fit: BoxFit.cover,
                               errorBuilder: (context, error, stackTrace) =>
                                   Container(
-                                width: 60,
-                                height: 60,
-                                color: Colors.grey[200],
-                                child: const Icon(
-                                    Icons.image_not_supported_outlined),
-                              ),
+                                    width: 60,
+                                    height: 60,
+                                    color: Colors.grey[200],
+                                    child: const Icon(
+                                      Icons.image_not_supported_outlined,
+                                    ),
+                                  ),
                             ),
                           )
                         else
@@ -128,8 +130,9 @@ class OrderSummaryCard extends StatelessWidget {
                               color: Colors.grey[200],
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            child:
-                                const Icon(Icons.image_not_supported_outlined),
+                            child: const Icon(
+                              Icons.image_not_supported_outlined,
+                            ),
                           ),
                         const SizedBox(width: 12),
                         // Product Details
@@ -140,7 +143,8 @@ class OrderSummaryCard extends StatelessWidget {
                               Text(
                                 item.product?.name ?? 'Product',
                                 style: const TextStyle(
-                                    fontWeight: FontWeight.w500),
+                                  fontWeight: FontWeight.w500,
+                                ),
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -158,7 +162,8 @@ class OrderSummaryCard extends StatelessWidget {
                         // Item Total
                         Text(
                           currencyFormat.format(
-                              (item.product?.price ?? 0) * item.quantity),
+                            (item.product?.price ?? 0) * item.quantity,
+                          ),
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ],

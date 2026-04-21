@@ -39,11 +39,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final ScrollController _scrollController = ScrollController();
   final GlobalKey _settingsKey = GlobalKey();
 
-  final List<String> _languages = [
-    'English',
-    'Hindi',
-    'Marathi',
-  ];
+  final List<String> _languages = ['English', 'Hindi', 'Marathi'];
 
   final List<Map<String, dynamic>> _settingsSections = [
     {
@@ -115,9 +111,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
       if (mounted) {
         Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(
-            builder: (context) => const LoginScreen(),
-          ),
+          MaterialPageRoute(builder: (context) => const LoginScreen()),
           (route) => false,
         );
       }
@@ -152,21 +146,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
         title: const Text(
           'Profile',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         actions: [
           IconButton(
-              icon: const Icon(Icons.notifications, color: Colors.white),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => NotificationsScreen()),
-                );
-              }),
+            icon: const Icon(Icons.notifications, color: Colors.white),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => NotificationsScreen()),
+              );
+            },
+          ),
         ],
       ),
       body: _isLoading
@@ -188,7 +179,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         const SizedBox(height: 10),
                         Padding(
                           padding: const EdgeInsets.symmetric(
-                              vertical: 12.0, horizontal: 5.0),
+                            vertical: 12.0,
+                            horizontal: 5.0,
+                          ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -215,9 +208,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                         const SizedBox(height: 12),
                         _buildSettingsList().animate().fadeIn(
-                              duration: const Duration(milliseconds: 500),
-                              delay: const Duration(milliseconds: 600),
-                            ),
+                          duration: const Duration(milliseconds: 500),
+                          delay: const Duration(milliseconds: 600),
+                        ),
                         const SizedBox(height: 24),
                         CustomButton(
                           text: 'Sign Out',
@@ -226,9 +219,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           buttonType: ButtonType.outlined,
                           leadingIcon: Icons.logout,
                         ).animate().fadeIn(
-                              duration: const Duration(milliseconds: 500),
-                              delay: const Duration(milliseconds: 700),
-                            ),
+                          duration: const Duration(milliseconds: 500),
+                          delay: const Duration(milliseconds: 700),
+                        ),
                         const SizedBox(height: 24),
                       ],
                     ),
@@ -271,9 +264,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                   )
                 : null,
-          ).animate().fadeIn(
-                duration: const Duration(milliseconds: 500),
-              ),
+          ).animate().fadeIn(duration: const Duration(milliseconds: 500)),
           const SizedBox(height: 16),
           Text(
             _currentUser?.name ?? 'User',
@@ -283,9 +274,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               fontWeight: FontWeight.bold,
             ),
           ).animate().fadeIn(
-                duration: const Duration(milliseconds: 500),
-                delay: const Duration(milliseconds: 100),
-              ),
+            duration: const Duration(milliseconds: 500),
+            delay: const Duration(milliseconds: 100),
+          ),
           const SizedBox(height: 8),
           Text(
             _currentUser?.email ?? 'user@example.com',
@@ -294,9 +285,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               fontSize: 16,
             ),
           ).animate().fadeIn(
-                duration: const Duration(milliseconds: 500),
-                delay: const Duration(milliseconds: 200),
-              ),
+            duration: const Duration(milliseconds: 500),
+            delay: const Duration(milliseconds: 200),
+          ),
           const SizedBox(height: 10),
         ],
       ),
@@ -305,75 +296,60 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildSettingsList() {
     return Column(
-      children: List.generate(
-        _settingsSections.length,
-        (sectionIndex) {
-          final section = _settingsSections[sectionIndex];
+      children: List.generate(_settingsSections.length, (sectionIndex) {
+        final section = _settingsSections[sectionIndex];
 
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                child: Row(
-                  children: [
-                    Icon(
-                      section['icon'],
-                      size: 18,
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+              child: Row(
+                children: [
+                  Icon(section['icon'], size: 18, color: AppColors.primary),
+                  const SizedBox(width: 8),
+                  Text(
+                    section['title'],
+                    style: AppTextStyles.bodyMedium.copyWith(
+                      fontWeight: FontWeight.w600,
                       color: AppColors.primary,
                     ),
-                    const SizedBox(width: 8),
-                    Text(
-                      section['title'],
-                      style: AppTextStyles.bodyMedium.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.primary,
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-              CustomCard(
-                padding: EdgeInsets.zero,
-                child: ListView.separated(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: section['items'].length,
-                  separatorBuilder: (context, index) =>
-                      const Divider(height: 1),
-                  itemBuilder: (context, index) {
-                    final item = section['items'][index];
+            ),
+            CustomCard(
+              padding: EdgeInsets.zero,
+              child: ListView.separated(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: section['items'].length,
+                separatorBuilder: (context, index) => const Divider(height: 1),
+                itemBuilder: (context, index) {
+                  final item = section['items'][index];
 
-                    // Use BiometricSettingsToggle for biometric setting
-                    if (item['title'] == 'Biometric Login') {
-                      return const BiometricSettingsToggle();
-                    }
+                  // Use BiometricSettingsToggle for biometric setting
+                  if (item['title'] == 'Biometric Login') {
+                    return const BiometricSettingsToggle();
+                  }
 
-                    return ListTile(
-                      leading: Icon(
-                        item['icon'],
-                        color: AppColors.textSecondary,
-                      ),
-                      title: Text(
-                        item['title'],
-                        style: AppTextStyles.bodyMedium,
-                      ),
-                      trailing: _buildSettingControl(item['title']),
-                      onTap: () {
-                        // Handle setting tap
-                        _handleSettingTap(item['title']);
-                      },
-                    );
-                  },
-                ),
+                  return ListTile(
+                    leading: Icon(item['icon'], color: AppColors.textSecondary),
+                    title: Text(item['title'], style: AppTextStyles.bodyMedium),
+                    trailing: _buildSettingControl(item['title']),
+                    onTap: () {
+                      // Handle setting tap
+                      _handleSettingTap(item['title']);
+                    },
+                  );
+                },
               ),
-              if (sectionIndex < _settingsSections.length - 1)
-                const SizedBox(height: 24),
-            ],
-          );
-        },
-      ),
+            ),
+            if (sectionIndex < _settingsSections.length - 1)
+              const SizedBox(height: 24),
+          ],
+        );
+      }),
     );
   }
 
@@ -438,9 +414,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         // Navigate to profile edit screen
         Navigator.push(
           context,
-          MaterialPageRoute(
-            builder: (context) => const EditProfileScreen(),
-          ),
+          MaterialPageRoute(builder: (context) => const EditProfileScreen()),
         ).then((value) {
           if (value == true) {
             // Reload user data after profile edit
@@ -452,9 +426,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         // Navigate to change password screen
         Navigator.push(
           context,
-          MaterialPageRoute(
-            builder: (context) => const ChangePasswordScreen(),
-          ),
+          MaterialPageRoute(builder: (context) => const ChangePasswordScreen()),
         );
         break;
       case 'Privacy':
@@ -470,36 +442,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
         // Navigate to help center
         Navigator.push(
           context,
-          MaterialPageRoute(
-            builder: (context) => const HelpCenterScreen(),
-          ),
+          MaterialPageRoute(builder: (context) => const HelpCenterScreen()),
         );
         break;
       case 'Report a Problem':
         // Navigate to problem reporting
         Navigator.push(
           context,
-          MaterialPageRoute(
-            builder: (context) => const ReportProblemScreen(),
-          ),
+          MaterialPageRoute(builder: (context) => const ReportProblemScreen()),
         );
         break;
       case 'Terms of Service':
         // Show terms of service
         Navigator.push(
           context,
-          MaterialPageRoute(
-            builder: (context) => const TermsOfServiceScreen(),
-          ),
+          MaterialPageRoute(builder: (context) => const TermsOfServiceScreen()),
         );
         break;
       case 'Privacy Policy':
         // Show privacy policy
         Navigator.push(
           context,
-          MaterialPageRoute(
-            builder: (context) => const PrivacyPolicyScreen(),
-          ),
+          MaterialPageRoute(builder: (context) => const PrivacyPolicyScreen()),
         );
         break;
       case 'Clear Cache':
@@ -526,10 +490,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               return ListTile(
                 title: Text(language),
                 trailing: language == _selectedLanguage
-                    ? const Icon(
-                        Icons.check,
-                        color: AppColors.primary,
-                      )
+                    ? const Icon(Icons.check, color: AppColors.primary)
                     : null,
                 onTap: () {
                   setState(() {

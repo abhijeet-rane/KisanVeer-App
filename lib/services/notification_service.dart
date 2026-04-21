@@ -34,10 +34,10 @@ class NotificationService {
           AndroidInitializationSettings('@mipmap/launcher_icon');
       const DarwinInitializationSettings iosSettings =
           DarwinInitializationSettings(
-        requestAlertPermission: true,
-        requestBadgePermission: true,
-        requestSoundPermission: true,
-      );
+            requestAlertPermission: true,
+            requestBadgePermission: true,
+            requestSoundPermission: true,
+          );
 
       const InitializationSettings initSettings = InitializationSettings(
         android: androidSettings,
@@ -55,8 +55,11 @@ class NotificationService {
       // Load notification history
       await _loadNotificationHistory();
     } catch (e) {
-      AppLogger.e('Error initializing notification service',
-          tag: 'Notifications', error: e);
+      AppLogger.e(
+        'Error initializing notification service',
+        tag: 'Notifications',
+        error: e,
+      );
     }
   }
 
@@ -66,42 +69,43 @@ class NotificationService {
       // General notifications
       const AndroidNotificationChannel generalChannel =
           AndroidNotificationChannel(
-        'general_channel',
-        'General Notifications',
-        description: 'Channel for general notifications',
-        importance: Importance.high,
-      );
+            'general_channel',
+            'General Notifications',
+            description: 'Channel for general notifications',
+            importance: Importance.high,
+          );
 
       // Weather alerts
       const AndroidNotificationChannel weatherChannel =
           AndroidNotificationChannel(
-        'weather_channel',
-        'Weather Alerts',
-        description: 'Channel for weather alerts and forecasts',
-        importance: Importance.high,
-      );
+            'weather_channel',
+            'Weather Alerts',
+            description: 'Channel for weather alerts and forecasts',
+            importance: Importance.high,
+          );
 
       // Market price alerts
       const AndroidNotificationChannel marketChannel =
           AndroidNotificationChannel(
-        'market_channel',
-        'Market Alerts',
-        description: 'Channel for market price alerts',
-        importance: Importance.high,
-      );
+            'market_channel',
+            'Market Alerts',
+            description: 'Channel for market price alerts',
+            importance: Importance.high,
+          );
 
       // Community updates
       const AndroidNotificationChannel communityChannel =
           AndroidNotificationChannel(
-        'community_channel',
-        'Community Updates',
-        description: 'Channel for community updates and discussion',
-        importance: Importance.defaultImportance,
-      );
+            'community_channel',
+            'Community Updates',
+            description: 'Channel for community updates and discussion',
+            importance: Importance.defaultImportance,
+          );
 
-      final androidPlugin =
-          _localNotifications.resolvePlatformSpecificImplementation<
-              AndroidFlutterLocalNotificationsPlugin>();
+      final androidPlugin = _localNotifications
+          .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin
+          >();
 
       if (androidPlugin != null) {
         await androidPlugin.createNotificationChannel(generalChannel);
@@ -136,8 +140,11 @@ class NotificationService {
         // Notify listeners to handle navigation
         notificationSubject.add(notificationModel);
       } catch (e) {
-        AppLogger.w('Error parsing notification payload',
-            tag: 'Notifications', error: e);
+        AppLogger.w(
+          'Error parsing notification payload',
+          tag: 'Notifications',
+          error: e,
+        );
       }
     }
   }
@@ -230,18 +237,15 @@ class NotificationService {
     await _saveNotificationHistory();
 
     // Show notification
-    await _showLocalNotification(
-      id,
-      title,
-      body,
-      type,
-      data ?? {},
-    );
+    await _showLocalNotification(id, title, body, type, data ?? {});
   }
 
   // Send weather alert
   Future<void> sendWeatherAlert(
-      String title, String body, Map<String, dynamic> weatherData) async {
+    String title,
+    String body,
+    Map<String, dynamic> weatherData,
+  ) async {
     await showLocalNotification(
       title: title,
       body: body,
@@ -252,7 +256,11 @@ class NotificationService {
 
   // Send market price alert
   Future<void> sendMarketAlert(
-      String title, String body, String product, double price) async {
+    String title,
+    String body,
+    String product,
+    double price,
+  ) async {
     await showLocalNotification(
       title: title,
       body: body,
@@ -283,8 +291,9 @@ class NotificationService {
   Future<void> _markAsRead(String id) async {
     final index = _notificationHistory.indexWhere((n) => n.id == id);
     if (index != -1) {
-      _notificationHistory[index] =
-          _notificationHistory[index].copyWith(read: true);
+      _notificationHistory[index] = _notificationHistory[index].copyWith(
+        read: true,
+      );
       await _saveNotificationHistory();
     }
   }
@@ -327,7 +336,9 @@ class NotificationService {
         .map((notification) => notification.toJson())
         .toList();
     await _storageService.saveString(
-        'notification_history', json.encode(jsonList));
+      'notification_history',
+      json.encode(jsonList),
+    );
   }
 
   // Get unread notification count

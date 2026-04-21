@@ -88,8 +88,11 @@ class SecureStorageService {
       ]);
       AppLogger.d('Auth tokens cleared', tag: 'SecureStorage');
     } catch (e) {
-      AppLogger.e('Failed to clear auth tokens',
-          tag: 'SecureStorage', error: e);
+      AppLogger.e(
+        'Failed to clear auth tokens',
+        tag: 'SecureStorage',
+        error: e,
+      );
     }
   }
 
@@ -97,10 +100,7 @@ class SecureStorageService {
 
   /// Enable biometric authentication
   Future<void> setBiometricEnabled(bool enabled) async {
-    await _storage.write(
-      key: _keyBiometricEnabled,
-      value: enabled.toString(),
-    );
+    await _storage.write(key: _keyBiometricEnabled, value: enabled.toString());
   }
 
   /// Check if biometric is enabled
@@ -132,8 +132,9 @@ class SecureStorageService {
   }
 
   /// Check if session has expired (30 minutes inactivity)
-  Future<bool> isSessionExpired(
-      {Duration timeout = const Duration(minutes: 30)}) async {
+  Future<bool> isSessionExpired({
+    Duration timeout = const Duration(minutes: 30),
+  }) async {
     final lastActivity = await getLastActivity();
     if (lastActivity == null) return true;
 
@@ -155,8 +156,11 @@ class SecureStorageService {
       await _storage.deleteAll();
       AppLogger.d('All secure storage cleared', tag: 'SecureStorage');
     } catch (e) {
-      AppLogger.e('Failed to clear secure storage',
-          tag: 'SecureStorage', error: e);
+      AppLogger.e(
+        'Failed to clear secure storage',
+        tag: 'SecureStorage',
+        error: e,
+      );
     }
   }
 }

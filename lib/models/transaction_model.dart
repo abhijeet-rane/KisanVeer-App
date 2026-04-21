@@ -50,8 +50,9 @@ class TransactionModel {
       amount: (json['amount'] ?? 0.0).toDouble(),
       type: json['type'] ?? 'expense',
       category: json['category'] ?? 'other',
-      date:
-          json['date'] != null ? DateTime.parse(json['date']) : DateTime.now(),
+      date: json['date'] != null
+          ? DateTime.parse(json['date'])
+          : DateTime.now(),
       userId: json['userId'] ?? '',
       attachmentUrl: json['attachmentUrl'] ?? '',
       createdAt: json['createdAt'] != null

@@ -50,7 +50,7 @@ class _SchemesListingScreenState extends State<SchemesListingScreen> {
     'Assam',
     'Goa',
     'Delhi',
-    'Others'
+    'Others',
   ];
   final Map<String, List<String>> _districtMap = {
     'Maharashtra': [
@@ -61,11 +61,11 @@ class _SchemesListingScreenState extends State<SchemesListingScreen> {
       'Aurangabad',
       'Solapur',
       'Kolhapur',
-      'Others'
+      'Others',
     ],
     'Gujarat': ['Ahmedabad', 'Surat', 'Vadodara', 'Rajkot', 'Others'],
     // ... add more states and districts as needed
-    'Others': ['Others']
+    'Others': ['Others'],
   };
 
   List<String> get _districts => _districtMap[_selectedState] ?? ['Others'];
@@ -126,8 +126,12 @@ class _SchemesListingScreenState extends State<SchemesListingScreen> {
         _errorMessage = 'Failed to load schemes: $e';
         _isLoading = false;
       });
-      AppLogger.e('Error in _loadSchemes',
-          tag: 'Schemes', error: e, stackTrace: stack);
+      AppLogger.e(
+        'Error in _loadSchemes',
+        tag: 'Schemes',
+        error: e,
+        stackTrace: stack,
+      );
     }
   }
 
@@ -144,9 +148,7 @@ class _SchemesListingScreenState extends State<SchemesListingScreen> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                    builder: (context) => AdminPanelScreen(),
-                  ),
+                  MaterialPageRoute(builder: (context) => AdminPanelScreen()),
                 );
               },
             ),
@@ -155,9 +157,7 @@ class _SchemesListingScreenState extends State<SchemesListingScreen> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (context) => MyApplicationsScreen(),
-                ),
+                MaterialPageRoute(builder: (context) => MyApplicationsScreen()),
               );
             },
             tooltip: 'My Applications',
@@ -203,13 +203,14 @@ class _SchemesListingScreenState extends State<SchemesListingScreen> {
                     border: OutlineInputBorder(),
                     isDense: true,
                   ),
-                  value:
-                      _states.contains(_selectedState) ? _selectedState : null,
+                  value: _states.contains(_selectedState)
+                      ? _selectedState
+                      : null,
                   items: _states
-                      .map((state) => DropdownMenuItem(
-                            value: state,
-                            child: Text(state),
-                          ))
+                      .map(
+                        (state) =>
+                            DropdownMenuItem(value: state, child: Text(state)),
+                      )
                       .toList(),
                   onChanged: (value) {
                     setState(() {
@@ -230,10 +231,12 @@ class _SchemesListingScreenState extends State<SchemesListingScreen> {
                       ? _selectedDistrict
                       : null,
                   items: _districts
-                      .map((district) => DropdownMenuItem(
-                            value: district,
-                            child: Text(district),
-                          ))
+                      .map(
+                        (district) => DropdownMenuItem(
+                          value: district,
+                          child: Text(district),
+                        ),
+                      )
                       .toList(),
                   onChanged: (value) {
                     setState(() {
@@ -259,49 +262,51 @@ class _SchemesListingScreenState extends State<SchemesListingScreen> {
             child: _isLoading
                 ? Center(child: CircularProgressIndicator())
                 : _errorMessage.isNotEmpty
-                    ? Center(child: Text(_errorMessage))
-                    : _schemes.isEmpty
-                        ? Center(child: Text('No schemes found.'))
-                        : ListView.builder(
-                            itemCount: _schemes.length,
-                            itemBuilder: (context, index) {
-                              final scheme = _schemes[index];
-                              return Card(
-                                margin: EdgeInsets.symmetric(
-                                    horizontal: 16, vertical: 8),
-                                elevation: 2,
-                                child: ListTile(
-                                  isThreeLine: true,
-                                  title: Text(
-                                    scheme.schemeName,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  subtitle: Text(
-                                    scheme.departmentName,
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  trailing: SizedBox(
-                                    width: 120,
-                                    child: ElevatedButton(
-                                      child: Text('View Details'),
-                                      onPressed: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                SchemeDetailsScreen(
-                                                    schemeId: scheme.id),
-                                          ),
-                                        );
-                                      },
+                ? Center(child: Text(_errorMessage))
+                : _schemes.isEmpty
+                ? Center(child: Text('No schemes found.'))
+                : ListView.builder(
+                    itemCount: _schemes.length,
+                    itemBuilder: (context, index) {
+                      final scheme = _schemes[index];
+                      return Card(
+                        margin: EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
+                        elevation: 2,
+                        child: ListTile(
+                          isThreeLine: true,
+                          title: Text(
+                            scheme.schemeName,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          subtitle: Text(
+                            scheme.departmentName,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          trailing: SizedBox(
+                            width: 120,
+                            child: ElevatedButton(
+                              child: Text('View Details'),
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => SchemeDetailsScreen(
+                                      schemeId: scheme.id,
                                     ),
                                   ),
-                                ),
-                              );
-                            },
+                                );
+                              },
+                            ),
                           ),
+                        ),
+                      );
+                    },
+                  ),
           ),
         ],
       ),

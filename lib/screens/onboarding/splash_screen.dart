@@ -64,24 +64,15 @@ class _SplashScreenState extends State<SplashScreen>
     )..repeat(reverse: true);
 
     _logoScale = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _logoController,
-        curve: Curves.elasticOut,
-      ),
+      CurvedAnimation(parent: _logoController, curve: Curves.elasticOut),
     );
 
     _logoRotation = Tween<double>(begin: -0.1, end: 0.0).animate(
-      CurvedAnimation(
-        parent: _logoController,
-        curve: Curves.easeOutBack,
-      ),
+      CurvedAnimation(parent: _logoController, curve: Curves.easeOutBack),
     );
 
     _pulseAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _pulseController,
-        curve: Curves.easeInOut,
-      ),
+      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
     );
   }
 
@@ -122,13 +113,16 @@ class _SplashScreenState extends State<SplashScreen>
           return FadeTransition(
             opacity: animation,
             child: SlideTransition(
-              position: Tween<Offset>(
-                begin: const Offset(0, 0.1),
-                end: Offset.zero,
-              ).animate(CurvedAnimation(
-                parent: animation,
-                curve: Curves.easeOutCubic,
-              )),
+              position:
+                  Tween<Offset>(
+                    begin: const Offset(0, 0.1),
+                    end: Offset.zero,
+                  ).animate(
+                    CurvedAnimation(
+                      parent: animation,
+                      curve: Curves.easeOutCubic,
+                    ),
+                  ),
               child: child,
             ),
           );
@@ -229,9 +223,7 @@ class _SplashScreenState extends State<SplashScreen>
       builder: (context, child) {
         return CustomPaint(
           size: size,
-          painter: ParticlesPainter(
-            animation: _backgroundController.value,
-          ),
+          painter: ParticlesPainter(animation: _backgroundController.value),
         );
       },
     );
@@ -310,69 +302,83 @@ class _SplashScreenState extends State<SplashScreen>
 
   Widget _buildAppName() {
     return ShaderMask(
-      shaderCallback: (bounds) => const LinearGradient(
-        colors: [Colors.white, Color(0xFFE8F5E9)],
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
-      ).createShader(bounds),
-      child: const Text(
-        'Kisan Veer',
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: 42,
-          fontWeight: FontWeight.bold,
-          fontFamily: 'Poppins',
-          letterSpacing: 2,
-        ),
-      ),
-    ).animate().fadeIn(duration: 600.ms, delay: 200.ms).slideY(
-        begin: 0.3, end: 0, duration: 600.ms, curve: Curves.easeOutCubic);
+          shaderCallback: (bounds) => const LinearGradient(
+            colors: [Colors.white, Color(0xFFE8F5E9)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ).createShader(bounds),
+          child: const Text(
+            'Kisan Veer',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 42,
+              fontWeight: FontWeight.bold,
+              fontFamily: 'Poppins',
+              letterSpacing: 2,
+            ),
+          ),
+        )
+        .animate()
+        .fadeIn(duration: 600.ms, delay: 200.ms)
+        .slideY(
+          begin: 0.3,
+          end: 0,
+          duration: 600.ms,
+          curve: Curves.easeOutCubic,
+        );
   }
 
   Widget _buildTagline() {
     return Text(
-      AppConstants.appTagline,
-      textAlign: TextAlign.center,
-      style: TextStyle(
-        color: Colors.white.withValues(alpha: 0.85),
-        fontSize: 16,
-        fontFamily: 'Poppins',
-        fontWeight: FontWeight.w400,
-        letterSpacing: 0.5,
-      ),
-    ).animate().fadeIn(duration: 600.ms, delay: 400.ms).slideY(
-        begin: 0.3, end: 0, duration: 600.ms, curve: Curves.easeOutCubic);
+          AppConstants.appTagline,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: Colors.white.withValues(alpha: 0.85),
+            fontSize: 16,
+            fontFamily: 'Poppins',
+            fontWeight: FontWeight.w400,
+            letterSpacing: 0.5,
+          ),
+        )
+        .animate()
+        .fadeIn(duration: 600.ms, delay: 400.ms)
+        .slideY(
+          begin: 0.3,
+          end: 0,
+          duration: 600.ms,
+          curve: Curves.easeOutCubic,
+        );
   }
 
   Widget _buildPremiumLoader() {
     return Column(
-      children: [
-        // Custom animated loader
-        SizedBox(
-          width: 50,
-          height: 50,
-          child: Stack(
-            children: [
-              // Outer ring
-              _buildAnimatedRing(50, 3, 0),
-              // Middle ring
-              Center(child: _buildAnimatedRing(35, 2.5, 0.3)),
-              // Inner ring
-              Center(child: _buildAnimatedRing(20, 2, 0.6)),
-            ],
-          ),
-        ),
-        const SizedBox(height: 20),
-        Text(
-          'Loading your farm assistant...',
-          style: TextStyle(
-            color: Colors.white.withValues(alpha: 0.7),
-            fontSize: 14,
-            fontFamily: 'Poppins',
-          ),
-        ),
-      ],
-    )
+          children: [
+            // Custom animated loader
+            SizedBox(
+              width: 50,
+              height: 50,
+              child: Stack(
+                children: [
+                  // Outer ring
+                  _buildAnimatedRing(50, 3, 0),
+                  // Middle ring
+                  Center(child: _buildAnimatedRing(35, 2.5, 0.3)),
+                  // Inner ring
+                  Center(child: _buildAnimatedRing(20, 2, 0.6)),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              'Loading your farm assistant...',
+              style: TextStyle(
+                color: Colors.white.withValues(alpha: 0.7),
+                fontSize: 14,
+                fontFamily: 'Poppins',
+              ),
+            ),
+          ],
+        )
         .animate()
         .fadeIn(duration: 500.ms)
         .scale(begin: const Offset(0.8, 0.8), end: const Offset(1, 1));
@@ -380,16 +386,19 @@ class _SplashScreenState extends State<SplashScreen>
 
   Widget _buildAnimatedRing(double size, double strokeWidth, double delay) {
     return SizedBox(
-      width: size,
-      height: size,
-      child: CircularProgressIndicator(
-        strokeWidth: strokeWidth,
-        valueColor: AlwaysStoppedAnimation<Color>(
-          Colors.white.withValues(alpha: 0.8 - delay),
-        ),
-      ),
-    ).animate(onPlay: (controller) => controller.repeat()).rotate(
-        duration: Duration(milliseconds: (1500 + delay * 1000).toInt()));
+          width: size,
+          height: size,
+          child: CircularProgressIndicator(
+            strokeWidth: strokeWidth,
+            valueColor: AlwaysStoppedAnimation<Color>(
+              Colors.white.withValues(alpha: 0.8 - delay),
+            ),
+          ),
+        )
+        .animate(onPlay: (controller) => controller.repeat())
+        .rotate(
+          duration: Duration(milliseconds: (1500 + delay * 1000).toInt()),
+        );
   }
 
   Widget _buildVersionInfo() {
@@ -410,7 +419,7 @@ class ParticlesPainter extends CustomPainter {
   final List<Particle> particles;
 
   ParticlesPainter({required this.animation})
-      : particles = List.generate(30, (index) => Particle(index));
+    : particles = List.generate(30, (index) => Particle(index));
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -425,11 +434,7 @@ class ParticlesPainter extends CustomPainter {
         alpha: particle.opacity * (1 - progress) * 0.3,
       );
 
-      canvas.drawCircle(
-        Offset(x, y),
-        particle.size,
-        paint,
-      );
+      canvas.drawCircle(Offset(x, y), particle.size, paint);
     }
   }
 
@@ -448,11 +453,11 @@ class Particle {
   final double offset;
 
   Particle(int seed)
-      : x = _random(seed * 1),
-        y = _random(seed * 2),
-        size = 1 + _random(seed * 3) * 3,
-        opacity = 0.3 + _random(seed * 4) * 0.7,
-        offset = _random(seed * 5);
+    : x = _random(seed * 1),
+      y = _random(seed * 2),
+      size = 1 + _random(seed * 3) * 3,
+      opacity = 0.3 + _random(seed * 4) * 0.7,
+      offset = _random(seed * 5);
 
   static double _random(int seed) {
     return ((math.sin(seed.toDouble()) * 10000) % 1).abs();

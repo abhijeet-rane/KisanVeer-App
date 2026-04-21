@@ -74,18 +74,18 @@ class _LoanPaymentScreenState extends State<LoanPaymentScreen> {
       });
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Payment Successful!')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Payment Successful!')));
 
         widget.onPaymentSuccess();
         Navigator.pop(context);
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error updating loan: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error updating loan: $e')));
       }
     } finally {
       if (mounted) {
@@ -105,7 +105,8 @@ class _LoanPaymentScreenState extends State<LoanPaymentScreen> {
   void _handleExternalWallet(ExternalWalletResponse response) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-          content: Text('External Wallet Selected: ${response.walletName}')),
+        content: Text('External Wallet Selected: ${response.walletName}'),
+      ),
     );
   }
 
@@ -139,15 +140,15 @@ class _LoanPaymentScreenState extends State<LoanPaymentScreen> {
       'prefill': {
         'contact': '', // Add user's phone number if available
         'email': '', // Add user's email if available
-      }
+      },
     };
 
     try {
       _razorpay.open(options);
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error: $e')));
     }
   }
 
@@ -178,11 +179,17 @@ class _LoanPaymentScreenState extends State<LoanPaymentScreen> {
                     children: [
                       _buildDetailRow('Loan Title', widget.loan.title),
                       _buildDetailRow(
-                          'Total Amount', '₹${widget.loan.totalAmount}'),
+                        'Total Amount',
+                        '₹${widget.loan.totalAmount}',
+                      ),
                       _buildDetailRow(
-                          'Remaining', '₹${widget.loan.remainingAmount}'),
+                        'Remaining',
+                        '₹${widget.loan.remainingAmount}',
+                      ),
                       _buildDetailRow(
-                          'Account No.', widget.loan.accountNumber ?? 'N/A'),
+                        'Account No.',
+                        widget.loan.accountNumber ?? 'N/A',
+                      ),
                     ],
                   ),
                 ),
@@ -254,14 +261,8 @@ class _LoanPaymentScreenState extends State<LoanPaymentScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            label,
-            style: TextStyle(color: Colors.grey[600]),
-          ),
-          Text(
-            value,
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
+          Text(label, style: TextStyle(color: Colors.grey[600])),
+          Text(value, style: TextStyle(fontWeight: FontWeight.bold)),
         ],
       ),
     );

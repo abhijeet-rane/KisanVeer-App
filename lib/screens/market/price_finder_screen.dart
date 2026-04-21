@@ -177,9 +177,7 @@ class _PriceFinderScreenState extends State<PriceFinderScreen> {
         _errorMessage = null;
       });
 
-      Map<String, String> filters = {
-        'state': _selectedState!,
-      };
+      Map<String, String> filters = {'state': _selectedState!};
 
       if (_selectedDistrict != null) {
         filters['district'] = _selectedDistrict!;
@@ -266,10 +264,10 @@ class _PriceFinderScreenState extends State<PriceFinderScreen> {
           child: _isSearching
               ? const Center(child: CircularProgressIndicator())
               : _hasSearched
-                  ? _searchResults.isEmpty
-                      ? _buildNoResultsView()
-                      : _buildSearchResults()
-                  : _buildInitialView(),
+              ? _searchResults.isEmpty
+                    ? _buildNoResultsView()
+                    : _buildSearchResults()
+              : _buildInitialView(),
         ),
       ],
     );
@@ -363,8 +361,9 @@ class _PriceFinderScreenState extends State<PriceFinderScreen> {
                     },
                     hint: Text(
                       'Any',
-                      style:
-                          AppTextStyles.bodySmall.copyWith(color: Colors.grey),
+                      style: AppTextStyles.bodySmall.copyWith(
+                        color: Colors.grey,
+                      ),
                     ),
                   ),
                 ),
@@ -405,8 +404,9 @@ class _PriceFinderScreenState extends State<PriceFinderScreen> {
                     },
                     hint: Text(
                       'Any',
-                      style:
-                          AppTextStyles.bodySmall.copyWith(color: Colors.grey),
+                      style: AppTextStyles.bodySmall.copyWith(
+                        color: Colors.grey,
+                      ),
                     ),
                   ),
                 ),
@@ -454,8 +454,9 @@ class _PriceFinderScreenState extends State<PriceFinderScreen> {
                   },
                   hint: Text(
                     'Select a commodity',
-                    style:
-                        AppTextStyles.bodyMedium.copyWith(color: Colors.grey),
+                    style: AppTextStyles.bodyMedium.copyWith(
+                      color: Colors.grey,
+                    ),
                   ),
                 ),
               ),
@@ -510,9 +511,7 @@ class _PriceFinderScreenState extends State<PriceFinderScreen> {
               icon: const Icon(Icons.search, color: Colors.white),
               label: Text(
                 'Search Prices',
-                style: AppTextStyles.buttonText.copyWith(
-                  color: Colors.white,
-                ),
+                style: AppTextStyles.buttonText.copyWith(color: Colors.white),
               ),
             ),
           ),
@@ -537,9 +536,7 @@ class _PriceFinderScreenState extends State<PriceFinderScreen> {
               icon: const Icon(Icons.show_chart, color: Colors.white),
               label: Text(
                 'View Price Trends',
-                style: AppTextStyles.buttonText.copyWith(
-                  color: Colors.white,
-                ),
+                style: AppTextStyles.buttonText.copyWith(color: Colors.white),
               ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.secondary,
@@ -562,11 +559,7 @@ class _PriceFinderScreenState extends State<PriceFinderScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.search,
-              size: 80,
-              color: Colors.grey.shade300,
-            ),
+            Icon(Icons.search, size: 80, color: Colors.grey.shade300),
             const SizedBox(height: 24),
             Text(
               'Find Latest Commodity Prices',
@@ -592,11 +585,7 @@ class _PriceFinderScreenState extends State<PriceFinderScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.search_off,
-              size: 80,
-              color: Colors.grey.shade300,
-            ),
+            Icon(Icons.search_off, size: 80, color: Colors.grey.shade300),
             const SizedBox(height: 24),
             Text(
               'No Results Found',
@@ -632,10 +621,7 @@ class _PriceFinderScreenState extends State<PriceFinderScreen> {
         Container(
           width: double.infinity,
           color: Colors.grey.shade100,
-          padding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 8,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -726,8 +712,10 @@ class _PriceFinderScreenState extends State<PriceFinderScreen> {
                 ),
                 // Price
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: AppColors.primary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
@@ -792,10 +780,7 @@ class _PriceFinderScreenState extends State<PriceFinderScreen> {
               children: [
                 Text(
                   'Range: ',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey.shade700,
-                  ),
+                  style: TextStyle(fontSize: 12, color: Colors.grey.shade700),
                 ),
                 Text(
                   '₹${record.minPrice.toStringAsFixed(2)} - ₹${record.maxPrice.toStringAsFixed(2)}',
@@ -872,15 +857,16 @@ class _PriceFinderScreenState extends State<PriceFinderScreen> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-            content: Text('${record.commodity} pinned successfully'),
-            backgroundColor: Colors.green,
-            action: SnackBarAction(
-              label: 'View Pinned',
-              textColor: Colors.white,
-              onPressed: () {
-                Navigator.pushNamed(context, '/pinned_commodities');
-              },
-            )),
+          content: Text('${record.commodity} pinned successfully'),
+          backgroundColor: Colors.green,
+          action: SnackBarAction(
+            label: 'View Pinned',
+            textColor: Colors.white,
+            onPressed: () {
+              Navigator.pushNamed(context, '/pinned_commodities');
+            },
+          ),
+        ),
       );
     } catch (e) {
       setState(() {
@@ -978,8 +964,9 @@ class _PriceFinderScreenState extends State<PriceFinderScreen> {
           ),
           ElevatedButton(
             onPressed: () {
-              final priceThreshold =
-                  double.tryParse(_priceAlertController.text);
+              final priceThreshold = double.tryParse(
+                _priceAlertController.text,
+              );
               if (priceThreshold == null) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(

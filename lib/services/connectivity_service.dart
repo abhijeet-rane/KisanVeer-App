@@ -49,11 +49,16 @@ class ConnectivityService {
         },
       );
 
-      AppLogger.d('Connectivity service initialized: $_currentStatus',
-          tag: 'Connectivity');
+      AppLogger.d(
+        'Connectivity service initialized: $_currentStatus',
+        tag: 'Connectivity',
+      );
     } catch (e) {
-      AppLogger.e('Failed to initialize connectivity',
-          tag: 'Connectivity', error: e);
+      AppLogger.e(
+        'Failed to initialize connectivity',
+        tag: 'Connectivity',
+        error: e,
+      );
     }
   }
 
@@ -64,10 +69,7 @@ class ConnectivityService {
       _currentStatus = newStatus;
       _statusController?.add(_currentStatus);
 
-      AppLogger.i(
-        'Connectivity changed: $_currentStatus',
-        tag: 'Connectivity',
-      );
+      AppLogger.i('Connectivity changed: $_currentStatus', tag: 'Connectivity');
     }
   }
 
@@ -97,15 +99,19 @@ class ConnectivityService {
       final results = await _connectivity.checkConnectivity();
       return _mapResultsToStatus(results);
     } catch (e) {
-      AppLogger.e('Failed to check connectivity',
-          tag: 'Connectivity', error: e);
+      AppLogger.e(
+        'Failed to check connectivity',
+        tag: 'Connectivity',
+        error: e,
+      );
       return ConnectivityStatus.unknown;
     }
   }
 
   /// Wait for connectivity to be restored
-  Future<void> waitForConnectivity(
-      {Duration timeout = const Duration(seconds: 30)}) async {
+  Future<void> waitForConnectivity({
+    Duration timeout = const Duration(seconds: 30),
+  }) async {
     if (isOnline) return;
 
     final completer = Completer<void>();
@@ -132,19 +138,15 @@ class ConnectivityService {
 }
 
 /// Connectivity status enum
-enum ConnectivityStatus {
-  online,
-  offline,
-  unknown,
-}
+enum ConnectivityStatus { online, offline, unknown }
 
 /// Extension for user-friendly messages
 extension ConnectivityStatusMessage on ConnectivityStatus {
   String get message => switch (this) {
-        ConnectivityStatus.online => 'Connected',
-        ConnectivityStatus.offline => 'No internet connection',
-        ConnectivityStatus.unknown => 'Checking connection...',
-      };
+    ConnectivityStatus.online => 'Connected',
+    ConnectivityStatus.offline => 'No internet connection',
+    ConnectivityStatus.unknown => 'Checking connection...',
+  };
 
   bool get isConnected => this == ConnectivityStatus.online;
 }

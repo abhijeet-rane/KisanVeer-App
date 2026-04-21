@@ -9,11 +9,8 @@ class CommunityThreadScreen extends StatefulWidget {
   final Community community;
   final CommunityThread? thread;
 
-  const CommunityThreadScreen({
-    Key? key,
-    required this.community,
-    this.thread,
-  }) : super(key: key);
+  const CommunityThreadScreen({Key? key, required this.community, this.thread})
+    : super(key: key);
 
   @override
   State<CommunityThreadScreen> createState() => _CommunityThreadScreenState();
@@ -59,9 +56,9 @@ class _CommunityThreadScreenState extends State<CommunityThreadScreen> {
       setState(() => _messages = messages);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error loading messages: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error loading messages: $e')));
       }
     } finally {
       if (mounted) {
@@ -85,9 +82,9 @@ class _CommunityThreadScreenState extends State<CommunityThreadScreen> {
 
   Future<void> _createThread() async {
     if (_titleController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter a title')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Please enter a title')));
       return;
     }
 
@@ -114,9 +111,9 @@ class _CommunityThreadScreenState extends State<CommunityThreadScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error creating thread: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error creating thread: $e')));
       }
     } finally {
       if (mounted) {
@@ -146,9 +143,9 @@ class _CommunityThreadScreenState extends State<CommunityThreadScreen> {
       });
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error sending message: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error sending message: $e')));
       }
     } finally {
       if (mounted) {
@@ -161,9 +158,7 @@ class _CommunityThreadScreenState extends State<CommunityThreadScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          widget.thread?.title ?? 'New Discussion',
-        ),
+        title: Text(widget.thread?.title ?? 'New Discussion'),
         elevation: 0,
       ),
       body: Column(
@@ -282,8 +277,9 @@ class _CommunityThreadScreenState extends State<CommunityThreadScreen> {
                                             );
                                           },
                                           child: ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(8),
+                                            borderRadius: BorderRadius.circular(
+                                              8,
+                                            ),
                                             child: CachedNetworkImage(
                                               imageUrl: url,
                                               height: 100,
@@ -315,10 +311,7 @@ class _CommunityThreadScreenState extends State<CommunityThreadScreen> {
                   return Stack(
                     children: [
                       Padding(
-                        padding: const EdgeInsets.only(
-                          right: 8,
-                          top: 8,
-                        ),
+                        padding: const EdgeInsets.only(right: 8, top: 8),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(8),
                           child: Image.file(
@@ -390,7 +383,9 @@ class _CommunityThreadScreenState extends State<CommunityThreadScreen> {
                           borderSide: BorderSide.none,
                         ),
                         filled: true,
-                        fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+                        fillColor: Theme.of(
+                          context,
+                        ).colorScheme.surfaceContainerHighest,
                         contentPadding: const EdgeInsets.symmetric(
                           horizontal: 20,
                           vertical: 10,
@@ -413,8 +408,8 @@ class _CommunityThreadScreenState extends State<CommunityThreadScreen> {
                     onPressed: _isSending
                         ? null
                         : widget.thread != null
-                            ? _sendMessage
-                            : _createThread,
+                        ? _sendMessage
+                        : _createThread,
                   ),
                 ],
               ),

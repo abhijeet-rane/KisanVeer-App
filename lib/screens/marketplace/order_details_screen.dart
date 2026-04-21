@@ -11,10 +11,7 @@ import 'package:kisan_veer/widgets/custom_button.dart';
 class OrderDetailsScreen extends StatefulWidget {
   final String orderId;
 
-  const OrderDetailsScreen({
-    Key? key,
-    required this.orderId,
-  }) : super(key: key);
+  const OrderDetailsScreen({Key? key, required this.orderId}) : super(key: key);
 
   @override
   State<OrderDetailsScreen> createState() => _OrderDetailsScreenState();
@@ -46,10 +43,11 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
     try {
       // Load order with full item details
       final order = await _marketplaceService.getOrderWithItems(widget.orderId);
-      final statusHistory =
-          await _marketplaceService.getOrderStatusHistory(widget.orderId);
-      final estimatedDelivery =
-          await _marketplaceService.getEstimatedDeliveryDate(widget.orderId);
+      final statusHistory = await _marketplaceService.getOrderStatusHistory(
+        widget.orderId,
+      );
+      final estimatedDelivery = await _marketplaceService
+          .getEstimatedDeliveryDate(widget.orderId);
 
       if (mounted) {
         setState(() {
@@ -60,8 +58,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
         });
       }
     } catch (e) {
-      AppLogger.e('Error loading order details',
-          tag: 'OrderDetails', error: e);
+      AppLogger.e('Error loading order details', tag: 'OrderDetails', error: e);
       if (mounted) {
         setState(() {
           _error = 'Failed to load order details: $e';
@@ -89,9 +86,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-            ),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
             child: const Text('YES, CANCEL'),
           ),
         ],
@@ -171,9 +166,11 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
   String _formatStatus(String status) {
     return status
         .split('_')
-        .map((word) => word.isNotEmpty
-            ? '${word[0].toUpperCase()}${word.substring(1)}'
-            : '')
+        .map(
+          (word) => word.isNotEmpty
+              ? '${word[0].toUpperCase()}${word.substring(1)}'
+              : '',
+        )
         .join(' ');
   }
 
@@ -191,31 +188,31 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _error != null
-              ? _buildErrorWidget()
-              : _order == null
-                  ? _buildOrderNotFoundWidget()
-                  : RefreshIndicator(
-                      onRefresh: _loadOrderDetails,
-                      child: SingleChildScrollView(
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _buildOrderHeader(),
-                            const SizedBox(height: 24),
-                            _buildOrderStatus(),
-                            const SizedBox(height: 24),
-                            _buildOrderItems(),
-                            const SizedBox(height: 24),
-                            _buildShippingDetails(),
-                            const SizedBox(height: 24),
-                            _buildPaymentSummary(),
-                            const SizedBox(height: 32),
-                            if (_canCancelOrder()) _buildCancelButton(),
-                          ],
-                        ),
-                      ),
-                    ),
+          ? _buildErrorWidget()
+          : _order == null
+          ? _buildOrderNotFoundWidget()
+          : RefreshIndicator(
+              onRefresh: _loadOrderDetails,
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildOrderHeader(),
+                    const SizedBox(height: 24),
+                    _buildOrderStatus(),
+                    const SizedBox(height: 24),
+                    _buildOrderItems(),
+                    const SizedBox(height: 24),
+                    _buildShippingDetails(),
+                    const SizedBox(height: 24),
+                    _buildPaymentSummary(),
+                    const SizedBox(height: 32),
+                    if (_canCancelOrder()) _buildCancelButton(),
+                  ],
+                ),
+              ),
+            ),
     );
   }
 
@@ -224,11 +221,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(
-            Icons.error_outline,
-            color: Colors.red,
-            size: 60,
-          ),
+          const Icon(Icons.error_outline, color: Colors.red, size: 60),
           const SizedBox(height: 16),
           Text(
             _error ?? 'Something went wrong',
@@ -252,11 +245,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.search_off,
-            color: Colors.grey[400],
-            size: 80,
-          ),
+          Icon(Icons.search_off, color: Colors.grey[400], size: 80),
           const SizedBox(height: 16),
           Text(
             'Order Not Found',
@@ -269,10 +258,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
           const SizedBox(height: 8),
           Text(
             'The order you requested could not be found',
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.grey[600],
-            ),
+            style: TextStyle(fontSize: 16, color: Colors.grey[600]),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 24),
@@ -293,9 +279,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
 
     return Card(
       elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -306,10 +290,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
               children: [
                 const Text(
                   'Order Information',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 Container(
                   padding: const EdgeInsets.symmetric(
@@ -317,11 +298,11 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: _getStatusColor(_order!.status).withValues(alpha: 0.1),
+                    color: _getStatusColor(
+                      _order!.status,
+                    ).withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(4),
-                    border: Border.all(
-                      color: _getStatusColor(_order!.status),
-                    ),
+                    border: Border.all(color: _getStatusColor(_order!.status)),
                   ),
                   child: Text(
                     _formatStatus(_order!.status),
@@ -338,10 +319,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
             _buildInfoRow('Order ID', '#${_order!.id.substring(0, 8)}'),
             _buildInfoRow('Order Date', formattedDate),
             _buildInfoRow('Payment Method', _order!.paymentMethod ?? 'Online'),
-            _buildInfoRow(
-              'Items',
-              '${_order!.items?.length ?? 0} items',
-            ),
+            _buildInfoRow('Items', '${_order!.items?.length ?? 0} items'),
             _buildInfoRow(
               'Total Amount',
               '₹${_order!.totalAmount.toStringAsFixed(2)}',
@@ -359,19 +337,12 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            label,
-            style: TextStyle(
-              color: Colors.grey[700],
-            ),
-          ),
+          Text(label, style: TextStyle(color: Colors.grey[700])),
           const SizedBox(width: 16),
           Flexible(
             child: Text(
               value,
-              style: const TextStyle(
-                fontWeight: FontWeight.w500,
-              ),
+              style: const TextStyle(fontWeight: FontWeight.w500),
               textAlign: TextAlign.right,
             ),
           ),
@@ -388,14 +359,16 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
     if (_estimatedDeliveryDate != null &&
         !['delivered', 'cancelled'].contains(_order!.status.toLowerCase())) {
       final dateFormat = DateFormat('dd MMM yyyy');
-      allStatuses.add(OrderStatusHistory(
-        id: 'estimated',
-        orderId: _order!.id,
-        status: 'estimated_delivery',
-        notes:
-            'Estimated delivery by ${dateFormat.format(_estimatedDeliveryDate!)}',
-        createdAt: _estimatedDeliveryDate!,
-      ));
+      allStatuses.add(
+        OrderStatusHistory(
+          id: 'estimated',
+          orderId: _order!.id,
+          status: 'estimated_delivery',
+          notes:
+              'Estimated delivery by ${dateFormat.format(_estimatedDeliveryDate!)}',
+          createdAt: _estimatedDeliveryDate!,
+        ),
+      );
     }
 
     // Filter out duplicate statuses (keep only the latest for each status)
@@ -408,9 +381,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
 
     return Card(
       elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -421,64 +392,66 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
             const SizedBox(height: 8),
-            ...filteredStatuses.map((status) => ListTile(
-                  leading: Icon(
-                    status.status == 'delivered'
-                        ? Icons.check_circle
-                        : status.status == 'shipped'
-                            ? Icons.local_shipping
-                            : status.status == 'packed'
-                                ? Icons.inventory
-                                : status.status == 'confirmed' ||
-                                        status.status == 'processing'
-                                    ? Icons.sync
-                                    : status.status == 'cancelled'
-                                        ? Icons.cancel
-                                        : Icons.radio_button_unchecked,
+            ...filteredStatuses.map(
+              (status) => ListTile(
+                leading: Icon(
+                  status.status == 'delivered'
+                      ? Icons.check_circle
+                      : status.status == 'shipped'
+                      ? Icons.local_shipping
+                      : status.status == 'packed'
+                      ? Icons.inventory
+                      : status.status == 'confirmed' ||
+                            status.status == 'processing'
+                      ? Icons.sync
+                      : status.status == 'cancelled'
+                      ? Icons.cancel
+                      : Icons.radio_button_unchecked,
+                  color: status.status == 'delivered'
+                      ? Colors.green
+                      : status.status == 'shipped'
+                      ? Colors.purple
+                      : status.status == 'packed'
+                      ? Colors.orange
+                      : status.status == 'cancelled'
+                      ? Colors.red
+                      : Colors.grey,
+                ),
+                title: Text(
+                  _formatStatus(status.status),
+                  style: TextStyle(
                     color: status.status == 'delivered'
                         ? Colors.green
-                        : status.status == 'shipped'
-                            ? Colors.purple
-                            : status.status == 'packed'
-                                ? Colors.orange
-                                : status.status == 'cancelled'
-                                    ? Colors.red
-                                    : Colors.grey,
+                        : status.status == 'cancelled'
+                        ? Colors.red
+                        : null,
+                    fontWeight: FontWeight.w600,
                   ),
-                  title: Text(
-                    _formatStatus(status.status),
-                    style: TextStyle(
-                      color: status.status == 'delivered'
-                          ? Colors.green
-                          : status.status == 'cancelled'
-                              ? Colors.red
-                              : null,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (status.status == 'estimated_delivery' &&
-                          status.notes != null &&
-                          status.notes!.isNotEmpty)
-                        Text(
-                          status.notes!,
-                          style: const TextStyle(
-                              fontSize: 12, color: Colors.black54),
-                        ),
-                      const SizedBox(height: 4),
+                ),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (status.status == 'estimated_delivery' &&
+                        status.notes != null &&
+                        status.notes!.isNotEmpty)
                       Text(
-                        DateFormat('dd MMM yyyy, hh:mm a')
-                            .format(status.createdAt),
-                        style: TextStyle(
-                          color: Colors.grey[500],
+                        status.notes!,
+                        style: const TextStyle(
                           fontSize: 12,
+                          color: Colors.black54,
                         ),
                       ),
-                    ],
-                  ),
-                )),
+                    const SizedBox(height: 4),
+                    Text(
+                      DateFormat(
+                        'dd MMM yyyy, hh:mm a',
+                      ).format(status.createdAt),
+                      style: TextStyle(color: Colors.grey[500], fontSize: 12),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -490,9 +463,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
 
     return Card(
       elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -500,16 +471,11 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
           children: [
             const Text(
               'Items',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             if (items.isEmpty)
-              const Center(
-                child: Text('No items available'),
-              )
+              const Center(child: Text('No items available'))
             else
               ListView.separated(
                 shrinkWrap: true,
@@ -560,16 +526,12 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                             const SizedBox(height: 4),
                             Text(
                               '₹${item.product!.price.toStringAsFixed(2)} / ${item.product!.unit}',
-                              style: TextStyle(
-                                color: Colors.grey[700],
-                              ),
+                              style: TextStyle(color: Colors.grey[700]),
                             ),
                             const SizedBox(height: 4),
                             Text(
                               'Quantity: ${item.quantity}',
-                              style: TextStyle(
-                                color: Colors.grey[700],
-                              ),
+                              style: TextStyle(color: Colors.grey[700]),
                             ),
                             const SizedBox(height: 4),
                             Text(
@@ -598,9 +560,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
     }
     return Card(
       elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -608,10 +568,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
           children: [
             const Text(
               'Shipping Details',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             _order!.address.name.isNotEmpty
@@ -634,8 +591,10 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                 : const SizedBox(),
             const SizedBox(height: 8),
             if (_estimatedDeliveryDate != null &&
-                !['delivered', 'cancelled']
-                    .contains(_order!.status.toLowerCase()))
+                ![
+                  'delivered',
+                  'cancelled',
+                ].contains(_order!.status.toLowerCase()))
               Padding(
                 padding: const EdgeInsets.only(top: 16),
                 child: Container(
@@ -666,8 +625,9 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              DateFormat('dd MMM yyyy')
-                                  .format(_estimatedDeliveryDate!),
+                              DateFormat(
+                                'dd MMM yyyy',
+                              ).format(_estimatedDeliveryDate!),
                               style: TextStyle(
                                 fontSize: 16,
                                 color: Colors.green[800],
@@ -689,9 +649,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
   Widget _buildPaymentSummary() {
     return Card(
       elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -699,10 +657,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
           children: [
             const Text(
               'Payment Summary',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             Row(
@@ -716,20 +671,14 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
               padding: EdgeInsets.symmetric(vertical: 8),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text('Delivery Fee'),
-                  Text('₹0.00'),
-                ],
+                children: [Text('Delivery Fee'), Text('₹0.00')],
               ),
             ),
             const Padding(
               padding: EdgeInsets.symmetric(vertical: 8),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text('Tax'),
-                  Text('Included'),
-                ],
+                children: [Text('Tax'), Text('Included')],
               ),
             ),
             const Divider(),
@@ -740,10 +689,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                 children: [
                   const Text(
                     'Total Amount',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                   ),
                   Text(
                     '₹${_order!.totalAmount.toStringAsFixed(2)}',
@@ -771,10 +717,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                     children: [
                       Text(
                         'Payment ID',
-                        style: TextStyle(
-                          color: Colors.grey[700],
-                          fontSize: 12,
-                        ),
+                        style: TextStyle(color: Colors.grey[700], fontSize: 12),
                       ),
                       const SizedBox(height: 4),
                       Text(

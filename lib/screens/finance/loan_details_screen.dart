@@ -30,10 +30,7 @@ class LoanDetailsScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Loan Progress',
-                    style: AppTextStyles.h3,
-                  ),
+                  Text('Loan Progress', style: AppTextStyles.h3),
                   const SizedBox(height: 16),
                   LinearProgressIndicator(
                     value: progress,
@@ -67,25 +64,29 @@ class LoanDetailsScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Loan Details',
-                    style: AppTextStyles.h3,
-                  ),
+                  Text('Loan Details', style: AppTextStyles.h3),
                   const SizedBox(height: 16),
-                  _buildDetailRow('Total Amount',
-                      '₹${loan.totalAmount.toStringAsFixed(2)}'),
                   _buildDetailRow(
-                      'Interest Rate',
-                      loan.interestRate != null
-                          ? '${loan.interestRate!.toStringAsFixed(2)}%'
-                          : 'N/A'),
+                    'Total Amount',
+                    '₹${loan.totalAmount.toStringAsFixed(2)}',
+                  ),
+                  _buildDetailRow(
+                    'Interest Rate',
+                    loan.interestRate != null
+                        ? '${loan.interestRate!.toStringAsFixed(2)}%'
+                        : 'N/A',
+                  ),
                   _buildDetailRow('Purpose', loan.purpose),
                   _buildDetailRow('Lender', loan.lenderName),
-                  _buildDetailRow('Start Date',
-                      '${loan.startDate.day}/${loan.startDate.month}/${loan.startDate.year}'),
+                  _buildDetailRow(
+                    'Start Date',
+                    '${loan.startDate.day}/${loan.startDate.month}/${loan.startDate.year}',
+                  ),
                   if (loan.endDate != null)
-                    _buildDetailRow('End Date',
-                        '${loan.endDate!.day}/${loan.endDate!.month}/${loan.endDate!.year}'),
+                    _buildDetailRow(
+                      'End Date',
+                      '${loan.endDate!.day}/${loan.endDate!.month}/${loan.endDate!.year}',
+                    ),
                   _buildDetailRow('Status', loan.status.toUpperCase()),
                 ],
               ),
@@ -109,8 +110,9 @@ class LoanDetailsScreen extends StatelessWidget {
                   : () {}, // Disable the button if the loan is fully repaid
               text: 'Make Payment',
               icon: Icons.payment,
-              backgroundColor:
-                  loan.remainingAmount > 0 ? AppColors.primary : Colors.grey,
+              backgroundColor: loan.remainingAmount > 0
+                  ? AppColors.primary
+                  : Colors.grey,
             ),
           ],
         ),
@@ -128,9 +130,7 @@ class LoanDetailsScreen extends StatelessWidget {
             width: 120,
             child: Text(
               label,
-              style: AppTextStyles.bodyMedium.copyWith(
-                color: Colors.grey[600],
-              ),
+              style: AppTextStyles.bodyMedium.copyWith(color: Colors.grey[600]),
             ),
           ),
           Expanded(

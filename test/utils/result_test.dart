@@ -36,16 +36,14 @@ void main() {
     });
 
     test('when dispatches to the correct branch', () {
-      final String s = Result<int>.success(5).when(
-        success: (d) => 'ok:$d',
-        failure: (e) => 'err:${e.message}',
-      );
+      final String s = Result<int>.success(
+        5,
+      ).when(success: (d) => 'ok:$d', failure: (e) => 'err:${e.message}');
       expect(s, 'ok:5');
 
-      final String f = Result<int>.failure(AppError(message: 'nope')).when(
-        success: (d) => 'ok:$d',
-        failure: (e) => 'err:${e.message}',
-      );
+      final String f = Result<int>.failure(
+        AppError(message: 'nope'),
+      ).when(success: (d) => 'ok:$d', failure: (e) => 'err:${e.message}');
       expect(f, 'err:nope');
     });
   });
@@ -55,8 +53,10 @@ void main() {
       expect(NetworkError.noConnection().code, 'NO_CONNECTION');
       expect(NetworkError.timeout().code, 'TIMEOUT');
       expect(NetworkError.unauthorized().statusCode, 401);
-      expect(NetworkError.notFound(resource: 'Order').message,
-          contains('Order'));
+      expect(
+        NetworkError.notFound(resource: 'Order').message,
+        contains('Order'),
+      );
     });
 
     test('AuthError factories carry codes', () {
@@ -95,8 +95,9 @@ void main() {
     });
 
     test('wraps non-AppError throw in a generic AppError', () async {
-      final Result<int> r =
-          await Future<int>.error(StateError('whoops')).toResult();
+      final Result<int> r = await Future<int>.error(
+        StateError('whoops'),
+      ).toResult();
       expect(r.isFailure, isTrue);
       expect(r.errorOrNull, isA<AppError>());
       expect(r.errorOrNull!.message, contains('whoops'));

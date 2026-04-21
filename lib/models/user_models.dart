@@ -61,9 +61,7 @@ class UserProfile {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = {
-      'id': id,
-    };
+    final Map<String, dynamic> data = {'id': id};
 
     if (fullName != null) data['full_name'] = fullName;
     if (phone != null) data['phone'] = phone;

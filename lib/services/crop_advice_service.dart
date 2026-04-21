@@ -22,7 +22,7 @@ class CropAdviceService {
         'jointing',
         'booting',
         'heading',
-        'ripening'
+        'ripening',
       ],
       'plantingMonths': ['October', 'November', 'December'],
       'harvestMonths': ['March', 'April'],
@@ -42,7 +42,7 @@ class CropAdviceService {
         'tillering',
         'panicle initiation',
         'flowering',
-        'maturity'
+        'maturity',
       ],
       'plantingMonths': ['June', 'July', 'December', 'January'],
       'harvestMonths': ['November', 'December', 'April', 'May'],
@@ -62,7 +62,7 @@ class CropAdviceService {
         'squaring',
         'flowering',
         'boll development',
-        'maturity'
+        'maturity',
       ],
       'plantingMonths': ['May', 'June', 'July'],
       'harvestMonths': ['November', 'December', 'January'],
@@ -80,7 +80,7 @@ class CropAdviceService {
         'germination',
         'tillering',
         'grand growth',
-        'maturation'
+        'maturation',
       ],
       'plantingMonths': ['January', 'February', 'October', 'November'],
       'harvestMonths': ['November', 'December', 'January', 'February', 'March'],
@@ -100,7 +100,7 @@ class CropAdviceService {
         'tasseling',
         'silking',
         'grain filling',
-        'maturity'
+        'maturity',
       ],
       'plantingMonths': ['June', 'July', 'February', 'March'],
       'harvestMonths': ['September', 'October', 'May', 'June'],
@@ -120,7 +120,7 @@ class CropAdviceService {
         'vegetative',
         'flowering',
         'pod development',
-        'maturation'
+        'maturation',
       ],
       'plantingMonths': ['June', 'July'],
       'harvestMonths': ['October', 'November'],
@@ -139,7 +139,7 @@ class CropAdviceService {
         'vegetative',
         'flowering',
         'pod formation',
-        'maturation'
+        'maturation',
       ],
       'plantingMonths': ['June', 'July'],
       'harvestMonths': ['December', 'January', 'February'],
@@ -158,7 +158,7 @@ class CropAdviceService {
         'pegging',
         'pod development',
         'kernel development',
-        'maturation'
+        'maturation',
       ],
       'plantingMonths': ['June', 'July', 'January', 'February'],
       'harvestMonths': ['October', 'November', 'May', 'June'],
@@ -177,7 +177,7 @@ class CropAdviceService {
         'vegetative',
         'flowering',
         'grain filling',
-        'maturation'
+        'maturation',
       ],
       'plantingMonths': ['June', 'July', 'October', 'November'],
       'harvestMonths': ['October', 'November', 'February', 'March'],
@@ -197,7 +197,7 @@ class CropAdviceService {
         'panicle initiation',
         'flowering',
         'grain filling',
-        'maturity'
+        'maturity',
       ],
       'plantingMonths': ['June', 'July'],
       'harvestMonths': ['September', 'October'],
@@ -216,7 +216,7 @@ class CropAdviceService {
         'leaf development',
         'bulb formation',
         'bulb development',
-        'maturation'
+        'maturation',
       ],
       'plantingMonths': ['October', 'November', 'January', 'February'],
       'harvestMonths': ['February', 'March', 'April', 'May'],
@@ -235,7 +235,7 @@ class CropAdviceService {
         'vegetative',
         'flowering',
         'fruit development',
-        'ripening'
+        'ripening',
       ],
       'plantingMonths': ['June', 'July', 'October', 'November'],
       'harvestMonths': ['October', 'November', 'February', 'March', 'April'],
@@ -254,7 +254,7 @@ class CropAdviceService {
         'vegetative',
         'flowering',
         'fruit development',
-        'harvesting'
+        'harvesting',
       ],
       'plantingMonths': ['May', 'June', 'September', 'October'],
       'harvestMonths': ['August', 'September', 'January', 'February'],
@@ -274,7 +274,7 @@ class CropAdviceService {
         'flowering',
         'fruit set',
         'veraison',
-        'ripening'
+        'ripening',
       ],
       'plantingMonths': ['January', 'February'],
       'harvestMonths': ['April', 'May', 'June'],
@@ -292,7 +292,7 @@ class CropAdviceService {
         'flowering',
         'fruit set',
         'fruit development',
-        'ripening'
+        'ripening',
       ],
       'plantingMonths': ['July', 'August'],
       'harvestMonths': ['November', 'December', 'January'],
@@ -310,7 +310,7 @@ class CropAdviceService {
         'vegetative',
         'flowering',
         'fruit development',
-        'maturation'
+        'maturation',
       ],
       'plantingMonths': ['July', 'August', 'January', 'February'],
       'harvestMonths': ['February', 'March', 'September', 'October'],
@@ -381,9 +381,10 @@ class CropAdviceService {
       // Update the cache immediately
       _userCropsCache = List<String>.from(crops);
 
-      await _client
-          .from('user_preferences')
-          .upsert({'user_id': userId, 'crops': crops}).select();
+      await _client.from('user_preferences').upsert({
+        'user_id': userId,
+        'crops': crops,
+      }).select();
     } catch (e) {
       AppLogger.e('Error saving user crops', tag: 'CropAdvice', error: e);
     }
@@ -396,16 +397,16 @@ class CropAdviceService {
 
   // Get crop-specific advice based on current weather
   Future<List<Map<String, dynamic>>> getCropSpecificAdvice(
-      Map<String, dynamic> currentWeather,
-      {List<String>? specificCrops}) async {
+    Map<String, dynamic> currentWeather, {
+    List<String>? specificCrops,
+  }) async {
     // Get user's crops if not specified
     List<String> userCrops = specificCrops ?? [];
     if (userCrops.isEmpty) {
       try {
         userCrops = await getUserCrops();
       } catch (e) {
-        AppLogger.w('Error getting user crops',
-            tag: 'CropAdvice', error: e);
+        AppLogger.w('Error getting user crops', tag: 'CropAdvice', error: e);
         userCrops = ['wheat', 'rice']; // Default crops
       }
     }
@@ -428,8 +429,9 @@ class CropAdviceService {
     // Try to fetch advice from Supabase database first
     try {
       // Create a query builder for multiple crop types using 'or' conditions
-      String cropFilter =
-          userCrops.map((crop) => 'crop_type.eq.$crop').join(',');
+      String cropFilter = userCrops
+          .map((crop) => 'crop_type.eq.$crop')
+          .join(',');
 
       // Query the Supabase farming_advice table
       final response = await _client
@@ -453,7 +455,8 @@ class CropAdviceService {
               'iconName': item['icon_name'] ?? 'grass',
               'color': item['color_hex'] ?? '#4CAF50',
               'region': item['region'] ?? 'Maharashtra',
-              'currentStage': item['growth_stage'] ??
+              'currentStage':
+                  item['growth_stage'] ??
                   _estimateGrowthStage(cropType, currentMonth),
               'title': item['advice_title'],
             });
@@ -461,8 +464,11 @@ class CropAdviceService {
         }
       }
     } catch (e) {
-      AppLogger.w('Error fetching crop advice from database',
-          tag: 'CropAdvice', error: e);
+      AppLogger.w(
+        'Error fetching crop advice from database',
+        tag: 'CropAdvice',
+        error: e,
+      );
       // Continue to fallback generation if database fetch fails
     }
 
@@ -482,12 +488,15 @@ class CropAdviceService {
       final Map<String, dynamic> humidityRange = cropData['optimalHumidity'];
 
       // Check if current month is in planting or harvesting season
-      final List<String> plantingMonths =
-          List<String>.from(cropData['plantingMonths'] ?? []);
-      final List<String> harvestMonths =
-          List<String>.from(cropData['harvestMonths'] ?? []);
-      final List<String> growthStages =
-          List<String>.from(cropData['growthStages'] ?? []);
+      final List<String> plantingMonths = List<String>.from(
+        cropData['plantingMonths'] ?? [],
+      );
+      final List<String> harvestMonths = List<String>.from(
+        cropData['harvestMonths'] ?? [],
+      );
+      final List<String> growthStages = List<String>.from(
+        cropData['growthStages'] ?? [],
+      );
       final String region = cropData['region'] ?? 'Maharashtra';
 
       // Initialize an advice string
@@ -512,8 +521,9 @@ class CropAdviceService {
       }
 
       // Add seasonal advice
-      final List<String> growingSeason =
-          List<String>.from(cropData['growingSeason'] ?? []);
+      final List<String> growingSeason = List<String>.from(
+        cropData['growingSeason'] ?? [],
+      );
       if (growingSeason.contains(season)) {
         adviceText += "Current $season season is suitable for $crop. ";
 
@@ -638,7 +648,7 @@ class CropAdviceService {
         'color': colorHex,
         'region': region,
         'currentStage': currentStage,
-        'title': adviceTitle
+        'title': adviceTitle,
       });
     }
 
@@ -652,10 +662,12 @@ class CropAdviceService {
     }
 
     final cropData = _cropPreferences[crop]!;
-    final List<String> plantingMonths =
-        List<String>.from(cropData['plantingMonths'] ?? []);
-    final List<String> growthStages =
-        List<String>.from(cropData['growthStages'] ?? []);
+    final List<String> plantingMonths = List<String>.from(
+      cropData['plantingMonths'] ?? [],
+    );
+    final List<String> growthStages = List<String>.from(
+      cropData['growthStages'] ?? [],
+    );
 
     if (plantingMonths.isEmpty || growthStages.isEmpty) {
       return '';
@@ -674,7 +686,7 @@ class CropAdviceService {
       'September',
       'October',
       'November',
-      'December'
+      'December',
     ];
 
     // Find closest planting month

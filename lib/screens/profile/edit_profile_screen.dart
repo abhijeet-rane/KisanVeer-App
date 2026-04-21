@@ -87,9 +87,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         return imageUrl;
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error uploading image: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error uploading image: $e')));
     } finally {
       setState(() {
         _isUploading = false;
@@ -141,7 +141,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           ),
         );
         Navigator.pop(
-            context, updatedUser); // Return success to previous screen
+          context,
+          updatedUser,
+        ); // Return success to previous screen
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -151,9 +153,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         );
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error saving profile: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error saving profile: $e')));
     } finally {
       setState(() {
         _isSaving = false;
@@ -177,18 +179,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         });
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error picking image: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error picking image: $e')));
     }
   }
 
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
     return Scaffold(
       appBar: AppBar(
@@ -211,16 +211,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     backgroundImage: _imageFile != null
                         ? FileImage(_imageFile!) as ImageProvider<Object>
                         : (_userModel?.photoUrl.isNotEmpty == true
-                            ? NetworkImage(_userModel!.photoUrl)
-                                as ImageProvider<Object>
-                            : null),
-                    child: _imageFile == null &&
+                              ? NetworkImage(_userModel!.photoUrl)
+                                    as ImageProvider<Object>
+                              : null),
+                    child:
+                        _imageFile == null &&
                             (_userModel?.photoUrl.isEmpty ?? true)
                         ? Text(
                             _nameController.text.isNotEmpty
                                 ? _nameController.text
-                                    .substring(0, 1)
-                                    .toUpperCase()
+                                      .substring(0, 1)
+                                      .toUpperCase()
                                 : 'U',
                             style: const TextStyle(
                               fontSize: 40,
@@ -353,8 +354,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             MultiSelectBottomSheetField<String>(
               initialValue: _selectedCrops,
               items: _availableCrops
-                  .map((crop) => MultiSelectItem<String>(
-                      crop, crop[0].toUpperCase() + crop.substring(1)))
+                  .map(
+                    (crop) => MultiSelectItem<String>(
+                      crop,
+                      crop[0].toUpperCase() + crop.substring(1),
+                    ),
+                  )
                   .toList(),
               title: const Text('Select Crops'),
               buttonText: const Text('Tap to pick crops'),
@@ -416,9 +421,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       decoration: InputDecoration(
         labelText: label,
         prefixIcon: Icon(prefixIcon),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
         contentPadding: EdgeInsets.symmetric(
           vertical: maxLines > 1 ? 16 : 0,
           horizontal: 16,

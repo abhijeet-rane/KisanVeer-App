@@ -19,10 +19,8 @@ import 'package:url_launcher/url_launcher.dart';
 class ProductDetailsScreen extends StatefulWidget {
   final String productId;
 
-  const ProductDetailsScreen({
-    Key? key,
-    required this.productId,
-  }) : super(key: key);
+  const ProductDetailsScreen({Key? key, required this.productId})
+    : super(key: key);
 
   @override
   State<ProductDetailsScreen> createState() => _ProductDetailsScreenState();
@@ -72,11 +70,13 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   Future<void> _initProductExtras() async {
     final userId = await _marketplaceService.getCurrentUserId();
     // Check if user can review this product
-    final canReview =
-        await _marketplaceService.canUserReviewProduct(widget.productId);
+    final canReview = await _marketplaceService.canUserReviewProduct(
+      widget.productId,
+    );
     // Check if user has already reviewed
-    final reviews =
-        await _marketplaceService.getProductReviews(widget.productId);
+    final reviews = await _marketplaceService.getProductReviews(
+      widget.productId,
+    );
     final hasReviewed = reviews.any((r) => r.userId == userId);
     setState(() {
       _canReviewProduct = canReview;
@@ -87,16 +87,19 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     _isSeller = product.sellerId == _currentUserId;
     // Fetch interest state
     if (!_isSeller) {
-      final buyers =
-          await _marketplaceService.getInterestedBuyers(widget.productId);
+      final buyers = await _marketplaceService.getInterestedBuyers(
+        widget.productId,
+      );
       _isInterested = buyers.any((u) => u.id == _currentUserId);
     } else {
-      _interestedBuyers =
-          await _marketplaceService.getInterestedBuyers(widget.productId);
+      _interestedBuyers = await _marketplaceService.getInterestedBuyers(
+        widget.productId,
+      );
     }
     // Fetch contact info
-    final contact =
-        await _marketplaceService.getSellerContact(widget.productId);
+    final contact = await _marketplaceService.getSellerContact(
+      widget.productId,
+    );
     _contactPhone = contact['phone'];
     _contactEmail = contact['email'];
     if (mounted) setState(() {});
@@ -201,9 +204,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error adding to cart: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error adding to cart: $e')));
       }
     } finally {
       if (mounted) {
@@ -255,10 +258,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                height: 300,
-                color: Colors.white,
-              ),
+              Container(height: 300, color: Colors.white),
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
@@ -270,17 +270,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                       color: Colors.white,
                     ),
                     const SizedBox(height: 8),
-                    Container(
-                      width: 150,
-                      height: 16,
-                      color: Colors.white,
-                    ),
+                    Container(width: 150, height: 16, color: Colors.white),
                     const SizedBox(height: 16),
-                    Container(
-                      width: 100,
-                      height: 20,
-                      color: Colors.white,
-                    ),
+                    Container(width: 100, height: 20, color: Colors.white),
                     const SizedBox(height: 16),
                     Container(
                       width: double.infinity,
@@ -315,36 +307,28 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.error_outline,
-              size: 64,
-              color: Colors.red[300],
-            ),
+            Icon(Icons.error_outline, size: 64, color: Colors.red[300]),
             const SizedBox(height: 16),
             const Text(
               'Error Loading Product',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             Text(
               error,
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey[600],
-              ),
+              style: TextStyle(fontSize: 16, color: Colors.grey[600]),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
             ElevatedButton(
               onPressed: () {
                 setState(() {
-                  _productFuture =
-                      _marketplaceService.getProductById(widget.productId);
-                  _reviewsFuture =
-                      _marketplaceService.getProductReviews(widget.productId);
+                  _productFuture = _marketplaceService.getProductById(
+                    widget.productId,
+                  );
+                  _reviewsFuture = _marketplaceService.getProductReviews(
+                    widget.productId,
+                  );
                 });
               },
               child: const Text('Retry'),
@@ -378,7 +362,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const CartScreen()),
+                        builder: (context) => const CartScreen(),
+                      ),
                     ).then((_) => _loadCartCount());
                   },
                 ),
@@ -421,7 +406,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                   children: [
                     Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 4),
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
                         color: AppColors.primary.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(4),
@@ -446,10 +433,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                     ),
                     Text(
                       ' (${product.reviewCount})',
-                      style: TextStyle(
-                        color: Colors.grey[600],
-                        fontSize: 14,
-                      ),
+                      style: TextStyle(color: Colors.grey[600], fontSize: 14),
                     ),
                   ],
                 ),
@@ -473,13 +457,18 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    const Icon(Icons.info_outline,
-                        size: 16, color: Colors.grey),
+                    const Icon(
+                      Icons.info_outline,
+                      size: 16,
+                      color: Colors.grey,
+                    ),
                     const SizedBox(width: 4),
                     Text(
                       'Status: ',
                       style: TextStyle(
-                          fontWeight: FontWeight.bold, color: Colors.grey[700]),
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey[700],
+                      ),
                     ),
                     Text(
                       product.status ?? 'available',
@@ -487,8 +476,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                         color: product.status == 'sold'
                             ? Colors.red
                             : product.status == 'inactive'
-                                ? Colors.grey
-                                : Colors.green,
+                            ? Colors.grey
+                            : Colors.green,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -503,10 +492,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                       product.location != null && product.location!.isNotEmpty
                           ? product.location!
                           : 'Location not specified',
-                      style: TextStyle(
-                        color: Colors.grey[600],
-                        fontSize: 14,
-                      ),
+                      style: TextStyle(color: Colors.grey[600], fontSize: 14),
                     ),
                   ],
                 ),
@@ -517,10 +503,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                     const SizedBox(width: 4),
                     Text(
                       '${product.availableQuantity} ${product.unit} available',
-                      style: TextStyle(
-                        color: Colors.grey[600],
-                        fontSize: 14,
-                      ),
+                      style: TextStyle(color: Colors.grey[600], fontSize: 14),
                     ),
                   ],
                 ),
@@ -531,28 +514,19 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                     const SizedBox(width: 4),
                     Text(
                       'Listed on ${DateFormat('MMM dd, yyyy').format(product.createdAt)}',
-                      style: TextStyle(
-                        color: Colors.grey[600],
-                        fontSize: 14,
-                      ),
+                      style: TextStyle(color: Colors.grey[600], fontSize: 14),
                     ),
                   ],
                 ),
                 const Divider(height: 32),
                 const Text(
                   'Description',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   product.description,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    height: 1.5,
-                  ),
+                  style: const TextStyle(fontSize: 16, height: 1.5),
                 ),
                 const Divider(height: 32),
                 if (product.seller != null) _buildSellerInfo(product),
@@ -586,8 +560,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                       child: CustomButton(
                         text:
                             'Add to Cart : ₹${(product.price * _quantity).toStringAsFixed(2)}',
-                        onPressed:
-                            _addingToCart ? null : () => _addToCart(product),
+                        onPressed: _addingToCart
+                            ? null
+                            : () => _addToCart(product),
                         color: AppColors.primary,
                         textColor: Colors.white,
                         isLoading: _addingToCart,
@@ -603,16 +578,19 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                     children: [
                       Flexible(
                         child: ElevatedButton.icon(
-                          icon: Icon(_isInterested
-                              ? Icons.favorite
-                              : Icons.favorite_border),
-                          label: Text(_isInterested
-                              ? 'Unmark Interest'
-                              : 'Mark Interest'),
+                          icon: Icon(
+                            _isInterested
+                                ? Icons.favorite
+                                : Icons.favorite_border,
+                          ),
+                          label: Text(
+                            _isInterested ? 'Unmark Interest' : 'Mark Interest',
+                          ),
                           onPressed: _toggleInterest,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                                _isInterested ? Colors.red : AppColors.primary,
+                            backgroundColor: _isInterested
+                                ? Colors.red
+                                : AppColors.primary,
                           ),
                         ),
                       ),
@@ -641,13 +619,17 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const SizedBox(height: 12),
-                      const Text('Interested Buyers:',
-                          style: TextStyle(fontWeight: FontWeight.bold)),
-                      ..._interestedBuyers.map((buyer) => ListTile(
-                            leading: const Icon(Icons.person),
-                            title: Text(buyer.displayName ?? 'User'),
-                            subtitle: Text(buyer.email ?? ''),
-                          )),
+                      const Text(
+                        'Interested Buyers:',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      ..._interestedBuyers.map(
+                        (buyer) => ListTile(
+                          leading: const Icon(Icons.person),
+                          title: Text(buyer.displayName ?? 'User'),
+                          subtitle: Text(buyer.email ?? ''),
+                        ),
+                      ),
                     ],
                   ),
               ],
@@ -668,10 +650,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
       children: [
         const Text(
           'Seller Information',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 12),
         Row(
@@ -714,10 +693,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                     (seller?.location?.isNotEmpty ?? false)
                         ? seller!.location!
                         : 'Location not available',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey[600],
-                    ),
+                    style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                   ),
                 ],
               ),
@@ -775,10 +751,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
           children: [
             Text(
               'Reviews (${product.reviewCount})',
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             if (product.reviewCount > 0)
               TextButton(
@@ -804,9 +777,13 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('Write a Review',
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold)),
+                      const Text(
+                        'Write a Review',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                       const SizedBox(height: 12),
                       Row(
                         children: [
@@ -814,8 +791,12 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                           DropdownButton<int>(
                             value: _reviewRating,
                             items: List.generate(5, (i) => i + 1)
-                                .map((v) => DropdownMenuItem(
-                                    value: v, child: Text(v.toString())))
+                                .map(
+                                  (v) => DropdownMenuItem(
+                                    value: v,
+                                    child: Text(v.toString()),
+                                  ),
+                                )
                                 .toList(),
                             onChanged: (val) {
                               if (val != null)
@@ -856,7 +837,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                 });
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
-                                      content: Text('Review submitted!')),
+                                    content: Text('Review submitted!'),
+                                  ),
                                 );
                                 // Optionally refresh reviews
                                 setState(() {
@@ -866,8 +848,10 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                               } catch (e) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
-                                      content:
-                                          Text('Failed to submit review: $e')),
+                                    content: Text(
+                                      'Failed to submit review: $e',
+                                    ),
+                                  ),
                                 );
                               }
                             }

@@ -43,8 +43,12 @@ class _WeatherScreenState extends State<WeatherScreen> {
         _userCrops = crops;
       });
     } catch (e, s) {
-      AppLogger.e('Error loading user crops',
-          tag: 'Weather', error: e, stackTrace: s);
+      AppLogger.e(
+        'Error loading user crops',
+        tag: 'Weather',
+        error: e,
+        stackTrace: s,
+      );
     }
   }
 
@@ -78,8 +82,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
           _errorMessage = 'other';
         }
       });
-      AppLogger.e('Error fetching weather data',
-          tag: 'Weather', error: e);
+      AppLogger.e('Error fetching weather data', tag: 'Weather', error: e);
     }
   }
 
@@ -92,17 +95,19 @@ class _WeatherScreenState extends State<WeatherScreen> {
         _alerts = alertMessages;
       });
     } catch (e, s) {
-      AppLogger.e('Error loading weather alerts',
-          tag: 'Weather', error: e, stackTrace: s);
+      AppLogger.e(
+        'Error loading weather alerts',
+        tag: 'Weather',
+        error: e,
+        stackTrace: s,
+      );
     }
   }
 
   Future<void> _searchLocation() async {
     final result = await Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (context) => const LocationSearchScreen(),
-      ),
+      MaterialPageRoute(builder: (context) => const LocationSearchScreen()),
     );
 
     if (result != null && result is Map<String, dynamic>) {
@@ -202,8 +207,12 @@ class _WeatherScreenState extends State<WeatherScreen> {
         ),
       );
     } catch (e, s) {
-      AppLogger.e('Failed to save user crops',
-          tag: 'Weather', error: e, stackTrace: s);
+      AppLogger.e(
+        'Failed to save user crops',
+        tag: 'Weather',
+        error: e,
+        stackTrace: s,
+      );
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -219,8 +228,8 @@ class _WeatherScreenState extends State<WeatherScreen> {
     final cropsLabel = _userCrops.isEmpty
         ? 'My Crops'
         : _userCrops.length == 1
-            ? _userCrops.first[0].toUpperCase() + _userCrops.first.substring(1)
-            : '${_userCrops.length} crops';
+        ? _userCrops.first[0].toUpperCase() + _userCrops.first.substring(1)
+        : '${_userCrops.length} crops';
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
@@ -230,8 +239,11 @@ class _WeatherScreenState extends State<WeatherScreen> {
           Expanded(
             child: Row(
               children: [
-                const Icon(Icons.location_on,
-                    size: 20, color: AppColors.textSecondary),
+                const Icon(
+                  Icons.location_on,
+                  size: 20,
+                  color: AppColors.textSecondary,
+                ),
                 const SizedBox(width: 4),
                 Flexible(
                   child: Text(
@@ -314,8 +326,10 @@ class _WeatherScreenState extends State<WeatherScreen> {
                 itemCount: _alerts.length,
                 itemBuilder: (context, index) {
                   return ListTile(
-                    leading:
-                        const Icon(Icons.warning_amber, color: Colors.orange),
+                    leading: const Icon(
+                      Icons.warning_amber,
+                      color: Colors.orange,
+                    ),
                     title: Text(_alerts[index]),
                   );
                 },
@@ -367,18 +381,12 @@ class _WeatherScreenState extends State<WeatherScreen> {
             const SizedBox(height: 4),
             Text(
               _alerts.first, // Show first alert in the banner
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 14,
-              ),
+              style: const TextStyle(color: Colors.white, fontSize: 14),
             ),
             if (_alerts.length > 1)
               Text(
                 '+${_alerts.length - 1} more alerts',
-                style: const TextStyle(
-                  color: Colors.white70,
-                  fontSize: 12,
-                ),
+                style: const TextStyle(color: Colors.white70, fontSize: 12),
               ),
           ],
         ),
@@ -390,8 +398,9 @@ class _WeatherScreenState extends State<WeatherScreen> {
   Widget build(BuildContext context) {
     if (_isLoading) {
       return Scaffold(
-          backgroundColor: Colors.white,
-          body: const Center(child: CircularProgressIndicator()));
+        backgroundColor: Colors.white,
+        body: const Center(child: CircularProgressIndicator()),
+      );
     }
 
     if (_errorMessage != null) {
@@ -405,10 +414,10 @@ class _WeatherScreenState extends State<WeatherScreen> {
                 _errorMessage == 'locationDisabled'
                     ? 'Location services are disabled. Please enable location services to view weather data.'
                     : _errorMessage == 'permissionDenied'
-                        ? 'Location permission denied. Please grant location permission to view weather data.'
-                        : _errorMessage == 'permissionPermanentlyDenied'
-                            ? 'Location permission permanently denied. Please enable it in settings.'
-                            : 'Failed to load weather data. Please try again.',
+                    ? 'Location permission denied. Please grant location permission to view weather data.'
+                    : _errorMessage == 'permissionPermanentlyDenied'
+                    ? 'Location permission permanently denied. Please enable it in settings.'
+                    : 'Failed to load weather data. Please try again.',
                 textAlign: TextAlign.center,
                 style: AppTextStyles.bodyLarge,
               ),
@@ -419,10 +428,10 @@ class _WeatherScreenState extends State<WeatherScreen> {
                   _errorMessage == 'locationDisabled'
                       ? 'Open Settings'
                       : _errorMessage == 'permissionDenied'
-                          ? 'Grant Permission'
-                          : _errorMessage == 'permissionPermanentlyDenied'
-                              ? 'Open App Settings'
-                              : 'Try Again',
+                      ? 'Grant Permission'
+                      : _errorMessage == 'permissionPermanentlyDenied'
+                      ? 'Open App Settings'
+                      : 'Try Again',
                 ),
               ),
             ],
@@ -434,9 +443,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
     if (_weatherData == null) {
       return Scaffold(
         backgroundColor: Colors.white,
-        body: const Center(
-          child: Text('No weather data available'),
-        ),
+        body: const Center(child: Text('No weather data available')),
       );
     }
 
@@ -445,193 +452,198 @@ class _WeatherScreenState extends State<WeatherScreen> {
     final forecast = _weatherData!['forecast'];
 
     return Scaffold(
-        backgroundColor: Colors.white,
-        body: RefreshIndicator(
-          onRefresh: _refreshWeatherData,
-          child: SafeArea(
-            child: SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 8),
-                  _buildLocationHeader(),
-                  if (_alerts.isNotEmpty) _buildAlertBanner(),
-                  Container(
-                    margin: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 12),
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [
-                          Colors.blue.shade400,
-                          Colors.blue.shade600,
+      backgroundColor: Colors.white,
+      body: RefreshIndicator(
+        onRefresh: _refreshWeatherData,
+        child: SafeArea(
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 8),
+                _buildLocationHeader(),
+                if (_alerts.isNotEmpty) _buildAlertBanner(),
+                Container(
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [Colors.blue.shade400, Colors.blue.shade600],
+                    ),
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.blue.shade300.withValues(alpha: 0.3),
+                        blurRadius: 12,
+                        offset: const Offset(0, 6),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Date and Location
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            DateFormat('EEEE, MMM d').format(DateTime.now()),
+                            style: AppTextStyles.bodySmall.copyWith(
+                              color: Colors.white.withValues(alpha: 0.9),
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          const Icon(
+                            Icons.location_on_outlined,
+                            color: Colors.white,
+                            size: 20,
+                          ),
                         ],
                       ),
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.blue.shade300.withValues(alpha: 0.3),
-                          blurRadius: 12,
-                          offset: const Offset(0, 6),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Date and Location
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              DateFormat('EEEE, MMM d').format(DateTime.now()),
-                              style: AppTextStyles.bodySmall.copyWith(
-                                color: Colors.white.withValues(alpha: 0.9),
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            const Icon(Icons.location_on_outlined,
-                                color: Colors.white, size: 20),
-                          ],
-                        ),
-                        const SizedBox(height: 20),
+                      const SizedBox(height: 20),
 
-                        // Temperature and Condition
-                        Row(
-                          children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  '${currentWeather['temperature']}°',
-                                  style: AppTextStyles.h1.copyWith(
-                                    color: Colors.white,
-                                    fontSize: 54,
-                                    fontWeight: FontWeight.bold,
-                                    shadows: [
-                                      Shadow(
-                                        color: Colors.black.withValues(alpha: 0.2),
-                                        blurRadius: 4,
+                      // Temperature and Condition
+                      Row(
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '${currentWeather['temperature']}°',
+                                style: AppTextStyles.h1.copyWith(
+                                  color: Colors.white,
+                                  fontSize: 54,
+                                  fontWeight: FontWeight.bold,
+                                  shadows: [
+                                    Shadow(
+                                      color: Colors.black.withValues(
+                                        alpha: 0.2,
                                       ),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(height: 6),
-                                Text(
-                                  currentWeather['condition'],
-                                  style: AppTextStyles.bodyMedium.copyWith(
-                                    color: Colors.white.withValues(alpha: 0.9),
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                                const SizedBox(height: 10),
-
-                                // Feels Like
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 12, vertical: 6),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white.withValues(alpha: 0.2),
-                                    borderRadius: BorderRadius.circular(14),
-                                  ),
-                                  child: Text(
-                                    'Feels like ${currentWeather['feelsLike']}°',
-                                    style: AppTextStyles.bodySmall.copyWith(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w600,
+                                      blurRadius: 4,
                                     ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(height: 6),
+                              Text(
+                                currentWeather['condition'],
+                                style: AppTextStyles.bodyMedium.copyWith(
+                                  color: Colors.white.withValues(alpha: 0.9),
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+
+                              // Feels Like
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 6,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withValues(alpha: 0.2),
+                                  borderRadius: BorderRadius.circular(14),
+                                ),
+                                child: Text(
+                                  'Feels like ${currentWeather['feelsLike']}°',
+                                  style: AppTextStyles.bodySmall.copyWith(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w600,
                                   ),
                                 ),
-                              ],
-                            ),
-                            const Spacer(),
+                              ),
+                            ],
+                          ),
+                          const Spacer(),
 
-                            // Weather Icon
-                            SvgPicture.asset(
-                              _getWeatherIcon(currentWeather['condition']),
-                              height: 90,
-                              width: 90,
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 24),
+                          // Weather Icon
+                          SvgPicture.asset(
+                            _getWeatherIcon(currentWeather['condition']),
+                            height: 90,
+                            width: 90,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 24),
 
-                        // Weather Details with Icons
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            _buildWeatherDetail('💨 Wind',
-                                '${currentWeather['windSpeed']} km/h'),
-                            _buildWeatherDetail('💧 Humidity',
-                                '${currentWeather['humidity']}%'),
-                            _buildWeatherDetail(
-                                '🔆 UV Index',
-                                _getUVIndexDescription(
-                                    currentWeather['uvIndex'])),
-                          ],
-                        ),
-                      ],
-                    ),
+                      // Weather Details with Icons
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          _buildWeatherDetail(
+                            '💨 Wind',
+                            '${currentWeather['windSpeed']} km/h',
+                          ),
+                          _buildWeatherDetail(
+                            '💧 Humidity',
+                            '${currentWeather['humidity']}%',
+                          ),
+                          _buildWeatherDetail(
+                            '🔆 UV Index',
+                            _getUVIndexDescription(currentWeather['uvIndex']),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 24),
-                  Padding(
+                ),
+                const SizedBox(height: 24),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Text('Hourly Forecast', style: AppTextStyles.h3),
+                ),
+                const SizedBox(height: 8),
+                SizedBox(
+                  height: 120,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
                     padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Text(
-                      'Hourly Forecast',
-                      style: AppTextStyles.h3,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  SizedBox(
-                    height: 120,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      itemCount: hourlyForecast.length,
-                      itemBuilder: (context, index) {
-                        final hour = hourlyForecast[index];
-                        return HourForecast(
-                          time: hour['hour'],
-                          temperature: '${hour['temperature']}°',
-                          icon: hour['icon'],
-                        );
-                      },
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Text(
-                      '5-Day Forecast',
-                      style: AppTextStyles.h3,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  ListView.builder(
-                    physics: const NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    itemCount: forecast.length,
+                    itemCount: hourlyForecast.length,
                     itemBuilder: (context, index) {
-                      final day = forecast[index];
-                      return ForecastCard(
-                        day: '${day['day']}, ${day['date']}',
-                        condition: day['condition'],
-                        minTemp: '${day['tempMin']}°',
-                        maxTemp: '${day['tempMax']}°',
-                        icon: day['icon'],
+                      final hour = hourlyForecast[index];
+                      return HourForecast(
+                        time: hour['hour'],
+                        temperature: '${hour['temperature']}°',
+                        icon: hour['icon'],
                       );
                     },
                   ),
-                  const SizedBox(height: 24),
-                ],
-              ),
+                ),
+                const SizedBox(height: 24),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Text('5-Day Forecast', style: AppTextStyles.h3),
+                ),
+                const SizedBox(height: 8),
+                ListView.builder(
+                  physics: const NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  itemCount: forecast.length,
+                  itemBuilder: (context, index) {
+                    final day = forecast[index];
+                    return ForecastCard(
+                      day: '${day['day']}, ${day['date']}',
+                      condition: day['condition'],
+                      minTemp: '${day['tempMin']}°',
+                      maxTemp: '${day['tempMax']}°',
+                      icon: day['icon'],
+                    );
+                  },
+                ),
+                const SizedBox(height: 24),
+              ],
             ),
           ),
-        ));
+        ),
+      ),
+    );
   }
 
   Widget _buildWeatherDetail(String label, String value) {

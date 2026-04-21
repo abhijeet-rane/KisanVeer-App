@@ -48,10 +48,12 @@ class CommunityService {
     }
 
     return response
-        .map((row) => Post.fromJson(
-              row,
-              author: UserProfile.fromJson(row['user_profiles']),
-            ))
+        .map(
+          (row) => Post.fromJson(
+            row,
+            author: UserProfile.fromJson(row['user_profiles']),
+          ),
+        )
         .toList();
   }
 
@@ -86,10 +88,7 @@ class CommunityService {
         .select('*, user_profiles(*)')
         .single();
 
-    return Post.fromJson(
-      data,
-      author: UserProfile.fromJson(userProfile),
-    );
+    return Post.fromJson(data, author: UserProfile.fromJson(userProfile));
   }
 
   Future<void> likePost(String postId) async {
@@ -112,10 +111,10 @@ class CommunityService {
       throw Exception('User not authenticated');
     }
 
-    await _supabase
-        .from('post_likes')
-        .delete()
-        .match({'user_id': userId, 'post_id': postId});
+    await _supabase.from('post_likes').delete().match({
+      'user_id': userId,
+      'post_id': postId,
+    });
 
     await _supabase.rpc('decrement_post_likes', params: {'post_id': postId});
   }
@@ -149,8 +148,9 @@ class CommunityService {
           .select('comment_id')
           .eq('user_id', userId);
 
-      final likedCommentIds =
-          likedComments.map((row) => row['comment_id']).toSet();
+      final likedCommentIds = likedComments
+          .map((row) => row['comment_id'])
+          .toSet();
 
       return response.map((row) {
         return Comment.fromJson(
@@ -161,15 +161,20 @@ class CommunityService {
     }
 
     return response
-        .map((row) => Comment.fromJson(
-              row,
-              author: UserProfile.fromJson(row['user_profiles']),
-            ))
+        .map(
+          (row) => Comment.fromJson(
+            row,
+            author: UserProfile.fromJson(row['user_profiles']),
+          ),
+        )
         .toList();
   }
 
-  Future<Comment> createComment(String postId, String content,
-      {String? parentCommentId}) async {
+  Future<Comment> createComment(
+    String postId,
+    String content, {
+    String? parentCommentId,
+  }) async {
     final userId = _supabase.auth.currentUser?.id;
     if (userId == null) {
       throw Exception('User not authenticated');
@@ -212,8 +217,10 @@ class CommunityService {
       'created_at': DateTime.now().toIso8601String(),
     });
 
-    await _supabase
-        .rpc('increment_comment_likes', params: {'comment_id': commentId});
+    await _supabase.rpc(
+      'increment_comment_likes',
+      params: {'comment_id': commentId},
+    );
   }
 
   Future<void> unlikeComment(String commentId) async {
@@ -222,13 +229,15 @@ class CommunityService {
       throw Exception('User not authenticated');
     }
 
-    await _supabase
-        .from('comment_likes')
-        .delete()
-        .match({'user_id': userId, 'comment_id': commentId});
+    await _supabase.from('comment_likes').delete().match({
+      'user_id': userId,
+      'comment_id': commentId,
+    });
 
-    await _supabase
-        .rpc('decrement_comment_likes', params: {'comment_id': commentId});
+    await _supabase.rpc(
+      'decrement_comment_likes',
+      params: {'comment_id': commentId},
+    );
   }
 
   // Categories
@@ -261,8 +270,9 @@ class CommunityService {
           .select('community_id')
           .eq('user_id', userId);
 
-      final memberCommunityIds =
-          memberCommunities.map((row) => row['community_id'] as String).toSet();
+      final memberCommunityIds = memberCommunities
+          .map((row) => row['community_id'] as String)
+          .toSet();
 
       // Get pending join requests
       final pendingRequests = await _supabase
@@ -271,8 +281,9 @@ class CommunityService {
           .eq('user_id', userId)
           .eq('status', 'pending');
 
-      final pendingRequestIds =
-          pendingRequests.map((row) => row['community_id'] as String).toSet();
+      final pendingRequestIds = pendingRequests
+          .map((row) => row['community_id'] as String)
+          .toSet();
 
       return response.map((row) {
         final community = Community.fromJson(
@@ -286,10 +297,12 @@ class CommunityService {
     }
 
     return response
-        .map((row) => Community.fromJson(
-              row,
-              admin: UserProfile.fromJson(row['user_profiles']),
-            ))
+        .map(
+          (row) => Community.fromJson(
+            row,
+            admin: UserProfile.fromJson(row['user_profiles']),
+          ),
+        )
         .toList();
   }
 
@@ -313,8 +326,9 @@ class CommunityService {
       await _supabase.storage
           .from('community_images')
           .upload(filePath, posterImage);
-      posterImageUrl =
-          _supabase.storage.from('community_images').getPublicUrl(filePath);
+      posterImageUrl = _supabase.storage
+          .from('community_images')
+          .getPublicUrl(filePath);
     }
 
     final response = await _supabase
@@ -369,10 +383,13 @@ class CommunityService {
       });
     }
 
-    await _supabase.from('community_join_requests').update({
-      'status': accept ? 'accepted' : 'rejected',
-      'processed_at': DateTime.now().toIso8601String(),
-    }).eq('id', requestId);
+    await _supabase
+        .from('community_join_requests')
+        .update({
+          'status': accept ? 'accepted' : 'rejected',
+          'processed_at': DateTime.now().toIso8601String(),
+        })
+        .eq('id', requestId);
   }
 
   Future<List<CommunityThread>> getCommunityThreads(String communityId) async {
@@ -383,10 +400,12 @@ class CommunityService {
         .order('created_at', ascending: false);
 
     return response
-        .map((row) => CommunityThread.fromJson(
-              row,
-              creator: UserProfile.fromJson(row['creator_profiles']),
-            ))
+        .map(
+          (row) => CommunityThread.fromJson(
+            row,
+            creator: UserProfile.fromJson(row['creator_profiles']),
+          ),
+        )
         .toList();
   }
 
@@ -425,10 +444,12 @@ class CommunityService {
         .order('created_at');
 
     return response
-        .map((row) => CommunityMessage.fromJson(
-              row,
-              sender: UserProfile.fromJson(row['sender_profiles']),
-            ))
+        .map(
+          (row) => CommunityMessage.fromJson(
+            row,
+            sender: UserProfile.fromJson(row['sender_profiles']),
+          ),
+        )
         .toList();
   }
 
@@ -454,8 +475,9 @@ class CommunityService {
         await _supabase.storage
             .from('community_images')
             .upload(filePath, image);
-        final url =
-            _supabase.storage.from('community_images').getPublicUrl(filePath);
+        final url = _supabase.storage
+            .from('community_images')
+            .getPublicUrl(filePath);
         imageUrls.add(url);
       }
     }
@@ -488,10 +510,12 @@ class CommunityService {
         .order('requested_at', ascending: true);
 
     return response
-        .map((row) => JoinRequest.fromJson(
-              row,
-              user: UserProfile.fromJson(row['user_profiles']),
-            ))
+        .map(
+          (row) => JoinRequest.fromJson(
+            row,
+            user: UserProfile.fromJson(row['user_profiles']),
+          ),
+        )
         .toList();
   }
 
@@ -531,8 +555,9 @@ class CommunityService {
       await _supabase.storage
           .from('community_images')
           .upload(filePath, posterImage);
-      updates['poster_image_url'] =
-          _supabase.storage.from('community_images').getPublicUrl(filePath);
+      updates['poster_image_url'] = _supabase.storage
+          .from('community_images')
+          .getPublicUrl(filePath);
     }
 
     if (updates.isNotEmpty) {
@@ -578,8 +603,10 @@ class CommunityService {
       });
 
       // Update the members count
-      await _supabase.rpc('increment_community_members',
-          params: {'community_id': communityId});
+      await _supabase.rpc(
+        'increment_community_members',
+        params: {'community_id': communityId},
+      );
     }
   }
 

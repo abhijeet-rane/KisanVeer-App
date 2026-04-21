@@ -141,10 +141,7 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
                         SizedBox(height: 8),
                         Text(
                           'Control how your information is shared with other users and the KisanVeer community.',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.black87,
-                          ),
+                          style: TextStyle(fontSize: 14, color: Colors.black87),
                         ),
                       ],
                     ),
@@ -164,9 +161,7 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
                       activeColor: AppColors.primary,
                       onChanged: (value) {
                         setState(() {
-                          _settings = _settings.copyWith(
-                            shareLocation: value,
-                          );
+                          _settings = _settings.copyWith(shareLocation: value);
                         });
                       },
                     ),
@@ -328,9 +323,7 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
                       activeColor: AppColors.primary,
                       onChanged: (value) {
                         setState(() {
-                          _settings = _settings.copyWith(
-                            shareCropData: value,
-                          );
+                          _settings = _settings.copyWith(shareCropData: value);
                         });
                       },
                     ),

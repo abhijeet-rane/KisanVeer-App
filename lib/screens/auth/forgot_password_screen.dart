@@ -85,14 +85,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Header
-              Text(
-                'Reset Password',
-                style: AppTextStyles.h1,
-              )
+              Text('Reset Password', style: AppTextStyles.h1)
                   .animate()
-                  .fadeIn(
-                    duration: const Duration(milliseconds: 600),
-                  )
+                  .fadeIn(duration: const Duration(milliseconds: 600))
                   .moveX(
                     begin: -20,
                     end: 0,
@@ -108,9 +103,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   color: AppColors.textSecondary,
                 ),
               ).animate().fadeIn(
-                    duration: const Duration(milliseconds: 600),
-                    delay: const Duration(milliseconds: 200),
-                  ),
+                duration: const Duration(milliseconds: 600),
+                delay: const Duration(milliseconds: 200),
+              ),
 
               const SizedBox(height: 40),
 
@@ -129,9 +124,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                           prefixIcon: Icons.email_outlined,
                           validator: Validators.validateEmail,
                         ).animate().fadeIn(
-                              duration: const Duration(milliseconds: 600),
-                              delay: const Duration(milliseconds: 300),
-                            ),
+                          duration: const Duration(milliseconds: 600),
+                          delay: const Duration(milliseconds: 300),
+                        ),
 
                         const SizedBox(height: 24),
 
@@ -174,9 +169,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                           isLoading: _isLoading,
                           onPressed: _sendResetLink,
                         ).animate().fadeIn(
-                              duration: const Duration(milliseconds: 600),
-                              delay: const Duration(milliseconds: 400),
-                            ),
+                          duration: const Duration(milliseconds: 600),
+                          delay: const Duration(milliseconds: 400),
+                        ),
 
                         const Spacer(),
                       ],
@@ -202,9 +197,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                           size: 50,
                         ),
                       ).animate().scale(
-                            duration: const Duration(milliseconds: 600),
-                            curve: Curves.elasticOut,
-                          ),
+                        duration: const Duration(milliseconds: 600),
+                        curve: Curves.elasticOut,
+                      ),
 
                       const SizedBox(height: 24),
 
@@ -213,9 +208,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         style: AppTextStyles.h2,
                         textAlign: TextAlign.center,
                       ).animate().fadeIn(
-                            duration: const Duration(milliseconds: 600),
-                            delay: const Duration(milliseconds: 300),
-                          ),
+                        duration: const Duration(milliseconds: 600),
+                        delay: const Duration(milliseconds: 300),
+                      ),
 
                       const SizedBox(height: 16),
 
@@ -226,9 +221,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         ),
                         textAlign: TextAlign.center,
                       ).animate().fadeIn(
-                            duration: const Duration(milliseconds: 600),
-                            delay: const Duration(milliseconds: 400),
-                          ),
+                        duration: const Duration(milliseconds: 600),
+                        delay: const Duration(milliseconds: 400),
+                      ),
 
                       const SizedBox(height: 32),
 
@@ -237,9 +232,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         style: AppTextStyles.bodyMedium,
                         textAlign: TextAlign.center,
                       ).animate().fadeIn(
-                            duration: const Duration(milliseconds: 600),
-                            delay: const Duration(milliseconds: 500),
-                          ),
+                        duration: const Duration(milliseconds: 600),
+                        delay: const Duration(milliseconds: 500),
+                      ),
 
                       const SizedBox(height: 40),
 
@@ -249,9 +244,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                           Navigator.pop(context);
                         },
                       ).animate().fadeIn(
-                            duration: const Duration(milliseconds: 600),
-                            delay: const Duration(milliseconds: 600),
-                          ),
+                        duration: const Duration(milliseconds: 600),
+                        delay: const Duration(milliseconds: 600),
+                      ),
                     ],
                   ),
                 ),

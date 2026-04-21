@@ -55,8 +55,10 @@ class Product {
         try {
           final String imageString = json['image_urls'];
           if (imageString.startsWith('[') && imageString.endsWith(']')) {
-            final trimmedString =
-                imageString.substring(1, imageString.length - 1);
+            final trimmedString = imageString.substring(
+              1,
+              imageString.length - 1,
+            );
             imageList = trimmedString
                 .split(',')
                 .map((e) => e.trim().replaceAll('"', ''))
@@ -95,7 +97,8 @@ class Product {
       price: parseDouble(json['price']),
       availableQuantity: parseInt(json['available_quantity']),
       category: parseStringNonNull(
-          json['category'].toString().isEmpty ? 'Other' : json['category']),
+        json['category'].toString().isEmpty ? 'Other' : json['category'],
+      ),
       subcategory: parseString(json['subcategory']),
       imageUrls: imageList,
       location: parseString(json['location']),
@@ -109,12 +112,13 @@ class Product {
       isActive: json['is_active'] is bool
           ? json['is_active']
           : (json['is_active'] == null
-              ? true
-              : json['is_active'].toString() == 'true' ||
-                  json['is_active'] == 1),
+                ? true
+                : json['is_active'].toString() == 'true' ||
+                      json['is_active'] == 1),
       avgRating: parseDouble(json['avg_rating']),
       reviewCount: parseInt(json['review_count']),
-      seller: seller ??
+      seller:
+          seller ??
           (json['user_profiles'] != null
               ? UserProfile.fromJson(json['user_profiles'])
               : null),
@@ -235,7 +239,8 @@ class CartItem {
       updatedAt: json['updated_at'] != null
           ? DateTime.parse(json['updated_at'].toString())
           : DateTime.now(),
-      product: product ??
+      product:
+          product ??
           (json['products'] != null
               ? Product.fromJson(json['products'])
               : null),
@@ -481,7 +486,8 @@ class OrderItem {
       createdAt: json['created_at'] != null
           ? DateTime.parse(json['created_at'])
           : DateTime.now(),
-      product: product ??
+      product:
+          product ??
           (json['products'] != null
               ? Product.fromJson(json['products'])
               : null),
@@ -522,8 +528,10 @@ class ProductReview {
     this.user,
   });
 
-  factory ProductReview.fromJson(Map<String, dynamic> json,
-      {UserProfile? user}) {
+  factory ProductReview.fromJson(
+    Map<String, dynamic> json, {
+    UserProfile? user,
+  }) {
     return ProductReview(
       id: json['id'],
       productId: json['product_id'],
@@ -536,7 +544,8 @@ class ProductReview {
       updatedAt: json['updated_at'] != null
           ? DateTime.parse(json['updated_at'])
           : DateTime.now(),
-      user: user ??
+      user:
+          user ??
           (json['user_profiles'] != null
               ? UserProfile.fromJson(json['user_profiles'])
               : null),

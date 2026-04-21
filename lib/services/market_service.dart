@@ -84,9 +84,7 @@ class MarketService {
       final today = DateFormat('dd/MM/yyyy').format(DateTime.now());
 
       final data = await fetchMarketData(
-        filters: {
-          'arrival_date': today,
-        },
+        filters: {'arrival_date': today},
         limit: 6000, // Larger limit to get enough data for analysis
       );
 
@@ -110,17 +108,20 @@ class MarketService {
       commodityPrices.forEach((commodity, prices) {
         if (prices.isNotEmpty) {
           final avgPrice = prices.reduce((a, b) => a + b) / prices.length;
-          commodityAvgPrices.add(CommoditySummary(
-            commodity: commodity,
-            averagePrice: avgPrice,
-            priceCount: prices.length,
-          ));
+          commodityAvgPrices.add(
+            CommoditySummary(
+              commodity: commodity,
+              averagePrice: avgPrice,
+              priceCount: prices.length,
+            ),
+          );
         }
       });
 
       // Sort by average price, descending
-      commodityAvgPrices
-          .sort((a, b) => b.averagePrice.compareTo(a.averagePrice));
+      commodityAvgPrices.sort(
+        (a, b) => b.averagePrice.compareTo(a.averagePrice),
+      );
 
       // Calculate market volatility
       final marketVolatility = <MarketVolatility>[];
@@ -149,15 +150,17 @@ class MarketService {
 
             if (volatility > 0) {
               final parts = marketKey.split('-');
-              marketVolatility.add(MarketVolatility(
-                state: parts[0],
-                district: parts[1],
-                market: parts[2],
-                commodity: commodity,
-                minPrice: minPrice,
-                maxPrice: maxPrice,
-                volatility: volatility,
-              ));
+              marketVolatility.add(
+                MarketVolatility(
+                  state: parts[0],
+                  district: parts[1],
+                  market: parts[2],
+                  commodity: commodity,
+                  minPrice: minPrice,
+                  maxPrice: maxPrice,
+                  volatility: volatility,
+                ),
+              );
             }
           }
         });
@@ -178,10 +181,7 @@ class MarketService {
       }
 
       stateMap.forEach((state, quantity) {
-        stateArrivals.add(StateArrival(
-          state: state,
-          totalQuantity: quantity,
-        ));
+        stateArrivals.add(StateArrival(state: state, totalQuantity: quantity));
       });
 
       // Sort by quantity, descending
@@ -194,8 +194,12 @@ class MarketService {
         stateArrivals: stateArrivals,
       );
     } catch (e, stacktrace) {
-      AppLogger.e('Error in getDailyMarketSummary',
-          tag: 'Market', error: e, stackTrace: stacktrace);
+      AppLogger.e(
+        'Error in getDailyMarketSummary',
+        tag: 'Market',
+        error: e,
+        stackTrace: stacktrace,
+      );
       throw Exception('Failed to fetch daily market summary: $e');
     }
   }
@@ -237,8 +241,10 @@ class MarketService {
       final trends = <PriceTrend>[];
       recordsByDate.forEach((dateStr, dateRecords) {
         // Calculate average modal price for this date
-        final validPrices =
-            dateRecords.map((r) => r.modalPrice).where((p) => p > 0).toList();
+        final validPrices = dateRecords
+            .map((r) => r.modalPrice)
+            .where((p) => p > 0)
+            .toList();
 
         if (validPrices.isNotEmpty) {
           final avgPrice =
@@ -248,11 +254,13 @@ class MarketService {
               .where((q) => q > 0)
               .fold(0.0, (a, b) => a + b);
 
-          trends.add(PriceTrend(
-            date: DateTime.parse(dateStr),
-            price: avgPrice,
-            quantity: avgQuantity,
-          ));
+          trends.add(
+            PriceTrend(
+              date: DateTime.parse(dateStr),
+              price: avgPrice,
+              quantity: avgQuantity,
+            ),
+          );
         }
       });
 
@@ -261,8 +269,9 @@ class MarketService {
 
       // If we don't have enough data points, pad with mock data
       if (trends.length < days) {
-        final existingDates =
-            trends.map((t) => DateFormat('yyyy-MM-dd').format(t.date)).toSet();
+        final existingDates = trends
+            .map((t) => DateFormat('yyyy-MM-dd').format(t.date))
+            .toSet();
         final today = DateTime.now();
 
         for (int i = 0; i < days; i++) {
@@ -279,11 +288,13 @@ class MarketService {
             final variation =
                 (random.nextBool() ? 1 : -1) * random.nextDouble() * 100;
 
-            trends.add(PriceTrend(
-              date: date,
-              price: basePrice + variation,
-              quantity: 100.0 + random.nextDouble() * 50,
-            ));
+            trends.add(
+              PriceTrend(
+                date: date,
+                price: basePrice + variation,
+                quantity: 100.0 + random.nextDouble() * 50,
+              ),
+            );
           }
         }
 
@@ -327,11 +338,13 @@ class MarketService {
           (random.nextBool() ? 1 : -1) * (i * 10 + (random.nextInt(30)));
       final price = basePrice + variation;
 
-      trends.add(PriceTrend(
-        date: date,
-        price: price,
-        quantity: 100.0 + (random.nextInt(50)),
-      ));
+      trends.add(
+        PriceTrend(
+          date: date,
+          price: price,
+          quantity: 100.0 + (random.nextInt(50)),
+        ),
+      );
     }
 
     return trends;
@@ -343,10 +356,7 @@ class MarketService {
       final today = DateFormat('dd/MM/yyyy').format(DateTime.now());
 
       final data = await fetchMarketData(
-        filters: {
-          'commodity': commodity,
-          'arrival_date': today,
-        },
+        filters: {'commodity': commodity, 'arrival_date': today},
         limit: 1000,
       );
 
@@ -367,11 +377,13 @@ class MarketService {
       stateMap.forEach((state, prices) {
         if (prices.isNotEmpty) {
           final avgPrice = prices.reduce((a, b) => a + b) / prices.length;
-          result.add(CommodityPriceMap(
-            state: state,
-            averagePrice: avgPrice,
-            count: prices.length,
-          ));
+          result.add(
+            CommodityPriceMap(
+              state: state,
+              averagePrice: avgPrice,
+              count: prices.length,
+            ),
+          );
         }
       });
 
@@ -438,31 +450,36 @@ class MarketService {
 
             // If growth is positive, add to recommendations
             if (growthPercent > 5) {
-              recommendations.add(CropRecommendation(
-                commodity: commodity,
-                growthPercent: growthPercent,
-                startPrice: startPrice,
-                endPrice: endPrice,
-                trend: trends,
-              ));
+              recommendations.add(
+                CropRecommendation(
+                  commodity: commodity,
+                  growthPercent: growthPercent,
+                  startPrice: startPrice,
+                  endPrice: endPrice,
+                  trend: trends,
+                ),
+              );
             }
           }
         } catch (e) {
           // Skip this commodity if there's an error
-          AppLogger.w('Error processing commodity $commodity',
-              tag: 'Market', error: e);
+          AppLogger.w(
+            'Error processing commodity $commodity',
+            tag: 'Market',
+            error: e,
+          );
           continue;
         }
       }
 
       // Sort by growth percent descending
-      recommendations
-          .sort((a, b) => b.growthPercent.compareTo(a.growthPercent));
+      recommendations.sort(
+        (a, b) => b.growthPercent.compareTo(a.growthPercent),
+      );
 
       return recommendations.take(5).toList();
     } catch (e) {
-      AppLogger.e('Error in getSmartRecommendations',
-          tag: 'Market', error: e);
+      AppLogger.e('Error in getSmartRecommendations', tag: 'Market', error: e);
       throw Exception('Failed to generate recommendations: $e');
     }
   }
@@ -495,8 +512,10 @@ class MarketService {
           );
 
           if (records.isNotEmpty) {
-            final prices =
-                records.map((r) => r.modalPrice).where((p) => p > 0).toList();
+            final prices = records
+                .map((r) => r.modalPrice)
+                .where((p) => p > 0)
+                .toList();
             if (prices.isNotEmpty) {
               initialPrice = prices.reduce((a, b) => a + b) / prices.length;
             }
@@ -524,8 +543,7 @@ class MarketService {
             }
           }
         } catch (e) {
-          AppLogger.w('Error fetching initial price',
-              tag: 'Market', error: e);
+          AppLogger.w('Error fetching initial price', tag: 'Market', error: e);
           // Continue with initialPrice = 0 if there's an error
         }
       }
@@ -583,9 +601,13 @@ class MarketService {
             double todayPrice = 0;
             if (records.isNotEmpty) {
               final latestRecords = records
-                  .where((r) =>
-                      r.arrivalDate.difference(records[0].arrivalDate).inDays ==
-                      0)
+                  .where(
+                    (r) =>
+                        r.arrivalDate
+                            .difference(records[0].arrivalDate)
+                            .inDays ==
+                        0,
+                  )
                   .toList();
 
               final prices = latestRecords
@@ -604,21 +626,26 @@ class MarketService {
             // If we don't have an initial price stored or it's 0, get it from historical data
             if (initialPrice <= 0 && records.length > 1) {
               // Try to get price closest to when the commodity was pinned
-              final pinnedDate = pinned.pinnedAt ??
+              final pinnedDate =
+                  pinned.pinnedAt ??
                   DateTime.now().subtract(const Duration(days: 7));
 
               // Find records closest to pinned date
               final sortedByProximity = List<MarketRecord>.from(records);
-              sortedByProximity.sort((a, b) =>
-                  (a.arrivalDate.difference(pinnedDate).inDays.abs()).compareTo(
-                      b.arrivalDate.difference(pinnedDate).inDays.abs()));
+              sortedByProximity.sort(
+                (a, b) => (a.arrivalDate.difference(pinnedDate).inDays.abs())
+                    .compareTo(
+                      b.arrivalDate.difference(pinnedDate).inDays.abs(),
+                    ),
+              );
 
               // Get the closest match
               if (sortedByProximity.isNotEmpty) {
                 final closestDate = sortedByProximity[0].arrivalDate;
                 final closestRecords = records
-                    .where((r) =>
-                        r.arrivalDate.difference(closestDate).inDays == 0)
+                    .where(
+                      (r) => r.arrivalDate.difference(closestDate).inDays == 0,
+                    )
                     .toList();
 
                 final initialPrices = closestRecords
@@ -627,16 +654,22 @@ class MarketService {
                     .toList();
 
                 if (initialPrices.isNotEmpty) {
-                  initialPrice = initialPrices.reduce((a, b) => a + b) /
+                  initialPrice =
+                      initialPrices.reduce((a, b) => a + b) /
                       initialPrices.length;
 
                   // Store this initial price in the database for future reference
                   try {
-                    await _supabase.from('pinned_commodities').update(
-                        {'initial_price': initialPrice}).eq('id', pinned.id);
+                    await _supabase
+                        .from('pinned_commodities')
+                        .update({'initial_price': initialPrice})
+                        .eq('id', pinned.id);
                   } catch (e) {
-                    AppLogger.w('Error updating initial price',
-                        tag: 'Market', error: e);
+                    AppLogger.w(
+                      'Error updating initial price',
+                      tag: 'Market',
+                      error: e,
+                    );
                   }
                 }
               }
@@ -657,23 +690,29 @@ class MarketService {
             try {
               await _supabase
                   .from('pinned_commodities')
-                  .update({'current_price': todayPrice}).eq('id', pinned.id);
+                  .update({'current_price': todayPrice})
+                  .eq('id', pinned.id);
             } catch (e) {
-              AppLogger.w('Error updating current price',
-                  tag: 'Market', error: e);
+              AppLogger.w(
+                'Error updating current price',
+                tag: 'Market',
+                error: e,
+              );
             }
           }
         } catch (e) {
-          AppLogger.w('Error fetching price for ${pinned.commodity}',
-              tag: 'Market', error: e);
+          AppLogger.w(
+            'Error fetching price for ${pinned.commodity}',
+            tag: 'Market',
+            error: e,
+          );
           // Keep default values if there's an error
         }
       }
 
       return pinnedList;
     } catch (e) {
-      AppLogger.e('Error in getPinnedCommodities',
-          tag: 'Market', error: e);
+      AppLogger.e('Error in getPinnedCommodities', tag: 'Market', error: e);
       throw Exception('Failed to get pinned commodities: $e');
     }
   }
@@ -736,8 +775,10 @@ class MarketService {
         throw Exception('User not authenticated');
       }
 
-      final response =
-          await _supabase.from('price_alerts').select().eq('user_id', userId);
+      final response = await _supabase
+          .from('price_alerts')
+          .select()
+          .eq('user_id', userId);
 
       return (response as List)
           .map((json) => PriceAlert.fromJson(json))
@@ -770,10 +811,7 @@ class MarketService {
   // Get unique states from the API
   Future<List<String>> getStates() async {
     try {
-      final data = await fetchMarketData(
-        filters: {},
-        limit: 1000,
-      );
+      final data = await fetchMarketData(filters: {}, limit: 1000);
 
       final states = <String>{};
       for (var record in data.records) {
@@ -813,10 +851,7 @@ class MarketService {
       final today = DateFormat('dd/MM/yyyy').format(DateTime.now());
 
       final data = await fetchMarketData(
-        filters: {
-          'commodity': commodity,
-          'arrival_date': today,
-        },
+        filters: {'commodity': commodity, 'arrival_date': today},
         limit: 1000,
       );
 
@@ -830,8 +865,7 @@ class MarketService {
 
       return markets.toList()..sort();
     } catch (e) {
-      AppLogger.e('Error in getMarketsForCommodity',
-          tag: 'Market', error: e);
+      AppLogger.e('Error in getMarketsForCommodity', tag: 'Market', error: e);
       throw Exception('Failed to fetch markets for commodity: $e');
     }
   }
@@ -840,10 +874,7 @@ class MarketService {
   Future<List<String>> getMarkets(String state, String district) async {
     try {
       final data = await fetchMarketData(
-        filters: {
-          'state': state,
-          'district': district,
-        },
+        filters: {'state': state, 'district': district},
         limit: 1000,
       );
 
@@ -880,10 +911,7 @@ class MarketService {
         filters['market'] = market;
       }
 
-      final data = await fetchMarketData(
-        filters: filters,
-        limit: 1000,
-      );
+      final data = await fetchMarketData(filters: filters, limit: 1000);
 
       final commodities = <String>{};
       for (var record in data.records) {
@@ -928,26 +956,46 @@ class MarketService {
 
             if (prices.isNotEmpty) {
               final avgPrice = prices.reduce((a, b) => a + b) / prices.length;
-              final totalQuantity = data.records
-                  .fold(0.0, (sum, record) => sum + record.quantity);
+              final totalQuantity = data.records.fold(
+                0.0,
+                (sum, record) => sum + record.quantity,
+              );
 
               // Get min and max prices for this market
               final minPrice = prices.reduce((a, b) => a < b ? a : b);
               final maxPrice = prices.reduce((a, b) => a > b ? a : b);
 
-              result.add(MarketComparison(
-                market: market,
-                state: state,
-                price: avgPrice,
-                quantity: totalQuantity,
-                modalPrice: avgPrice,
-                minPrice: minPrice,
-                maxPrice: maxPrice,
-                hasData: true,
-              ));
+              result.add(
+                MarketComparison(
+                  market: market,
+                  state: state,
+                  price: avgPrice,
+                  quantity: totalQuantity,
+                  modalPrice: avgPrice,
+                  minPrice: minPrice,
+                  maxPrice: maxPrice,
+                  hasData: true,
+                ),
+              );
             } else {
               // Add market with no price data
-              result.add(MarketComparison(
+              result.add(
+                MarketComparison(
+                  market: market,
+                  state: state,
+                  price: 0,
+                  quantity: 0,
+                  modalPrice: 0,
+                  minPrice: 0,
+                  maxPrice: 0,
+                  hasData: false,
+                ),
+              );
+            }
+          } else {
+            // Add market with no records
+            result.add(
+              MarketComparison(
                 market: market,
                 state: state,
                 price: 0,
@@ -956,11 +1004,18 @@ class MarketService {
                 minPrice: 0,
                 maxPrice: 0,
                 hasData: false,
-              ));
-            }
-          } else {
-            // Add market with no records
-            result.add(MarketComparison(
+              ),
+            );
+          }
+        } catch (e) {
+          AppLogger.w(
+            'Error processing market $market',
+            tag: 'Market',
+            error: e,
+          );
+          // Still add the market even if there was an error
+          result.add(
+            MarketComparison(
               market: market,
               state: state,
               price: 0,
@@ -969,22 +1024,8 @@ class MarketService {
               minPrice: 0,
               maxPrice: 0,
               hasData: false,
-            ));
-          }
-        } catch (e) {
-          AppLogger.w('Error processing market $market',
-              tag: 'Market', error: e);
-          // Still add the market even if there was an error
-          result.add(MarketComparison(
-            market: market,
-            state: state,
-            price: 0,
-            quantity: 0,
-            modalPrice: 0,
-            minPrice: 0,
-            maxPrice: 0,
-            hasData: false,
-          ));
+            ),
+          );
         }
       }
 
@@ -1079,8 +1120,7 @@ class MarketService {
             .eq('user_id', userId);
       }
     } catch (e) {
-      AppLogger.e('Error in updateUserPreferences',
-          tag: 'Market', error: e);
+      AppLogger.e('Error in updateUserPreferences', tag: 'Market', error: e);
       throw Exception('Failed to update user preferences: $e');
     }
   }
@@ -1095,13 +1135,7 @@ class MarketService {
 
       // If user crops list is empty, use some common crops
       if (userCrops.isEmpty) {
-        userCrops = [
-          'Wheat',
-          'Rice',
-          'Potato',
-          'Onion',
-          'Tomato',
-        ];
+        userCrops = ['Wheat', 'Rice', 'Potato', 'Onion', 'Tomato'];
       }
 
       // For each crop, check price trend
@@ -1181,20 +1215,23 @@ class MarketService {
             recommendations.add(cropRecommendation);
           }
         } catch (e) {
-          AppLogger.w('Error processing crop $commodity',
-              tag: 'Market', error: e);
+          AppLogger.w(
+            'Error processing crop $commodity',
+            tag: 'Market',
+            error: e,
+          );
           continue;
         }
       }
 
       // Sort by confidence score descending
       recommendations.sort(
-          (a, b) => (b.confidenceScore ?? 0).compareTo(a.confidenceScore ?? 0));
+        (a, b) => (b.confidenceScore ?? 0).compareTo(a.confidenceScore ?? 0),
+      );
 
       return recommendations;
     } catch (e) {
-      AppLogger.e('Error in getCropRecommendations',
-          tag: 'Market', error: e);
+      AppLogger.e('Error in getCropRecommendations', tag: 'Market', error: e);
       throw Exception('Failed to generate crop recommendations: $e');
     }
   }
@@ -1213,8 +1250,9 @@ class MarketService {
           .select()
           .eq('user_id', userId);
 
-      final pinnedList =
-          response.map((json) => PinnedCommodity.fromJson(json)).toList();
+      final pinnedList = response
+          .map((json) => PinnedCommodity.fromJson(json))
+          .toList();
 
       if (pinnedList.isEmpty) {
         return; // No pinned commodities to update
@@ -1255,30 +1293,38 @@ class MarketService {
               // Seed the initial price on the first refresh so future
               // price-change percentages are comparable to this snapshot.
               if (pinnedCommodity.initialPrice <= 0) {
-                await _supabase.from('pinned_commodities').update({
-                  'initial_price': avgPrice,
-                }).eq('id', pinnedCommodity.id);
+                await _supabase
+                    .from('pinned_commodities')
+                    .update({'initial_price': avgPrice})
+                    .eq('id', pinnedCommodity.id);
               }
 
               // Update current price and last updated
-              await _supabase.from('pinned_commodities').update({
-                'current_price': avgPrice,
-                'last_updated': DateTime.now().toIso8601String(),
-              }).eq('id', pinnedCommodity.id);
+              await _supabase
+                  .from('pinned_commodities')
+                  .update({
+                    'current_price': avgPrice,
+                    'last_updated': DateTime.now().toIso8601String(),
+                  })
+                  .eq('id', pinnedCommodity.id);
             }
           }
         } catch (e) {
           AppLogger.w(
-              'Error updating pinned commodity ${pinnedCommodity.commodity}',
-              tag: 'Market',
-              error: e);
+            'Error updating pinned commodity ${pinnedCommodity.commodity}',
+            tag: 'Market',
+            error: e,
+          );
           // Continue with next commodity
           continue;
         }
       }
     } catch (e) {
-      AppLogger.e('Error in updatePinnedCommodityPrices',
-          tag: 'Market', error: e);
+      AppLogger.e(
+        'Error in updatePinnedCommodityPrices',
+        tag: 'Market',
+        error: e,
+      );
       throw Exception('Failed to update pinned commodity prices: $e');
     }
   }
@@ -1320,8 +1366,10 @@ class MarketService {
             .from('price_alerts')
             .update(updateData)
             .eq('id', alertId)
-            .eq('user_id',
-                userId); // Ensure user can only update their own alerts
+            .eq(
+              'user_id',
+              userId,
+            ); // Ensure user can only update their own alerts
       }
     } catch (e) {
       AppLogger.e('Error in updatePriceAlert', tag: 'Market', error: e);

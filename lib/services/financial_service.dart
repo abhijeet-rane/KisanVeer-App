@@ -90,8 +90,11 @@ class FinancialService {
         'updated_at': DateTime.now().toIso8601String(),
       };
 
-      final response =
-          await _supabase.from('loans').insert(loanData).select().single();
+      final response = await _supabase
+          .from('loans')
+          .insert(loanData)
+          .select()
+          .single();
 
       return Loan.fromJson(response);
     } catch (e) {
@@ -124,10 +127,13 @@ class FinancialService {
       final newRemainingAmount = loan.remainingAmount - paymentAmount;
 
       // Update loan remaining amount
-      await _supabase.from('loans').update({
-        'remaining_amount': newRemainingAmount,
-        'updated_at': DateTime.now().toIso8601String(),
-      }).eq('id', loanId);
+      await _supabase
+          .from('loans')
+          .update({
+            'remaining_amount': newRemainingAmount,
+            'updated_at': DateTime.now().toIso8601String(),
+          })
+          .eq('id', loanId);
 
       // Add payment record
       await _supabase.from('loan_payments').insert({
@@ -168,23 +174,30 @@ class FinancialService {
     final expenseTransactions = await getExpenseTransactions();
 
     final monthlyIncome = incomeTransactions
-        .where((t) =>
-            t.transactionDate
-                .isAfter(startOfMonth.subtract(const Duration(days: 1))) &&
-            t.transactionDate.isBefore(endOfMonth.add(const Duration(days: 1))))
+        .where(
+          (t) =>
+              t.transactionDate.isAfter(
+                startOfMonth.subtract(const Duration(days: 1)),
+              ) &&
+              t.transactionDate.isBefore(
+                endOfMonth.add(const Duration(days: 1)),
+              ),
+        )
         .fold<double>(0, (sum, t) => sum + t.amount);
 
     final monthlyExpense = expenseTransactions
-        .where((t) =>
-            t.transactionDate
-                .isAfter(startOfMonth.subtract(const Duration(days: 1))) &&
-            t.transactionDate.isBefore(endOfMonth.add(const Duration(days: 1))))
+        .where(
+          (t) =>
+              t.transactionDate.isAfter(
+                startOfMonth.subtract(const Duration(days: 1)),
+              ) &&
+              t.transactionDate.isBefore(
+                endOfMonth.add(const Duration(days: 1)),
+              ),
+        )
         .fold<double>(0, (sum, t) => sum + t.amount);
 
-    return {
-      'income': monthlyIncome,
-      'expense': monthlyExpense,
-    };
+    return {'income': monthlyIncome, 'expense': monthlyExpense};
   }
 
   Future<Map<String, List<FinancialTransaction>>> getTransactionHistory(
@@ -196,23 +209,30 @@ class FinancialService {
       final expenseTransactions = await getExpenseTransactions();
 
       final filteredIncome = incomeTransactions
-          .where((t) =>
-              t.transactionDate
-                  .isAfter(startDate.subtract(const Duration(days: 1))) &&
-              t.transactionDate.isBefore(endDate.add(const Duration(days: 1))))
+          .where(
+            (t) =>
+                t.transactionDate.isAfter(
+                  startDate.subtract(const Duration(days: 1)),
+                ) &&
+                t.transactionDate.isBefore(
+                  endDate.add(const Duration(days: 1)),
+                ),
+          )
           .toList();
 
       final filteredExpenses = expenseTransactions
-          .where((t) =>
-              t.transactionDate
-                  .isAfter(startDate.subtract(const Duration(days: 1))) &&
-              t.transactionDate.isBefore(endDate.add(const Duration(days: 1))))
+          .where(
+            (t) =>
+                t.transactionDate.isAfter(
+                  startDate.subtract(const Duration(days: 1)),
+                ) &&
+                t.transactionDate.isBefore(
+                  endDate.add(const Duration(days: 1)),
+                ),
+          )
           .toList();
 
-      return {
-        'income': filteredIncome,
-        'expenses': filteredExpenses,
-      };
+      return {'income': filteredIncome, 'expenses': filteredExpenses};
     } catch (e) {
       rethrow;
     }
@@ -225,7 +245,8 @@ class FinancialService {
     }
 
     final response = await _supabase
-        .rpc('calculate_balance', params: {'user_id': userId}).single();
+        .rpc('calculate_balance', params: {'user_id': userId})
+        .single();
 
     return {
       'currentBalance': (response['current_balance'] ?? 0).toDouble(),
@@ -248,10 +269,7 @@ class FinancialService {
       expenses[numberOfMonths - 1 - i] = totals['expense'] ?? 0;
     }
 
-    return {
-      'income': incomes,
-      'expense': expenses,
-    };
+    return {'income': incomes, 'expense': expenses};
   }
 
   Future<int> calculateCreditScore() async {
@@ -271,8 +289,9 @@ class FinancialService {
       double creditUtilizationScore = _calculateCreditUtilizationScore(loans);
 
       // Calculate income stability score (20% weight)
-      double incomeStabilityScore =
-          _calculateIncomeStabilityScore(incomeTransactions);
+      double incomeStabilityScore = _calculateIncomeStabilityScore(
+        incomeTransactions,
+      );
 
       // Calculate expense management score (10% weight)
       double expenseManagementScore = _calculateExpenseManagementScore(
@@ -281,7 +300,8 @@ class FinancialService {
       );
 
       // Calculate final score (base: 300, max additional: 600)
-      int finalScore = 300 +
+      int finalScore =
+          300 +
           ((paymentHistoryScore * 240) +
                   (creditUtilizationScore * 180) +
                   (incomeStabilityScore * 120) +
@@ -336,8 +356,11 @@ class FinancialService {
               payment.paymentDate.isAtSameMomentAs(endDate);
         }).length;
       } catch (e) {
-        AppLogger.w('Error getting payments for loan ${loan.id}',
-            tag: 'Finance', error: e);
+        AppLogger.w(
+          'Error getting payments for loan ${loan.id}',
+          tag: 'Finance',
+          error: e,
+        );
         // Continue with other loans if one fails
         continue;
       }
@@ -367,7 +390,8 @@ class FinancialService {
   }
 
   double _calculateIncomeStabilityScore(
-      List<FinancialTransaction> incomeTransactions) {
+    List<FinancialTransaction> incomeTransactions,
+  ) {
     if (incomeTransactions.isEmpty) return 0.5; // Neutral score for no history
 
     // Group transactions by month
@@ -387,7 +411,7 @@ class FinancialService {
     final mean = values.reduce((a, b) => a + b) / values.length;
     final variance =
         values.map((v) => pow(v - mean, 2)).reduce((a, b) => a + b) /
-            values.length;
+        values.length;
     final standardDeviation = sqrt(variance);
 
     // Calculate coefficient of variation (lower is better)

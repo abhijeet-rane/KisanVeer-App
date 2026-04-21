@@ -6,7 +6,7 @@ import '../../services/marketplace_service.dart'; // Correct import for Marketpl
 class SellerPendingOrdersScreen extends StatefulWidget {
   final String sellerId;
   const SellerPendingOrdersScreen({Key? key, required this.sellerId})
-      : super(key: key);
+    : super(key: key);
 
   @override
   State<SellerPendingOrdersScreen> createState() =>
@@ -72,11 +72,12 @@ class _SellerPendingOrdersScreenState extends State<SellerPendingOrdersScreen> {
             DropdownButton<String>(
               value: stages.contains(status) ? status : stages.first,
               items: stages
-                  .map((stage) => DropdownMenuItem(
-                        value: stage,
-                        child:
-                            Text(stage[0].toUpperCase() + stage.substring(1)),
-                      ))
+                  .map(
+                    (stage) => DropdownMenuItem(
+                      value: stage,
+                      child: Text(stage[0].toUpperCase() + stage.substring(1)),
+                    ),
+                  )
                   .toList(),
               onChanged: (value) {
                 if (value != null && value != status) {
@@ -108,12 +109,11 @@ class _SellerPendingOrdersScreenState extends State<SellerPendingOrdersScreen> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _orders.isEmpty
-              ? const Center(child: Text('No pending orders to fulfill.'))
-              : ListView.builder(
-                  itemCount: _orders.length,
-                  itemBuilder: (context, index) =>
-                      _buildOrderCard(_orders[index]),
-                ),
+          ? const Center(child: Text('No pending orders to fulfill.'))
+          : ListView.builder(
+              itemCount: _orders.length,
+              itemBuilder: (context, index) => _buildOrderCard(_orders[index]),
+            ),
     );
   }
 }

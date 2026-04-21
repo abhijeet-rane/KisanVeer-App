@@ -7,10 +7,7 @@ import 'package:kisan_veer/services/sync_manager.dart';
 class OfflineIndicator extends StatefulWidget {
   final Widget child;
 
-  const OfflineIndicator({
-    Key? key,
-    required this.child,
-  }) : super(key: key);
+  const OfflineIndicator({Key? key, required this.child}) : super(key: key);
 
   @override
   State<OfflineIndicator> createState() => _OfflineIndicatorState();
@@ -107,10 +104,7 @@ class _OfflineIndicatorState extends State<OfflineIndicator>
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [
-            Colors.orange.shade700,
-            Colors.orange.shade800,
-          ],
+          colors: [Colors.orange.shade700, Colors.orange.shade800],
         ),
         boxShadow: [
           BoxShadow(
@@ -124,11 +118,7 @@ class _OfflineIndicatorState extends State<OfflineIndicator>
         bottom: false,
         child: Row(
           children: [
-            const Icon(
-              Icons.cloud_off,
-              color: Colors.white,
-              size: 20,
-            ),
+            const Icon(Icons.cloud_off, color: Colors.white, size: 20),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
@@ -213,11 +203,7 @@ class _ConnectivityIndicatorState extends State<ConnectivityIndicator> {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            Icons.cloud_off,
-            size: 14,
-            color: Colors.orange.shade700,
-          ),
+          Icon(Icons.cloud_off, size: 14, color: Colors.orange.shade700),
           const SizedBox(width: 4),
           Text(
             'Offline',

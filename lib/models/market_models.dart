@@ -118,11 +118,7 @@ class PriceTrend {
   final double price;
   final double quantity;
 
-  PriceTrend({
-    required this.date,
-    required this.price,
-    required this.quantity,
-  });
+  PriceTrend({required this.date, required this.price, required this.quantity});
 }
 
 // Summary for daily market dashboard
@@ -181,10 +177,7 @@ class StateArrival {
   final String state;
   final double totalQuantity;
 
-  StateArrival({
-    required this.state,
-    required this.totalQuantity,
-  });
+  StateArrival({required this.state, required this.totalQuantity});
 }
 
 // Commodity price map for heatmap
@@ -299,16 +292,17 @@ class PinnedCommodity {
       createdAt: json['created_at'] != null
           ? DateTime.parse(json['created_at'])
           : DateTime.now(),
-      pinnedAt:
-          json['pinned_at'] != null ? DateTime.parse(json['pinned_at']) : null,
+      pinnedAt: json['pinned_at'] != null
+          ? DateTime.parse(json['pinned_at'])
+          : null,
       currentPrice:
           json['current_price'] != null && json['current_price'] is num
-              ? (json['current_price'] as num).toDouble()
-              : 0.0,
+          ? (json['current_price'] as num).toDouble()
+          : 0.0,
       initialPrice:
           json['initial_price'] != null && json['initial_price'] is num
-              ? (json['initial_price'] as num).toDouble()
-              : 0.0,
+          ? (json['initial_price'] as num).toDouble()
+          : 0.0,
       priceChange: 0.0, // Will be calculated later
     );
   }

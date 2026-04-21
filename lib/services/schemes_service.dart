@@ -22,9 +22,9 @@ class SchemesService {
         .order('created_at', ascending: false);
 
     // Filter in Dart instead of at the database level
-    return (response as List)
-        .map((scheme) => SchemeModel.fromMap(scheme))
-        .where((scheme) {
+    return (response as List).map((scheme) => SchemeModel.fromMap(scheme)).where((
+      scheme,
+    ) {
       bool matches = true;
 
       // Apply state filter
@@ -43,7 +43,8 @@ class SchemesService {
 
       // Apply search filter (case insensitive)
       if (searchQuery != null && searchQuery.isNotEmpty) {
-        matches = matches &&
+        matches =
+            matches &&
             scheme.schemeName.toLowerCase().contains(searchQuery.toLowerCase());
       }
 
@@ -66,7 +67,8 @@ class SchemesService {
 
   // Create a new application
   Future<ApplicationModel> createApplication(
-      ApplicationModel application) async {
+    ApplicationModel application,
+  ) async {
     final response = await _supabaseClient
         .from(_applicationsTable)
         .insert(application.toCreateMap())
@@ -89,8 +91,9 @@ class SchemesService {
         .order('submitted_at', ascending: false);
 
     // Filter for the current user's applications
-    final userApplications =
-        (response as List).where((app) => app['user_id'] == userId).toList();
+    final userApplications = (response as List)
+        .where((app) => app['user_id'] == userId)
+        .toList();
 
     return userApplications.map((app) {
       final Map<String, dynamic> flattenedMap = {
@@ -137,8 +140,9 @@ class SchemesService {
       return false;
     }
 
-    final response =
-        await _supabaseClient.from('user_profiles').select('is_admin');
+    final response = await _supabaseClient
+        .from('user_profiles')
+        .select('is_admin');
 
     // Filter for the current user's profile
     final userProfile = (response as List).firstWhere(
@@ -220,7 +224,8 @@ class SchemesService {
     final response = await _supabaseClient
         .from(_applicationsTable)
         .select(
-            '*, schemes(scheme_name, department_name), user_profiles(display_name)')
+          '*, schemes(scheme_name, department_name), user_profiles(display_name)',
+        )
         .order('submitted_at', ascending: false);
 
     // Filter by status in Dart if specified
@@ -241,15 +246,20 @@ class SchemesService {
 
   // Admin: Update application status
   Future<ApplicationModel> updateApplicationStatus(
-      String id, String status, String? remarks) async {
+    String id,
+    String status,
+    String? remarks,
+  ) async {
     if (!await isUserAdmin()) {
       throw Exception(
-          'Unauthorized: Only admins can update application status');
+        'Unauthorized: Only admins can update application status',
+      );
     }
 
     // First verify the application exists
-    final existingApplications =
-        await _supabaseClient.from(_applicationsTable).select();
+    final existingApplications = await _supabaseClient
+        .from(_applicationsTable)
+        .select();
 
     final exists = (existingApplications as List).any((a) => a['id'] == id);
     if (!exists) {
@@ -267,7 +277,8 @@ class SchemesService {
     final updatedApplications = await _supabaseClient
         .from(_applicationsTable)
         .select(
-            '*, schemes(scheme_name, department_name), user_profiles(display_name)');
+          '*, schemes(scheme_name, department_name), user_profiles(display_name)',
+        );
 
     final updated = (updatedApplications as List).firstWhere(
       (a) => a['id'] == id,

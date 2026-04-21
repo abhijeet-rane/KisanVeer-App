@@ -43,6 +43,8 @@ class WeatherNotificationManager {
     // Update the last notification time
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt(
-        _lastNotificationTimeKey, DateTime.now().millisecondsSinceEpoch);
+      _lastNotificationTimeKey,
+      DateTime.now().millisecondsSinceEpoch,
+    );
   }
 }

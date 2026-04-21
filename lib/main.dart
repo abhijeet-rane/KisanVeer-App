@@ -62,9 +62,7 @@ class MyApp extends StatelessWidget {
       home: const SplashScreen(),
       // Custom page transitions for premium feel
       onGenerateRoute: _generateRoute,
-      routes: {
-        '/splash': (context) => const SplashScreen(),
-      },
+      routes: {'/splash': (context) => const SplashScreen()},
     );
   }
 
@@ -89,19 +87,13 @@ class MyApp extends StatelessWidget {
         return null;
     }
 
-    return PremiumPageRoute(
-      builder: (context) => page,
-      settings: settings,
-    );
+    return PremiumPageRoute(builder: (context) => page, settings: settings);
   }
 }
 
 /// Custom page route with premium transition animation
 class PremiumPageRoute<T> extends MaterialPageRoute<T> {
-  PremiumPageRoute({
-    required super.builder,
-    super.settings,
-  });
+  PremiumPageRoute({required super.builder, super.settings});
 
   @override
   Duration get transitionDuration => const Duration(milliseconds: 400);
@@ -115,16 +107,10 @@ class PremiumPageRoute<T> extends MaterialPageRoute<T> {
   ) {
     // Fade + slight scale transition
     return FadeTransition(
-      opacity: CurvedAnimation(
-        parent: animation,
-        curve: Curves.easeOut,
-      ),
+      opacity: CurvedAnimation(parent: animation, curve: Curves.easeOut),
       child: ScaleTransition(
         scale: Tween<double>(begin: 0.95, end: 1.0).animate(
-          CurvedAnimation(
-            parent: animation,
-            curve: Curves.easeOutCubic,
-          ),
+          CurvedAnimation(parent: animation, curve: Curves.easeOutCubic),
         ),
         child: child,
       ),

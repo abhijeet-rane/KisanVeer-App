@@ -55,7 +55,8 @@ void main() {
 
     test('roundtrips via toJson preserving values', () {
       final t = FinancialTransaction.fromJson(
-          _financialTransactionJson(amount: 1234.56));
+        _financialTransactionJson(amount: 1234.56),
+      );
       final t2 = FinancialTransaction.fromJson(t.toJson());
       expect(t2.id, t.id);
       expect(t2.amount, t.amount);
@@ -73,7 +74,8 @@ void main() {
 
     test('handles null optional fields', () {
       final loan = Loan.fromJson(
-          _loanJson(rate: null, endDate: null, accountNumber: null));
+        _loanJson(rate: null, endDate: null, accountNumber: null),
+      );
       expect(loan.interestRate, isNull);
       expect(loan.endDate, isNull);
       expect(loan.accountNumber, isNull);
@@ -81,7 +83,8 @@ void main() {
 
     test('toJson emits null for missing end date / account / rate', () {
       final loan = Loan.fromJson(
-          _loanJson(rate: null, endDate: null, accountNumber: null));
+        _loanJson(rate: null, endDate: null, accountNumber: null),
+      );
       final map = loan.toJson();
       expect(map['interest_rate'], isNull);
       expect(map['end_date'], isNull);

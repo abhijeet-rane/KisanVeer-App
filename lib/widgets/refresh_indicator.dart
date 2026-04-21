@@ -109,10 +109,7 @@ class EmptyStateWidget extends StatelessWidget {
               duration: const Duration(milliseconds: 600),
               curve: Curves.elasticOut,
               builder: (context, value, child) {
-                return Transform.scale(
-                  scale: value,
-                  child: child,
-                );
+                return Transform.scale(scale: value, child: child);
               },
               child: Container(
                 padding: const EdgeInsets.all(24),
@@ -120,19 +117,15 @@ class EmptyStateWidget extends StatelessWidget {
                   color: AppColors.primary.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(
-                  icon,
-                  size: 64,
-                  color: AppColors.primary,
-                ),
+                child: Icon(icon, size: 64, color: AppColors.primary),
               ),
             ),
             const SizedBox(height: 24),
             Text(
               title,
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
             if (subtitle != null) ...[
@@ -140,8 +133,8 @@ class EmptyStateWidget extends StatelessWidget {
               Text(
                 subtitle!,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: AppColors.textSecondary,
-                    ),
+                  color: AppColors.textSecondary,
+                ),
                 textAlign: TextAlign.center,
               ),
             ],
@@ -196,10 +189,7 @@ class ErrorStateWidget extends StatelessWidget {
 class NoConnectionWidget extends StatelessWidget {
   final VoidCallback onRetry;
 
-  const NoConnectionWidget({
-    Key? key,
-    required this.onRetry,
-  }) : super(key: key);
+  const NoConnectionWidget({Key? key, required this.onRetry}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

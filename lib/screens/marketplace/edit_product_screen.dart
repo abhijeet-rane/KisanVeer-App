@@ -32,7 +32,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
     'Poultry',
     'Seeds',
     'Fertilizers',
-    'Equipment'
+    'Equipment',
   ];
   final List<String> _statusOptions = ['available', 'sold', 'inactive'];
 
@@ -42,8 +42,9 @@ class _EditProductScreenState extends State<EditProductScreen> {
     final p = widget.product;
     _nameController = TextEditingController(text: p.name);
     _priceController = TextEditingController(text: p.price.toString());
-    _quantityController =
-        TextEditingController(text: p.availableQuantity.toString());
+    _quantityController = TextEditingController(
+      text: p.availableQuantity.toString(),
+    );
     _descriptionController = TextEditingController(text: p.description);
     _contactPhoneController = TextEditingController(text: p.contactPhone ?? '');
     _contactEmailController = TextEditingController(text: p.contactEmail ?? '');
@@ -100,8 +101,9 @@ class _EditProductScreenState extends State<EditProductScreen> {
       setState(() => _isLoading = false);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-            content: Text('Failed to update product: $e'),
-            backgroundColor: Colors.red),
+          content: Text('Failed to update product: $e'),
+          backgroundColor: Colors.red,
+        ),
       );
     }
   }
@@ -124,8 +126,9 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   children: [
                     TextFormField(
                       controller: _nameController,
-                      decoration:
-                          const InputDecoration(labelText: 'Product Name'),
+                      decoration: const InputDecoration(
+                        labelText: 'Product Name',
+                      ),
                       validator: (val) =>
                           val == null || val.isEmpty ? 'Required' : null,
                     ),
@@ -133,7 +136,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
                     TextFormField(
                       controller: _locationController,
                       decoration: const InputDecoration(
-                          labelText: 'Location (e.g. City, State or Market)'),
+                        labelText: 'Location (e.g. City, State or Market)',
+                      ),
                       validator: (val) =>
                           val == null || val.isEmpty ? 'Required' : null,
                     ),
@@ -141,8 +145,10 @@ class _EditProductScreenState extends State<EditProductScreen> {
                     DropdownButtonFormField<String>(
                       value: _selectedCategory,
                       items: _categories
-                          .map((cat) =>
-                              DropdownMenuItem(value: cat, child: Text(cat)))
+                          .map(
+                            (cat) =>
+                                DropdownMenuItem(value: cat, child: Text(cat)),
+                          )
                           .toList(),
                       onChanged: (val) =>
                           setState(() => _selectedCategory = val!),
@@ -167,16 +173,21 @@ class _EditProductScreenState extends State<EditProductScreen> {
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: _descriptionController,
-                      decoration:
-                          const InputDecoration(labelText: 'Description'),
+                      decoration: const InputDecoration(
+                        labelText: 'Description',
+                      ),
                       maxLines: 3,
                     ),
                     const SizedBox(height: 16),
                     DropdownButtonFormField<String>(
                       value: _selectedStatus,
                       items: _statusOptions
-                          .map((status) => DropdownMenuItem(
-                              value: status, child: Text(status)))
+                          .map(
+                            (status) => DropdownMenuItem(
+                              value: status,
+                              child: Text(status),
+                            ),
+                          )
                           .toList(),
                       onChanged: (val) =>
                           setState(() => _selectedStatus = val!),
@@ -185,14 +196,16 @@ class _EditProductScreenState extends State<EditProductScreen> {
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: _contactPhoneController,
-                      decoration:
-                          const InputDecoration(labelText: 'Contact Phone'),
+                      decoration: const InputDecoration(
+                        labelText: 'Contact Phone',
+                      ),
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: _contactEmailController,
-                      decoration:
-                          const InputDecoration(labelText: 'Contact Email'),
+                      decoration: const InputDecoration(
+                        labelText: 'Contact Email',
+                      ),
                     ),
                     const SizedBox(height: 24),
                     SizedBox(
@@ -201,7 +214,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
                         onPressed: _saveProduct,
                         child: const Text('Save Changes'),
                         style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.primary),
+                          backgroundColor: AppColors.primary,
+                        ),
                       ),
                     ),
                   ],

@@ -63,8 +63,7 @@ void main() {
       expect(capturedLines.any((l) => l.contains('[KisanVeer]')), isTrue);
     });
 
-    test('error log emits a trailing "Error:" line when error is provided',
-        () {
+    test('error log emits a trailing "Error:" line when error is provided', () {
       AppLogger.e('failed', error: StateError('boom'));
       expect(capturedLines.any((l) => l.contains('Error:')), isTrue);
     });

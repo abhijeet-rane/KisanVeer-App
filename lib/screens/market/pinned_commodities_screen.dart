@@ -139,9 +139,7 @@ class _PinnedCommoditiesScreenState extends State<PinnedCommoditiesScreen> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(
-              builder: (context) => const PriceFinderScreen(),
-            ),
+            MaterialPageRoute(builder: (context) => const PriceFinderScreen()),
           );
         },
         backgroundColor: AppColors.primary,
@@ -157,8 +155,8 @@ class _PinnedCommoditiesScreenState extends State<PinnedCommoditiesScreen> {
       child: _errorMessage != null
           ? _buildErrorView()
           : _pinnedCommodities.isEmpty
-              ? _buildEmptyView()
-              : _buildCommoditiesList(),
+          ? _buildEmptyView()
+          : _buildCommoditiesList(),
     );
   }
 
@@ -173,11 +171,7 @@ class _PinnedCommoditiesScreenState extends State<PinnedCommoditiesScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
-                  Icons.error_outline,
-                  size: 80,
-                  color: Colors.red.shade300,
-                ),
+                Icon(Icons.error_outline, size: 80, color: Colors.red.shade300),
                 const SizedBox(height: 16),
                 Text(
                   'Failed to load pinned commodities',
@@ -289,230 +283,233 @@ class _PinnedCommoditiesScreenState extends State<PinnedCommoditiesScreen> {
       locationString += ', ${commodity.market}';
     }
 
-    final lastUpdated =
-        DateFormat('dd MMM, h:mm a').format(commodity.lastUpdated);
+    final lastUpdated = DateFormat(
+      'dd MMM, h:mm a',
+    ).format(commodity.lastUpdated);
 
     return Card(
-      margin: const EdgeInsets.only(bottom: 16),
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: InkWell(
-        onTap: () {
-          // Navigate to price trend screen for this commodity
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const PriceTrendScreen(),
-              // Pass commodity data for showing trends
-            ),
-          );
-        },
-        borderRadius: BorderRadius.circular(16),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Commodity name and price change
-              Row(
+          margin: const EdgeInsets.only(bottom: 16),
+          elevation: 2,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: InkWell(
+            onTap: () {
+              // Navigate to price trend screen for this commodity
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const PriceTrendScreen(),
+                  // Pass commodity data for showing trends
+                ),
+              );
+            },
+            borderRadius: BorderRadius.circular(16),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          commodity.commodity,
-                          style: AppTextStyles.h3,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          locationString,
-                          style: AppTextStyles.bodySmall.copyWith(
-                            color: Colors.grey,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    ),
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
+                  // Commodity name and price change
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              commodity.commodity,
+                              style: AppTextStyles.h3,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              locationString,
+                              style: AppTextStyles.bodySmall.copyWith(
+                                color: Colors.grey,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          Icon(
-                            isPositive
-                                ? Icons.arrow_upward
-                                : Icons.arrow_downward,
-                            color: isPositive ? Colors.green : Colors.red,
-                            size: 16,
+                          Row(
+                            children: [
+                              Icon(
+                                isPositive
+                                    ? Icons.arrow_upward
+                                    : Icons.arrow_downward,
+                                color: isPositive ? Colors.green : Colors.red,
+                                size: 16,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                '${isPositive ? '+' : ''}${percentChange.toStringAsFixed(2)}%',
+                                style: AppTextStyles.bodyMedium.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: isPositive ? Colors.green : Colors.red,
+                                ),
+                              ),
+                            ],
                           ),
-                          const SizedBox(width: 4),
                           Text(
-                            '${isPositive ? '+' : ''}${percentChange.toStringAsFixed(2)}%',
-                            style: AppTextStyles.bodyMedium.copyWith(
-                              fontWeight: FontWeight.bold,
+                            '₹${priceChange.abs().toStringAsFixed(2)}',
+                            style: AppTextStyles.bodySmall.copyWith(
                               color: isPositive ? Colors.green : Colors.red,
                             ),
                           ),
                         ],
                       ),
-                      Text(
-                        '₹${priceChange.abs().toStringAsFixed(2)}',
-                        style: AppTextStyles.bodySmall.copyWith(
-                          color: isPositive ? Colors.green : Colors.red,
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Current price and initial price
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Current Price',
+                              style: AppTextStyles.bodySmall.copyWith(
+                                color: Colors.grey,
+                              ),
+                            ),
+                            Text(
+                              '₹${commodity.currentPrice.toStringAsFixed(2)}',
+                              style: AppTextStyles.bodyLarge.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.primary,
+                              ),
+                            ),
+                          ],
                         ),
+                      ),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Initial Price',
+                              style: AppTextStyles.bodySmall.copyWith(
+                                color: Colors.grey,
+                              ),
+                            ),
+                            Text(
+                              '₹${commodity.initialPrice.toStringAsFixed(2)}',
+                              style: AppTextStyles.bodyMedium,
+                            ),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Last Updated',
+                              style: AppTextStyles.bodySmall.copyWith(
+                                color: Colors.grey,
+                              ),
+                            ),
+                            Text(lastUpdated, style: AppTextStyles.bodySmall),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Action buttons
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      // Set alert button
+                      SizedBox(
+                        width: 110, // Fixed width to prevent layout issues
+                        child: OutlinedButton.icon(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => PriceAlertsScreen(
+                                  initialCommodity: commodity.commodity,
+                                  initialState: commodity.state,
+                                  initialDistrict: commodity.district,
+                                  initialMarket: commodity.market,
+                                ),
+                              ),
+                            );
+                          },
+                          icon: const Icon(
+                            Icons.notifications_outlined,
+                            size: 18,
+                          ),
+                          label: const Text('Set Alert'),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: AppColors.primary,
+                            side: BorderSide(color: AppColors.primary),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+
+                      // View trends button
+                      SizedBox(
+                        width: 122, // Fixed width to prevent layout issues
+                        child: OutlinedButton.icon(
+                          onPressed: () {
+                            // Navigate to price trends for this commodity
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => PriceTrendScreen(
+                                  initialCommodity: commodity.commodity,
+                                  initialState: commodity.state,
+                                  initialDistrict: commodity.district,
+                                  initialMarket: commodity.market,
+                                ),
+                              ),
+                            );
+                          },
+                          icon: const Icon(Icons.show_chart, size: 18),
+                          label: const Text('View Trends'),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: AppColors.primary,
+                            side: BorderSide(color: AppColors.primary),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+
+                      // Unpin button
+                      IconButton(
+                        onPressed: () => _showUnpinDialog(commodity),
+                        icon: const Icon(Icons.push_pin),
+                        color: Colors.grey,
+                        tooltip: 'Unpin commodity',
                       ),
                     ],
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
-
-              // Current price and initial price
-              Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Current Price',
-                          style: AppTextStyles.bodySmall.copyWith(
-                            color: Colors.grey,
-                          ),
-                        ),
-                        Text(
-                          '₹${commodity.currentPrice.toStringAsFixed(2)}',
-                          style: AppTextStyles.bodyLarge.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.primary,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Initial Price',
-                          style: AppTextStyles.bodySmall.copyWith(
-                            color: Colors.grey,
-                          ),
-                        ),
-                        Text(
-                          '₹${commodity.initialPrice.toStringAsFixed(2)}',
-                          style: AppTextStyles.bodyMedium,
-                        ),
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Last Updated',
-                          style: AppTextStyles.bodySmall.copyWith(
-                            color: Colors.grey,
-                          ),
-                        ),
-                        Text(
-                          lastUpdated,
-                          style: AppTextStyles.bodySmall,
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-
-              // Action buttons
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  // Set alert button
-                  SizedBox(
-                    width: 110, // Fixed width to prevent layout issues
-                    child: OutlinedButton.icon(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => PriceAlertsScreen(
-                              initialCommodity: commodity.commodity,
-                              initialState: commodity.state,
-                              initialDistrict: commodity.district,
-                              initialMarket: commodity.market,
-                            ),
-                          ),
-                        );
-                      },
-                      icon: const Icon(Icons.notifications_outlined, size: 18),
-                      label: const Text('Set Alert'),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: AppColors.primary,
-                        side: BorderSide(color: AppColors.primary),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-
-                  // View trends button
-                  SizedBox(
-                    width: 122, // Fixed width to prevent layout issues
-                    child: OutlinedButton.icon(
-                      onPressed: () {
-                        // Navigate to price trends for this commodity
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => PriceTrendScreen(
-                              initialCommodity: commodity.commodity,
-                              initialState: commodity.state,
-                              initialDistrict: commodity.district,
-                              initialMarket: commodity.market,
-                            ),
-                          ),
-                        );
-                      },
-                      icon: const Icon(Icons.show_chart, size: 18),
-                      label: const Text('View Trends'),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: AppColors.primary,
-                        side: BorderSide(color: AppColors.primary),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-
-                  // Unpin button
-                  IconButton(
-                    onPressed: () => _showUnpinDialog(commodity),
-                    icon: const Icon(Icons.push_pin),
-                    color: Colors.grey,
-                    tooltip: 'Unpin commodity',
-                  ),
-                ],
-              ),
-            ],
+            ),
           ),
-        ),
-      ),
-    )
+        )
         .animate()
         .fadeIn(
           duration: 300.ms,
@@ -532,9 +529,7 @@ class _PinnedCommoditiesScreenState extends State<PinnedCommoditiesScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Unpin Commodity'),
-        content: Text(
-          'Are you sure you want to unpin ${commodity.commodity}?',
-        ),
+        content: Text('Are you sure you want to unpin ${commodity.commodity}?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -546,9 +541,7 @@ class _PinnedCommoditiesScreenState extends State<PinnedCommoditiesScreen> {
               _unpinCommodity(commodity.id);
             },
             child: const Text('Unpin'),
-            style: TextButton.styleFrom(
-              foregroundColor: Colors.red,
-            ),
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
           ),
         ],
       ),

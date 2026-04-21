@@ -35,15 +35,15 @@ class FinancialTransaction {
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'user_id': userId,
-        'title': title,
-        'category': category,
-        'amount': amount,
-        'transaction_date': transactionDate.toIso8601String(),
-        'created_at': createdAt.toIso8601String(),
-        'updated_at': updatedAt.toIso8601String(),
-      };
+    'id': id,
+    'user_id': userId,
+    'title': title,
+    'category': category,
+    'amount': amount,
+    'transaction_date': transactionDate.toIso8601String(),
+    'created_at': createdAt.toIso8601String(),
+    'updated_at': updatedAt.toIso8601String(),
+  };
 }
 
 class Loan {
@@ -151,11 +151,11 @@ class LoanPayment {
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'loan_id': loanId,
-        'amount': amount,
-        'payment_date': paymentDate.toIso8601String(),
-        'payment_method': paymentMethod,
-        'created_at': createdAt.toIso8601String(),
-      };
+    'id': id,
+    'loan_id': loanId,
+    'amount': amount,
+    'payment_date': paymentDate.toIso8601String(),
+    'payment_method': paymentMethod,
+    'created_at': createdAt.toIso8601String(),
+  };
 }

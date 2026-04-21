@@ -80,8 +80,9 @@ class _MarketComparisonScreenState extends State<MarketComparisonScreen> {
         _availableMarkets = [];
       });
 
-      final markets =
-          await _marketService.getMarketsForCommodity(_selectedCommodity!);
+      final markets = await _marketService.getMarketsForCommodity(
+        _selectedCommodity!,
+      );
 
       setState(() {
         _availableMarkets = markets;
@@ -192,7 +193,7 @@ class _MarketComparisonScreenState extends State<MarketComparisonScreen> {
           else if (_comparisonData.isNotEmpty)
             _buildComparisonResults()
           else if (_selectedCommodity != null && _selectedMarkets.length >= 2)
-            _buildNoDataView()
+            _buildNoDataView(),
         ],
       ),
     );
@@ -200,121 +201,124 @@ class _MarketComparisonScreenState extends State<MarketComparisonScreen> {
 
   Widget _buildSelectionCard() {
     return Card(
-      margin: const EdgeInsets.all(16.0),
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Compare Commodity Prices', style: AppTextStyles.subtitle),
-            const SizedBox(height: 16),
+          margin: const EdgeInsets.all(16.0),
+          elevation: 2,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Compare Commodity Prices', style: AppTextStyles.subtitle),
+                const SizedBox(height: 16),
 
-            // Commodity dropdown
-            DropdownButtonFormField<String>(
-              decoration: InputDecoration(
-                labelText: 'Select Commodity',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 0,
-                  vertical: 12,
-                ),
-              ),
-              value: _selectedCommodity,
-              items: _commodities.map((commodity) {
-                return DropdownMenuItem<String>(
-                  value: commodity,
-                  child: Text(commodity),
-                );
-              }).toList(),
-              onChanged: (value) {
-                setState(() {
-                  _selectedCommodity = value;
-                  _selectedMarkets.clear();
-                  _comparisonData = [];
-                });
-                _loadMarketsForCommodity();
-              },
-              hint: const Text('Select a commodity'),
-            ),
-            const SizedBox(height: 24),
-
-            // Markets section
-            if (_availableMarkets.isNotEmpty) ...[
-              Text('Select Markets to Compare', style: AppTextStyles.subtitle),
-              const SizedBox(height: 8),
-              Text(
-                'Choose at least 2 markets for comparison',
-                style: AppTextStyles.bodySmall.copyWith(color: Colors.grey),
-              ),
-              const SizedBox(height: 12),
-
-              // Markets selection
-              MultiSelectDialogField(
-                items: _availableMarkets
-                    .map((market) => MultiSelectItem(market, market))
-                    .toList(),
-                title: const Text("Markets"),
-                selectedColor: AppColors.primary,
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade100,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                    color: Colors.grey.shade400,
-                    width: 1,
-                  ),
-                ),
-                buttonIcon: const Icon(
-                  Icons.arrow_drop_down,
-                  color: Colors.grey,
-                ),
-                buttonText: const Text(
-                  "Select Markets",
-                  style: TextStyle(
-                    color: Colors.black87,
-                    fontSize: 16,
-                  ),
-                ),
-                onConfirm: (results) {
-                  setState(() {
-                    _selectedMarkets = List<String>.from(results);
-                  });
-                },
-                initialValue: _selectedMarkets,
-              ),
-
-              const SizedBox(height: 24),
-
-              // Compare button
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed:
-                      _selectedMarkets.length >= 2 ? _compareMarkets : null,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    shape: RoundedRectangleBorder(
+                // Commodity dropdown
+                DropdownButtonFormField<String>(
+                  decoration: InputDecoration(
+                    labelText: 'Select Commodity',
+                    border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    disabledBackgroundColor: Colors.grey.shade300,
-                  ),
-                  child: Text(
-                    'Compare Markets',
-                    style: AppTextStyles.buttonText.copyWith(
-                      color: Colors.white,
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 0,
+                      vertical: 12,
                     ),
                   ),
+                  value: _selectedCommodity,
+                  items: _commodities.map((commodity) {
+                    return DropdownMenuItem<String>(
+                      value: commodity,
+                      child: Text(commodity),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedCommodity = value;
+                      _selectedMarkets.clear();
+                      _comparisonData = [];
+                    });
+                    _loadMarketsForCommodity();
+                  },
+                  hint: const Text('Select a commodity'),
                 ),
-              ),
-            ],
-          ],
-        ),
-      ),
-    ).animate().fadeIn(duration: 300.ms).slideY(
+                const SizedBox(height: 24),
+
+                // Markets section
+                if (_availableMarkets.isNotEmpty) ...[
+                  Text(
+                    'Select Markets to Compare',
+                    style: AppTextStyles.subtitle,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Choose at least 2 markets for comparison',
+                    style: AppTextStyles.bodySmall.copyWith(color: Colors.grey),
+                  ),
+                  const SizedBox(height: 12),
+
+                  // Markets selection
+                  MultiSelectDialogField(
+                    items: _availableMarkets
+                        .map((market) => MultiSelectItem(market, market))
+                        .toList(),
+                    title: const Text("Markets"),
+                    selectedColor: AppColors.primary,
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade100,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.grey.shade400, width: 1),
+                    ),
+                    buttonIcon: const Icon(
+                      Icons.arrow_drop_down,
+                      color: Colors.grey,
+                    ),
+                    buttonText: const Text(
+                      "Select Markets",
+                      style: TextStyle(color: Colors.black87, fontSize: 16),
+                    ),
+                    onConfirm: (results) {
+                      setState(() {
+                        _selectedMarkets = List<String>.from(results);
+                      });
+                    },
+                    initialValue: _selectedMarkets,
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  // Compare button
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: _selectedMarkets.length >= 2
+                          ? _compareMarkets
+                          : null,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        disabledBackgroundColor: Colors.grey.shade300,
+                      ),
+                      child: Text(
+                        'Compare Markets',
+                        style: AppTextStyles.buttonText.copyWith(
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        )
+        .animate()
+        .fadeIn(duration: 300.ms)
+        .slideY(
           begin: 0.1,
           end: 0,
           duration: 300.ms,
@@ -324,34 +328,37 @@ class _MarketComparisonScreenState extends State<MarketComparisonScreen> {
 
   Widget _buildComparisonResults() {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Price Comparison for $_selectedCommodity',
-            style: AppTextStyles.h3,
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Price Comparison for $_selectedCommodity',
+                style: AppTextStyles.h3,
+              ),
+              const SizedBox(height: 4),
+              Text(
+                'Data as of ${DateFormat('dd MMM yyyy').format(DateTime.now())}',
+                style: AppTextStyles.bodySmall.copyWith(color: Colors.grey),
+              ),
+              const SizedBox(height: 24),
+
+              // Price comparison chart
+              _buildPriceChart(),
+              const SizedBox(height: 24),
+
+              // Comparison table
+              _buildComparisonTable(),
+
+              // Best market recommendation
+              const SizedBox(height: 24),
+              _buildBestMarketCard(),
+            ],
           ),
-          const SizedBox(height: 4),
-          Text(
-            'Data as of ${DateFormat('dd MMM yyyy').format(DateTime.now())}',
-            style: AppTextStyles.bodySmall.copyWith(color: Colors.grey),
-          ),
-          const SizedBox(height: 24),
-
-          // Price comparison chart
-          _buildPriceChart(),
-          const SizedBox(height: 24),
-
-          // Comparison table
-          _buildComparisonTable(),
-
-          // Best market recommendation
-          const SizedBox(height: 24),
-          _buildBestMarketCard(),
-        ],
-      ),
-    ).animate().fadeIn(duration: 500.ms).slideY(
+        )
+        .animate()
+        .fadeIn(duration: 500.ms)
+        .slideY(
           begin: 0.1,
           end: 0,
           duration: 500.ms,
@@ -384,11 +391,7 @@ class _MarketComparisonScreenState extends State<MarketComparisonScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                Icons.bar_chart,
-                size: 48,
-                color: Colors.grey.shade300,
-              ),
+              Icon(Icons.bar_chart, size: 48, color: Colors.grey.shade300),
               const SizedBox(height: 16),
               Text(
                 'No price data available for chart',
@@ -430,10 +433,8 @@ class _MarketComparisonScreenState extends State<MarketComparisonScreen> {
           gridData: FlGridData(
             show: true,
             drawVerticalLine: false,
-            getDrawingHorizontalLine: (value) => FlLine(
-              color: Colors.grey.shade200,
-              strokeWidth: 1,
-            ),
+            getDrawingHorizontalLine: (value) =>
+                FlLine(color: Colors.grey.shade200, strokeWidth: 1),
           ),
           borderData: FlBorderData(
             show: true,
@@ -458,12 +459,8 @@ class _MarketComparisonScreenState extends State<MarketComparisonScreen> {
                 reservedSize: 40,
               ),
             ),
-            rightTitles: AxisTitles(
-              sideTitles: SideTitles(showTitles: false),
-            ),
-            topTitles: AxisTitles(
-              sideTitles: SideTitles(showTitles: false),
-            ),
+            rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
             bottomTitles: AxisTitles(
               sideTitles: SideTitles(
                 showTitles: true,
@@ -491,26 +488,23 @@ class _MarketComparisonScreenState extends State<MarketComparisonScreen> {
               ),
             ),
           ),
-          barGroups: List.generate(
-            marketsWithData.length,
-            (index) {
-              final market = marketsWithData[index];
-              return BarChartGroupData(
-                x: index,
-                barRods: [
-                  BarChartRodData(
-                    toY: market.modalPrice,
-                    color: _getBarColor(index),
-                    width: 20,
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(4),
-                      topRight: Radius.circular(4),
-                    ),
+          barGroups: List.generate(marketsWithData.length, (index) {
+            final market = marketsWithData[index];
+            return BarChartGroupData(
+              x: index,
+              barRods: [
+                BarChartRodData(
+                  toY: market.modalPrice,
+                  color: _getBarColor(index),
+                  width: 20,
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(4),
+                    topRight: Radius.circular(4),
                   ),
-                ],
-              );
-            },
-          ),
+                ),
+              ],
+            );
+          }),
           barTouchData: BarTouchData(
             touchTooltipData: BarTouchTooltipData(
               tooltipRoundedRadius: 8,
@@ -697,8 +691,8 @@ class _MarketComparisonScreenState extends State<MarketComparisonScreen> {
         color: isLowest
             ? Colors.green.shade50
             : isHighest
-                ? Colors.red.shade50
-                : null,
+            ? Colors.red.shade50
+            : null,
         border: Border(
           bottom: BorderSide(color: Colors.grey.shade200, width: 1),
         ),
@@ -759,8 +753,8 @@ class _MarketComparisonScreenState extends State<MarketComparisonScreen> {
                 color: isLowest
                     ? Colors.green
                     : isHighest
-                        ? Colors.red
-                        : null,
+                    ? Colors.red
+                    : null,
               ),
               textAlign: TextAlign.center,
             ),
@@ -787,10 +781,7 @@ class _MarketComparisonScreenState extends State<MarketComparisonScreen> {
             children: [
               Row(
                 children: [
-                  Icon(
-                    Icons.info_outline,
-                    color: Colors.grey.shade700,
-                  ),
+                  Icon(Icons.info_outline, color: Colors.grey.shade700),
                   const SizedBox(width: 8),
                   Text(
                     'Market Insight',
@@ -808,8 +799,9 @@ class _MarketComparisonScreenState extends State<MarketComparisonScreen> {
               const SizedBox(height: 16),
               Text(
                 'Try selecting different markets or check back later for updated price information.',
-                style: AppTextStyles.bodySmall
-                    .copyWith(color: Colors.grey.shade600),
+                style: AppTextStyles.bodySmall.copyWith(
+                  color: Colors.grey.shade600,
+                ),
               ),
             ],
           ),
@@ -837,10 +829,7 @@ class _MarketComparisonScreenState extends State<MarketComparisonScreen> {
           children: [
             Row(
               children: [
-                Icon(
-                  Icons.insights,
-                  color: Colors.amber.shade700,
-                ),
+                Icon(Icons.insights, color: Colors.amber.shade700),
                 const SizedBox(width: 8),
                 Text(
                   'Market Insight for Farmers',
@@ -860,15 +849,10 @@ class _MarketComparisonScreenState extends State<MarketComparisonScreen> {
             const SizedBox(height: 8),
             Text(
               highestMarket.market,
-              style: AppTextStyles.h3.copyWith(
-                color: Colors.amber.shade700,
-              ),
+              style: AppTextStyles.h3.copyWith(color: Colors.amber.shade700),
             ),
             const SizedBox(height: 16),
-            Text(
-              'Price Comparison Analysis:',
-              style: AppTextStyles.bodyMedium,
-            ),
+            Text('Price Comparison Analysis:', style: AppTextStyles.bodyMedium),
             const SizedBox(height: 8),
             Row(
               children: [
@@ -932,10 +916,7 @@ class _MarketComparisonScreenState extends State<MarketComparisonScreen> {
               ),
               child: Row(
                 children: [
-                  Icon(
-                    Icons.currency_rupee,
-                    color: Colors.amber.shade700,
-                  ),
+                  Icon(Icons.currency_rupee, color: Colors.amber.shade700),
                   const SizedBox(width: 8),
                   Expanded(
                     child: RichText(
@@ -944,9 +925,7 @@ class _MarketComparisonScreenState extends State<MarketComparisonScreen> {
                           color: Colors.black,
                         ),
                         children: [
-                          const TextSpan(
-                            text: 'You can earn ',
-                          ),
+                          const TextSpan(text: 'You can earn '),
                           TextSpan(
                             text: '₹${priceDifference.toStringAsFixed(2)}/Qtl',
                             style: TextStyle(
@@ -954,9 +933,7 @@ class _MarketComparisonScreenState extends State<MarketComparisonScreen> {
                               color: Colors.amber.shade700,
                             ),
                           ),
-                          const TextSpan(
-                            text: ' (approx. ',
-                          ),
+                          const TextSpan(text: ' (approx. '),
                           TextSpan(
                             text: '${percentageDifference.toStringAsFixed(1)}%',
                             style: TextStyle(
@@ -988,11 +965,7 @@ class _MarketComparisonScreenState extends State<MarketComparisonScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.compare_arrows,
-              size: 80,
-              color: Colors.grey.shade400,
-            ),
+            Icon(Icons.compare_arrows, size: 80, color: Colors.grey.shade400),
             const SizedBox(height: 16),
             Text(
               'No Comparison Data Available',

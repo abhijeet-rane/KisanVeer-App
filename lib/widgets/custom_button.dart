@@ -39,14 +39,16 @@ class CustomButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Determine colors based on button type
-    final Color bgColor = backgroundColor ??
+    final Color bgColor =
+        backgroundColor ??
         (buttonType == ButtonType.filled
             ? AppColors.primary
             : (buttonType == ButtonType.outlined
-                ? Colors.transparent
-                : Colors.transparent));
+                  ? Colors.transparent
+                  : Colors.transparent));
 
-    final Color txtColor = textColor ??
+    final Color txtColor =
+        textColor ??
         (buttonType == ButtonType.filled ? Colors.white : AppColors.primary);
 
     // Build button content with optional icons and loading state
@@ -108,8 +110,10 @@ class CustomButton extends StatelessWidget {
             disabledBackgroundColor: bgColor.withAlpha((0.6 * 255).round()),
             disabledForegroundColor: txtColor.withAlpha((0.8 * 255).round()),
             elevation: 2,
-            minimumSize:
-                Size(width ?? MediaQuery.of(context).size.width * 0.9, height),
+            minimumSize: Size(
+              width ?? MediaQuery.of(context).size.width * 0.9,
+              height,
+            ),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(borderRadius),
             ),
@@ -125,8 +129,10 @@ class CustomButton extends StatelessWidget {
           style: OutlinedButton.styleFrom(
             foregroundColor: txtColor,
             side: BorderSide(color: txtColor, width: 1.5),
-            minimumSize:
-                Size(width ?? MediaQuery.of(context).size.width * 0.9, height),
+            minimumSize: Size(
+              width ?? MediaQuery.of(context).size.width * 0.9,
+              height,
+            ),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(borderRadius),
             ),
@@ -141,8 +147,10 @@ class CustomButton extends StatelessWidget {
           onPressed: isLoading ? null : onPressed,
           style: TextButton.styleFrom(
             foregroundColor: txtColor,
-            minimumSize:
-                Size(width ?? MediaQuery.of(context).size.width * 0.9, height),
+            minimumSize: Size(
+              width ?? MediaQuery.of(context).size.width * 0.9,
+              height,
+            ),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(borderRadius),
             ),

@@ -141,16 +141,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       padding: EdgeInsets.zero,
                       constraints: const BoxConstraints(),
                     ).animate().fadeIn(
-                          duration: const Duration(milliseconds: 400),
-                        ),
+                      duration: const Duration(milliseconds: 400),
+                    ),
 
                     const SizedBox(height: 20),
 
                     // Register heading
-                    Text(
-                      'Create Account',
-                      style: AppTextStyles.h1,
-                    )
+                    Text('Create Account', style: AppTextStyles.h1)
                         .animate()
                         .fadeIn(
                           duration: const Duration(milliseconds: 600),
@@ -172,9 +169,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         color: AppColors.textSecondary,
                       ),
                     ).animate().fadeIn(
-                          duration: const Duration(milliseconds: 600),
-                          delay: const Duration(milliseconds: 300),
-                        ),
+                      duration: const Duration(milliseconds: 600),
+                      delay: const Duration(milliseconds: 300),
+                    ),
 
                     const SizedBox(height: 32),
 
@@ -194,9 +191,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             textCapitalization: TextCapitalization.words,
                             validator: Validators.validateName,
                           ).animate().fadeIn(
-                                duration: const Duration(milliseconds: 600),
-                                delay: const Duration(milliseconds: 400),
-                              ),
+                            duration: const Duration(milliseconds: 600),
+                            delay: const Duration(milliseconds: 400),
+                          ),
 
                           const SizedBox(height: 20),
 
@@ -209,9 +206,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             prefixIcon: Icons.email_outlined,
                             validator: Validators.validateEmail,
                           ).animate().fadeIn(
-                                duration: const Duration(milliseconds: 600),
-                                delay: const Duration(milliseconds: 500),
-                              ),
+                            duration: const Duration(milliseconds: 600),
+                            delay: const Duration(milliseconds: 500),
+                          ),
 
                           const SizedBox(height: 20),
 
@@ -224,9 +221,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             prefixIcon: Icons.phone_outlined,
                             validator: Validators.validatePhone,
                           ).animate().fadeIn(
-                                duration: const Duration(milliseconds: 600),
-                                delay: const Duration(milliseconds: 600),
-                              ),
+                            duration: const Duration(milliseconds: 600),
+                            delay: const Duration(milliseconds: 600),
+                          ),
 
                           const SizedBox(height: 20),
 
@@ -234,10 +231,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                'I am a',
-                                style: AppTextStyles.label,
-                              ),
+                              Text('I am a', style: AppTextStyles.label),
                               const SizedBox(height: 12),
                               Row(
                                 children: [
@@ -260,9 +254,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               ),
                             ],
                           ).animate().fadeIn(
-                                duration: const Duration(milliseconds: 600),
-                                delay: const Duration(milliseconds: 700),
-                              ),
+                            duration: const Duration(milliseconds: 600),
+                            delay: const Duration(milliseconds: 700),
+                          ),
 
                           const SizedBox(height: 20),
 
@@ -275,9 +269,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             prefixIcon: Icons.lock_outline,
                             validator: Validators.validatePassword,
                           ).animate().fadeIn(
-                                duration: const Duration(milliseconds: 600),
-                                delay: const Duration(milliseconds: 800),
-                              ),
+                            duration: const Duration(milliseconds: 600),
+                            delay: const Duration(milliseconds: 800),
+                          ),
 
                           const SizedBox(height: 20),
 
@@ -298,9 +292,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               return null;
                             },
                           ).animate().fadeIn(
-                                duration: const Duration(milliseconds: 600),
-                                delay: const Duration(milliseconds: 900),
-                              ),
+                            duration: const Duration(milliseconds: 600),
+                            delay: const Duration(milliseconds: 900),
+                          ),
 
                           const SizedBox(height: 24),
 
@@ -343,9 +337,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             isLoading: _isLoading,
                             onPressed: _handleRegister,
                           ).animate().fadeIn(
-                                duration: const Duration(milliseconds: 600),
-                                delay: const Duration(milliseconds: 1000),
-                              ),
+                            duration: const Duration(milliseconds: 600),
+                            delay: const Duration(milliseconds: 1000),
+                          ),
 
                           const SizedBox(height: 24),
 
@@ -359,8 +353,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 ),
                               ),
                               Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 16),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                ),
                                 child: Text(
                                   'OR',
                                   style: AppTextStyles.bodySmall.copyWith(
@@ -376,9 +371,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               ),
                             ],
                           ).animate().fadeIn(
-                                duration: const Duration(milliseconds: 600),
-                                delay: const Duration(milliseconds: 1100),
-                              ),
+                            duration: const Duration(milliseconds: 600),
+                            delay: const Duration(milliseconds: 1100),
+                          ),
 
                           const SizedBox(height: 24),
 
@@ -390,9 +385,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             onPressed: _signUpWithGoogle,
                             leadingIcon: Icons.g_mobiledata,
                           ).animate().fadeIn(
-                                duration: const Duration(milliseconds: 600),
-                                delay: const Duration(milliseconds: 1200),
-                              ),
+                            duration: const Duration(milliseconds: 600),
+                            delay: const Duration(milliseconds: 1200),
+                          ),
 
                           const SizedBox(height: 40),
 
@@ -428,9 +423,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               ),
                             ),
                           ).animate().fadeIn(
-                                duration: const Duration(milliseconds: 600),
-                                delay: const Duration(milliseconds: 1300),
-                              ),
+                            duration: const Duration(milliseconds: 600),
+                            delay: const Duration(milliseconds: 1300),
+                          ),
 
                           const SizedBox(height: 24),
                         ],
@@ -462,7 +457,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.primary.withValues(alpha: 0.1) : Colors.white,
+          color: isSelected
+              ? AppColors.primary.withValues(alpha: 0.1)
+              : Colors.white,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isSelected ? AppColors.primary : AppColors.textLight,

@@ -45,15 +45,20 @@ class MarketHistoryService {
               grade: record['grade'] ?? '',
               arrivalDate: _parseDate(record['arrival_date'] ?? record['date']),
               minPrice: _parseDouble(
-                  record['min_x0020_price'] ?? record['min_price']),
+                record['min_x0020_price'] ?? record['min_price'],
+              ),
               maxPrice: _parseDouble(
-                  record['max_x0020_price'] ?? record['max_price']),
+                record['max_x0020_price'] ?? record['max_price'],
+              ),
               modalPrice: _parseDouble(
-                  record['modal_x0020_price'] ?? record['modal_price']),
-              quantity:
-                  _parseDouble(record['arrival_qty'] ?? record['quantity']),
+                record['modal_x0020_price'] ?? record['modal_price'],
+              ),
+              quantity: _parseDouble(
+                record['arrival_qty'] ?? record['quantity'],
+              ),
               arrivalQuantity: _parseDouble(
-                  record['arrival_quantity'] ?? record['arrival_qty'] ?? 0),
+                record['arrival_quantity'] ?? record['arrival_qty'] ?? 0,
+              ),
             );
           }).toList();
         }
@@ -61,8 +66,11 @@ class MarketHistoryService {
 
       return [];
     } catch (e) {
-      AppLogger.e('Error fetching historical market data',
-          tag: 'MarketHistory', error: e);
+      AppLogger.e(
+        'Error fetching historical market data',
+        tag: 'MarketHistory',
+        error: e,
+      );
       throw Exception('Failed to fetch historical market data: $e');
     }
   }

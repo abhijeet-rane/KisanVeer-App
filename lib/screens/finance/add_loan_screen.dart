@@ -75,9 +75,9 @@ class _AddLoanScreenState extends State<AddLoanScreen> {
       final userId = supabase.auth.currentUser?.id;
 
       if (userId == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('User not authenticated')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('User not authenticated')));
         setState(() {
           _isLoading = false;
         });
@@ -247,10 +247,7 @@ class _AddLoanScreenState extends State<AddLoanScreen> {
                 },
               ),
               const SizedBox(height: 24),
-              Text(
-                'Loan Period',
-                style: AppTextStyles.h4,
-              ),
+              Text('Loan Period', style: AppTextStyles.h4),
               const SizedBox(height: 8),
               Row(
                 children: [

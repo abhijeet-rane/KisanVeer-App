@@ -38,8 +38,11 @@ class OfflineStorageService {
       _isInitialized = true;
       AppLogger.d('Offline storage initialized', tag: 'OfflineStorage');
     } catch (e) {
-      AppLogger.e('Failed to initialize offline storage',
-          tag: 'OfflineStorage', error: e);
+      AppLogger.e(
+        'Failed to initialize offline storage',
+        tag: 'OfflineStorage',
+        error: e,
+      );
       rethrow;
     }
   }
@@ -48,7 +51,9 @@ class OfflineStorageService {
 
   /// Save market prices locally
   Future<void> cacheMarketPrices(
-      String commodityId, Map<String, dynamic> priceData) async {
+    String commodityId,
+    Map<String, dynamic> priceData,
+  ) async {
     final box = Hive.box<Map>(_marketPricesBox);
     await box.put(commodityId, priceData);
     await _updateCacheTimestamp(_marketPricesBox, commodityId);
@@ -80,7 +85,9 @@ class OfflineStorageService {
 
   /// Save product locally
   Future<void> cacheProduct(
-      String productId, Map<String, dynamic> productData) async {
+    String productId,
+    Map<String, dynamic> productData,
+  ) async {
     final box = Hive.box<Map>(_productsBox);
     await box.put(productId, productData);
     await _updateCacheTimestamp(_productsBox, productId);
@@ -103,7 +110,9 @@ class OfflineStorageService {
 
   /// Save user profile locally
   Future<void> cacheUserProfile(
-      String userId, Map<String, dynamic> profileData) async {
+    String userId,
+    Map<String, dynamic> profileData,
+  ) async {
     final box = Hive.box<Map>(_userDataBox);
     await box.put('profile_$userId', profileData);
   }
@@ -121,8 +130,10 @@ class OfflineStorageService {
   Future<void> queuePendingAction(PendingAction action) async {
     final box = Hive.box<Map>(_pendingActionsBox);
     await box.put(action.id, action.toMap());
-    AppLogger.d('Action queued for sync: ${action.type}',
-        tag: 'OfflineStorage');
+    AppLogger.d(
+      'Action queued for sync: ${action.type}',
+      tag: 'OfflineStorage',
+    );
   }
 
   /// Get all pending actions
@@ -156,8 +167,11 @@ class OfflineStorageService {
   }
 
   /// Check if cache is still valid
-  bool isCacheValid(String boxName, String key,
-      {Duration maxAge = const Duration(minutes: 30)}) {
+  bool isCacheValid(
+    String boxName,
+    String key, {
+    Duration maxAge = const Duration(minutes: 30),
+  }) {
     final metaBox = Hive.box<Map>(_cacheMetadataBox);
     final meta = metaBox.get('${boxName}_$key');
 
@@ -227,16 +241,19 @@ class OfflineStorageService {
           await box.delete(itemKey);
         } catch (e) {
           AppLogger.w(
-              'Failed to delete stale cache entry $boxName/$itemKey',
-              tag: 'OfflineStorage',
-              error: e);
+            'Failed to delete stale cache entry $boxName/$itemKey',
+            tag: 'OfflineStorage',
+            error: e,
+          );
         }
       }
       await metaBox.delete(key);
     }
 
-    AppLogger.d('Cleared ${keysToRemove.length} stale cache entries',
-        tag: 'OfflineStorage');
+    AppLogger.d(
+      'Cleared ${keysToRemove.length} stale cache entries',
+      tag: 'OfflineStorage',
+    );
   }
 }
 
@@ -257,20 +274,20 @@ class PendingAction {
   }) : createdAt = createdAt ?? DateTime.now();
 
   Map<String, dynamic> toMap() => {
-        'id': id,
-        'type': type,
-        'data': data,
-        'createdAt': createdAt.millisecondsSinceEpoch,
-        'retryCount': retryCount,
-      };
+    'id': id,
+    'type': type,
+    'data': data,
+    'createdAt': createdAt.millisecondsSinceEpoch,
+    'retryCount': retryCount,
+  };
 
   factory PendingAction.fromMap(Map<String, dynamic> map) => PendingAction(
-        id: map['id'] as String,
-        type: map['type'] as String,
-        data: Map<String, dynamic>.from(map['data'] as Map),
-        createdAt: DateTime.fromMillisecondsSinceEpoch(map['createdAt'] as int),
-        retryCount: map['retryCount'] as int? ?? 0,
-      );
+    id: map['id'] as String,
+    type: map['type'] as String,
+    data: Map<String, dynamic>.from(map['data'] as Map),
+    createdAt: DateTime.fromMillisecondsSinceEpoch(map['createdAt'] as int),
+    retryCount: map['retryCount'] as int? ?? 0,
+  );
 }
 
 /// Action types for sync queue

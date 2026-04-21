@@ -89,9 +89,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         _isLoading = false;
       });
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error loading addresses: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error loading addresses: $e')));
       }
     }
   }
@@ -170,9 +170,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     } catch (e) {
       AppLogger.e('Error saving address', tag: 'Checkout', error: e);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error saving address: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error saving address: $e')));
       }
     }
   }
@@ -197,7 +197,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       setState(() => _processingPayment = false);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-            content: Text('Error: Unable to retrieve payment API key')),
+          content: Text('Error: Unable to retrieve payment API key'),
+        ),
       );
       return;
     }
@@ -210,12 +211,13 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       'name': 'Kisan Veer',
       'description': 'Payment for marketplace order',
       'prefill': {
-        'contact':
-            _useNewAddress ? _phoneController.text : _selectedAddress!.phone,
+        'contact': _useNewAddress
+            ? _phoneController.text
+            : _selectedAddress!.phone,
       },
       'external': {
-        'wallets': ['paytm']
-      }
+        'wallets': ['paytm'],
+      },
     };
 
     try {
@@ -226,15 +228,17 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         _processingPayment = false;
         _razorpayError = e.toString();
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error initiating payment: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error initiating payment: $e')));
     }
   }
 
   Future<void> _handlePaymentSuccess(PaymentSuccessResponse response) async {
-    AppLogger.success('Payment success: ${response.paymentId}',
-        tag: 'Checkout');
+    AppLogger.success(
+      'Payment success: ${response.paymentId}',
+      tag: 'Checkout',
+    );
 
     try {
       // Determine which address to use
@@ -287,9 +291,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       AppLogger.e('Error creating order', tag: 'Checkout', error: e);
       if (mounted) {
         setState(() => _processingPayment = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error creating order: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error creating order: $e')));
       }
     }
   }
@@ -317,10 +321,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     return Scaffold(
       backgroundColor: Colors.grey[100],
       appBar: AppBar(
-        title: const Text(
-          'Checkout',
-          style: TextStyle(color: Colors.white),
-        ),
+        title: const Text('Checkout', style: TextStyle(color: Colors.white)),
         backgroundColor: AppColors.primary,
         elevation: 0,
       ),
@@ -356,10 +357,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               children: [
                 const Text(
                   'Delivery Address',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 TextButton(
                   onPressed: _toggleNewAddress,
@@ -389,8 +387,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.primary,
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
           ),
           child: const Text('Add New Address'),
         ),
@@ -411,7 +410,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 Text(
                   address.name,
                   style: const TextStyle(
-                      fontWeight: FontWeight.bold, fontSize: 16),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
                 ),
                 const SizedBox(height: 2),
                 Text(
@@ -555,7 +556,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               backgroundColor: AppColors.primary,
               padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8)),
+                borderRadius: BorderRadius.circular(8),
+              ),
             ),
             child: const Text('Save Address'),
           ),
@@ -575,10 +577,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           children: [
             const Text(
               'Order Summary',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             ListView.builder(
@@ -638,9 +637,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       ),
                       Text(
                         '₹${(product.price * item.quantity).toStringAsFixed(2)}',
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
@@ -658,10 +655,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             const SizedBox(height: 8),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: const [
-                Text('Delivery Fee'),
-                Text('₹0.00'),
-              ],
+              children: const [Text('Delivery Fee'), Text('₹0.00')],
             ),
             const SizedBox(height: 8),
             Row(
@@ -669,10 +663,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               children: [
                 const Text(
                   'Total',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
                 Text(
                   '₹${widget.totalAmount.toStringAsFixed(2)}',
@@ -701,10 +692,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           children: [
             const Text(
               'Payment Method',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             Container(
@@ -719,11 +707,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     'assets/images/razorpay_logo.png',
                     width: 30,
                     height: 30,
-                    errorBuilder: (context, error, stackTrace) => const Icon(
-                      Icons.payment,
-                      size: 30,
-                      color: Colors.blue,
-                    ),
+                    errorBuilder: (context, error, stackTrace) =>
+                        const Icon(Icons.payment, size: 30, color: Colors.blue),
                   ),
                   const SizedBox(width: 12),
                   const Expanded(
@@ -755,17 +740,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 ),
                 child: Row(
                   children: [
-                    Icon(
-                      Icons.error_outline,
-                      color: Colors.red[700],
-                    ),
+                    Icon(Icons.error_outline, color: Colors.red[700]),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         _razorpayError!,
-                        style: TextStyle(
-                          color: Colors.red[700],
-                        ),
+                        style: TextStyle(color: Colors.red[700]),
                       ),
                     ),
                   ],

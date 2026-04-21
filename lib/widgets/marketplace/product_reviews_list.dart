@@ -91,27 +91,15 @@ class ProductReviewsList extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    width: 120,
-                    height: 16,
-                    color: Colors.white,
-                  ),
+                  Container(width: 120, height: 16, color: Colors.white),
                   const SizedBox(height: 4),
-                  Container(
-                    width: 80,
-                    height: 12,
-                    color: Colors.white,
-                  ),
+                  Container(width: 80, height: 12, color: Colors.white),
                 ],
               ),
             ],
           ),
           const SizedBox(height: 8),
-          Container(
-            width: double.infinity,
-            height: 16,
-            color: Colors.white,
-          ),
+          Container(width: double.infinity, height: 16, color: Colors.white),
           const SizedBox(height: 4),
           Container(
             width: double.infinity * 0.7,
@@ -154,10 +142,7 @@ class ProductReviewsList extends StatelessWidget {
             const SizedBox(height: 16),
             const Text(
               'No reviews yet',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             Text(
@@ -202,17 +187,12 @@ class ProductReviewsList extends StatelessWidget {
                   children: [
                     Text(
                       review.user?.displayName ?? 'Anonymous',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       DateFormat('MMM dd, yyyy').format(review.createdAt),
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey[600],
-                      ),
+                      style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                     ),
                   ],
                 ),
@@ -233,10 +213,7 @@ class ProductReviewsList extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               review.reviewText!,
-              style: const TextStyle(
-                fontSize: 14,
-                height: 1.4,
-              ),
+              style: const TextStyle(fontSize: 14, height: 1.4),
             ),
           ],
         ],

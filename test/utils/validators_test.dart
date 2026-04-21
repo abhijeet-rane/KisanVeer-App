@@ -102,11 +102,15 @@ void main() {
 
   group('Validators.validateRequired', () {
     test('returns error when null, empty, or whitespace-only', () {
-      expect(Validators.validateRequired(null, 'Address'),
-          'Address is required');
+      expect(
+        Validators.validateRequired(null, 'Address'),
+        'Address is required',
+      );
       expect(Validators.validateRequired('', 'Address'), 'Address is required');
-      expect(Validators.validateRequired('   ', 'Address'),
-          'Address is required');
+      expect(
+        Validators.validateRequired('   ', 'Address'),
+        'Address is required',
+      );
     });
 
     test('returns null when value has content', () {
@@ -118,8 +122,10 @@ void main() {
     test('rejects empty or too-short names', () {
       expect(Validators.validateName(null), 'Name is required');
       expect(Validators.validateName(''), 'Name is required');
-      expect(Validators.validateName('A'),
-          'Name must be at least 2 characters long');
+      expect(
+        Validators.validateName('A'),
+        'Name must be at least 2 characters long',
+      );
     });
 
     test('accepts 2+ char names', () {
@@ -130,13 +136,16 @@ void main() {
 
   group('Validators.validateNumeric', () {
     test('rejects null / empty / non-numeric', () {
-      expect(
-          Validators.validateNumeric(null, 'Price'), 'Price is required');
+      expect(Validators.validateNumeric(null, 'Price'), 'Price is required');
       expect(Validators.validateNumeric('', 'Price'), 'Price is required');
-      expect(Validators.validateNumeric('abc', 'Price'),
-          'Please enter a valid number');
-      expect(Validators.validateNumeric('12.345', 'Price'),
-          'Please enter a valid number');
+      expect(
+        Validators.validateNumeric('abc', 'Price'),
+        'Please enter a valid number',
+      );
+      expect(
+        Validators.validateNumeric('12.345', 'Price'),
+        'Please enter a valid number',
+      );
     });
 
     test('accepts integers and up to 2-decimal floats', () {

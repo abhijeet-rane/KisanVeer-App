@@ -34,8 +34,9 @@ class _PriceAlertsScreenState extends State<PriceAlertsScreen> {
   @override
   void initState() {
     super.initState();
-    _commodityController =
-        TextEditingController(text: widget.initialCommodity ?? '');
+    _commodityController = TextEditingController(
+      text: widget.initialCommodity ?? '',
+    );
     _selectedState = widget.initialState;
     _selectedDistrict = widget.initialDistrict;
     _selectedMarket = widget.initialMarket;
@@ -292,8 +293,8 @@ class _PriceAlertsScreenState extends State<PriceAlertsScreen> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _errorMessage != null
-              ? _buildErrorView()
-              : _buildAlertsView(),
+          ? _buildErrorView()
+          : _buildAlertsView(),
       floatingActionButton: FloatingActionButton(
         onPressed: _showCreateAlertSheet,
         backgroundColor: AppColors.primary,
@@ -309,11 +310,7 @@ class _PriceAlertsScreenState extends State<PriceAlertsScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.error_outline,
-              size: 80,
-              color: Colors.red.shade300,
-            ),
+            Icon(Icons.error_outline, size: 80, color: Colors.red.shade300),
             const SizedBox(height: 16),
             Text(
               'Failed to load alerts',
@@ -413,119 +410,129 @@ class _PriceAlertsScreenState extends State<PriceAlertsScreen> {
     }
 
     return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Commodity name and alert status
-            Row(
+          margin: const EdgeInsets.only(bottom: 12),
+          elevation: 2,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(
-                  child: Text(
-                    alert.commodity,
-                    style: AppTextStyles.subtitle,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
+                // Commodity name and alert status
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        alert.commodity,
+                        style: AppTextStyles.subtitle,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    Switch(
+                      value: alert.isActive,
+                      onChanged: (_) => _toggleAlert(alert),
+                      activeColor: AppColors.primary,
+                    ),
+                  ],
                 ),
-                Switch(
-                  value: alert.isActive,
-                  onChanged: (_) => _toggleAlert(alert),
-                  activeColor: AppColors.primary,
+
+                // Alert condition
+                Row(
+                  children: [
+                    Icon(
+                      alert.condition == 'above'
+                          ? Icons.arrow_upward
+                          : Icons.arrow_downward,
+                      color: alert.condition == 'above'
+                          ? Colors.green
+                          : Colors.red,
+                      size: 16,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      '${alert.condition == 'above' ? 'Above' : 'Below'} ₹${alert.targetPrice.toStringAsFixed(2)}',
+                      style: AppTextStyles.bodyMedium.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: alert.condition == 'above'
+                            ? Colors.green
+                            : Colors.red,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+
+                // Location
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.location_on_outlined,
+                      size: 16,
+                      color: Colors.grey,
+                    ),
+                    const SizedBox(width: 4),
+                    Expanded(
+                      child: Text(
+                        locationString,
+                        style: AppTextStyles.bodySmall.copyWith(
+                          color: Colors.grey,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+
+                // Created date
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.calendar_today_outlined,
+                      size: 16,
+                      color: Colors.grey,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      'Created on ${dateFormat.format(alert.createdAt)}',
+                      style: AppTextStyles.bodySmall.copyWith(
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+
+                // Delete button
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: OutlinedButton.icon(
+                    onPressed: () => _deleteAlert(alert),
+                    icon: Icon(
+                      Icons.delete_outline,
+                      color: Colors.red.shade400,
+                      size: 18,
+                    ),
+                    label: Text(
+                      'Delete',
+                      style: TextStyle(color: Colors.red.shade400),
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      side: BorderSide(color: Colors.red.shade400),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
+                  ),
                 ),
               ],
             ),
-
-            // Alert condition
-            Row(
-              children: [
-                Icon(
-                  alert.condition == 'above'
-                      ? Icons.arrow_upward
-                      : Icons.arrow_downward,
-                  color: alert.condition == 'above' ? Colors.green : Colors.red,
-                  size: 16,
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  '${alert.condition == 'above' ? 'Above' : 'Below'} ₹${alert.targetPrice.toStringAsFixed(2)}',
-                  style: AppTextStyles.bodyMedium.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color:
-                        alert.condition == 'above' ? Colors.green : Colors.red,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-
-            // Location
-            Row(
-              children: [
-                const Icon(
-                  Icons.location_on_outlined,
-                  size: 16,
-                  color: Colors.grey,
-                ),
-                const SizedBox(width: 4),
-                Expanded(
-                  child: Text(
-                    locationString,
-                    style: AppTextStyles.bodySmall.copyWith(color: Colors.grey),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-
-            // Created date
-            Row(
-              children: [
-                const Icon(
-                  Icons.calendar_today_outlined,
-                  size: 16,
-                  color: Colors.grey,
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  'Created on ${dateFormat.format(alert.createdAt)}',
-                  style: AppTextStyles.bodySmall.copyWith(color: Colors.grey),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-
-            // Delete button
-            Align(
-              alignment: Alignment.centerRight,
-              child: OutlinedButton.icon(
-                onPressed: () => _deleteAlert(alert),
-                icon: Icon(Icons.delete_outline,
-                    color: Colors.red.shade400, size: 18),
-                label: Text(
-                  'Delete',
-                  style: TextStyle(color: Colors.red.shade400),
-                ),
-                style: OutlinedButton.styleFrom(
-                  side: BorderSide(color: Colors.red.shade400),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    )
+          ),
+        )
         .animate()
         .fadeIn(
           duration: 300.ms,
@@ -606,8 +613,9 @@ class _PriceAlertsScreenState extends State<PriceAlertsScreen> {
 
                 // State dropdown
                 DropdownButtonFormField<String>(
-                  value:
-                      _states.contains(_selectedState) ? _selectedState : null,
+                  value: _states.contains(_selectedState)
+                      ? _selectedState
+                      : null,
                   items: _states.map((state) {
                     return DropdownMenuItem<String>(
                       value: state,

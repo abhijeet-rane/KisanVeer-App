@@ -53,7 +53,11 @@ class SyncManager {
 
     if (!_connectivity.isOnline) {
       return SyncResult(
-          total: 0, synced: 0, failed: 0, error: 'No internet connection');
+        total: 0,
+        synced: 0,
+        failed: 0,
+        error: 'No internet connection',
+      );
     }
 
     _isSyncing = true;
@@ -66,8 +70,10 @@ class SyncManager {
         return SyncResult(total: 0, synced: 0, failed: 0);
       }
 
-      AppLogger.i('Syncing ${pendingActions.length} pending actions',
-          tag: 'SyncManager');
+      AppLogger.i(
+        'Syncing ${pendingActions.length} pending actions',
+        tag: 'SyncManager',
+      );
 
       int synced = 0;
       int failed = 0;
@@ -83,16 +89,21 @@ class SyncManager {
             action.retryCount++;
             if (action.retryCount >= 3) {
               await _offlineStorage.removePendingAction(action.id);
-              AppLogger.w('Action ${action.id} failed after 3 retries',
-                  tag: 'SyncManager');
+              AppLogger.w(
+                'Action ${action.id} failed after 3 retries',
+                tag: 'SyncManager',
+              );
             }
             failed++;
           }
 
           onSyncProgress?.call(pendingActions.length - synced, synced);
         } catch (e) {
-          AppLogger.e('Error syncing action ${action.id}',
-              tag: 'SyncManager', error: e);
+          AppLogger.e(
+            'Error syncing action ${action.id}',
+            tag: 'SyncManager',
+            error: e,
+          );
           failed++;
         }
       }
@@ -103,8 +114,10 @@ class SyncManager {
         failed: failed,
       );
 
-      AppLogger.success('Sync complete: $synced/${pendingActions.length}',
-          tag: 'SyncManager');
+      AppLogger.success(
+        'Sync complete: $synced/${pendingActions.length}',
+        tag: 'SyncManager',
+      );
       onSyncComplete?.call();
 
       return result;
@@ -153,8 +166,11 @@ class SyncManager {
       await _supabase.from('user_profiles').update(data).eq('id', userId);
       return true;
     } catch (e) {
-      AppLogger.e('Failed to sync profile update',
-          tag: 'SyncManager', error: e);
+      AppLogger.e(
+        'Failed to sync profile update',
+        tag: 'SyncManager',
+        error: e,
+      );
       return false;
     }
   }

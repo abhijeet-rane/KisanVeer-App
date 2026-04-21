@@ -8,10 +8,7 @@ import 'package:timeago/timeago.dart' as timeago;
 class PostDetailsScreen extends StatefulWidget {
   final Post post;
 
-  const PostDetailsScreen({
-    Key? key,
-    required this.post,
-  }) : super(key: key);
+  const PostDetailsScreen({Key? key, required this.post}) : super(key: key);
 
   @override
   State<PostDetailsScreen> createState() => _PostDetailsScreenState();
@@ -46,9 +43,9 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
       setState(() => _comments = comments);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error loading comments: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error loading comments: $e')));
       }
     } finally {
       if (mounted) {
@@ -84,9 +81,9 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error posting comment: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error posting comment: $e')));
       }
     } finally {
       if (mounted) {
@@ -112,9 +109,9 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     }
   }
@@ -122,9 +119,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Post Details'),
-      ),
+      appBar: AppBar(title: const Text('Post Details')),
       body: Column(
         children: [
           // Post details
@@ -152,12 +147,13 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                   trailing: widget.post.category.isNotEmpty
                       ? Chip(
                           label: Text(widget.post.category),
-                          backgroundColor:
-                              Theme.of(context).colorScheme.secondaryContainer,
+                          backgroundColor: Theme.of(
+                            context,
+                          ).colorScheme.secondaryContainer,
                           labelStyle: TextStyle(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onSecondaryContainer,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSecondaryContainer,
                           ),
                         )
                       : null,
@@ -168,8 +164,8 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                 Text(
                   widget.post.title,
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(height: 16),
 
@@ -201,17 +197,17 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                               fit: BoxFit.cover,
                               width: 200,
                               placeholder: (context, url) => Container(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .surfaceContainerHighest,
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.surfaceContainerHighest,
                                 child: const Center(
                                   child: CircularProgressIndicator(),
                                 ),
                               ),
                               errorWidget: (context, url, error) => Container(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .errorContainer,
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.errorContainer,
                                 child: const Icon(Icons.error),
                               ),
                             ),
@@ -232,8 +228,9 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                         .map(
                           (tag) => Chip(
                             label: Text(tag),
-                            backgroundColor:
-                                Theme.of(context).colorScheme.surfaceContainerHighest,
+                            backgroundColor: Theme.of(
+                              context,
+                            ).colorScheme.surfaceContainerHighest,
                           ),
                         )
                         .toList(),

@@ -39,9 +39,9 @@ class _CommunitiesScreenState extends State<CommunitiesScreen> {
         _popularCommunities = communities;
       });
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error loading communities: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error loading communities: $e')));
     } finally {
       setState(() => _isLoading = false);
     }
@@ -80,9 +80,9 @@ class _CommunitiesScreenState extends State<CommunitiesScreen> {
         _loadCommunities(); // Refresh the lists
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error: $e')));
     }
   }
 
@@ -90,9 +90,7 @@ class _CommunitiesScreenState extends State<CommunitiesScreen> {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       clipBehavior: Clip.antiAlias,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       elevation: 3,
       child: InkWell(
         onTap: () => _navigateToCommunityDetails(community),
@@ -137,10 +135,7 @@ class _CommunitiesScreenState extends State<CommunitiesScreen> {
                       const SizedBox(height: 8),
                       Text(
                         community.description,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey[600],
-                        ),
+                        style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -157,8 +152,11 @@ class _CommunitiesScreenState extends State<CommunitiesScreen> {
                             ),
                           ),
                           const SizedBox(width: 16),
-                          Icon(Icons.chat_bubble_outline,
-                              size: 16, color: Colors.grey[600]),
+                          Icon(
+                            Icons.chat_bubble_outline,
+                            size: 16,
+                            color: Colors.grey[600],
+                          ),
                           const SizedBox(width: 4),
                           Text(
                             '${community.postCount} posts',
@@ -208,8 +206,10 @@ class _CommunitiesScreenState extends State<CommunitiesScreen> {
                 opacity: 1.0,
                 duration: const Duration(milliseconds: 500),
                 child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: community.isPrivate
@@ -261,8 +261,10 @@ class _CommunitiesScreenState extends State<CommunitiesScreen> {
           : RefreshIndicator(
               onRefresh: _loadCommunities,
               child: ListView(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 7,
+                ),
                 children: [
                   // Join Communities Card
                   Card(
@@ -279,7 +281,7 @@ class _CommunitiesScreenState extends State<CommunitiesScreen> {
                           gradient: LinearGradient(
                             colors: [
                               Colors.blue.withValues(alpha: 0.1),
-                              Colors.blueAccent.withValues(alpha: 0.1)
+                              Colors.blueAccent.withValues(alpha: 0.1),
                             ],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
@@ -295,7 +297,9 @@ class _CommunitiesScreenState extends State<CommunitiesScreen> {
                         ),
                         child: Padding(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 14),
+                            horizontal: 16,
+                            vertical: 14,
+                          ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -308,14 +312,19 @@ class _CommunitiesScreenState extends State<CommunitiesScreen> {
                                       shape: BoxShape.circle,
                                       boxShadow: [
                                         BoxShadow(
-                                          color: Colors.blue.withValues(alpha: 0.3),
+                                          color: Colors.blue.withValues(
+                                            alpha: 0.3,
+                                          ),
                                           blurRadius: 10,
                                           spreadRadius: 2,
                                         ),
                                       ],
                                     ),
-                                    child: const Icon(Icons.group_add,
-                                        size: 28, color: Colors.blue),
+                                    child: const Icon(
+                                      Icons.group_add,
+                                      size: 28,
+                                      color: Colors.blue,
+                                    ),
                                   ),
                                   const SizedBox(width: 14),
                                   Expanded(
@@ -356,13 +365,14 @@ class _CommunitiesScreenState extends State<CommunitiesScreen> {
                                   child: Container(
                                     width: double.infinity,
                                     padding: const EdgeInsets.symmetric(
-                                        vertical: 16),
+                                      vertical: 16,
+                                    ),
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(14),
                                       gradient: LinearGradient(
                                         colors: [
                                           Colors.blue.shade400,
-                                          Colors.blue.shade700
+                                          Colors.blue.shade700,
                                         ],
                                         begin: Alignment.topLeft,
                                         end: Alignment.bottomRight,
@@ -405,7 +415,7 @@ class _CommunitiesScreenState extends State<CommunitiesScreen> {
                         gradient: LinearGradient(
                           colors: [
                             Colors.blueAccent.withValues(alpha: 0.2),
-                            Colors.white
+                            Colors.white,
                           ],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
@@ -426,8 +436,11 @@ class _CommunitiesScreenState extends State<CommunitiesScreen> {
                         children: [
                           Row(
                             children: [
-                              Icon(Icons.groups_rounded,
-                                  size: 28, color: Colors.blueAccent),
+                              Icon(
+                                Icons.groups_rounded,
+                                size: 28,
+                                color: Colors.blueAccent,
+                              ),
                               const SizedBox(width: 8),
                               const Text(
                                 'My Communities',
@@ -445,8 +458,8 @@ class _CommunitiesScreenState extends State<CommunitiesScreen> {
                                 350, // Increased height to better fit image & details
                             child: PageView.builder(
                               controller: PageController(
-                                  viewportFraction:
-                                      0.85), // Smooth scrolling with slight overlap
+                                viewportFraction: 0.85,
+                              ), // Smooth scrolling with slight overlap
                               scrollDirection: Axis.horizontal,
                               itemCount: _myCommunities.length,
                               itemBuilder: (context, index) {
@@ -454,14 +467,17 @@ class _CommunitiesScreenState extends State<CommunitiesScreen> {
                                 return AnimatedContainer(
                                   duration: Duration(milliseconds: 300),
                                   curve: Curves.easeInOut,
-                                  margin:
-                                      const EdgeInsets.symmetric(horizontal: 8),
+                                  margin: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                  ),
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(16),
                                     color: Colors.white.withValues(alpha: 0.9),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: Colors.black.withValues(alpha: 0.08),
+                                        color: Colors.black.withValues(
+                                          alpha: 0.08,
+                                        ),
                                         blurRadius: 10,
                                         spreadRadius: 2,
                                         offset: const Offset(0, 3),
@@ -485,7 +501,8 @@ class _CommunitiesScreenState extends State<CommunitiesScreen> {
                   // Popular Communities Section
                   Padding(
                     padding: const EdgeInsets.only(
-                        top: 10), // Adjust space as needed
+                      top: 10,
+                    ), // Adjust space as needed
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [

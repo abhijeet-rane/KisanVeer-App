@@ -41,9 +41,9 @@ class _CartScreenState extends State<CartScreen> {
         _isLoading = false;
       });
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error loading cart: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error loading cart: $e')));
       setState(() => _isLoading = false);
     }
   }
@@ -68,9 +68,9 @@ class _CartScreenState extends State<CartScreen> {
       await _marketplaceService.updateCartItemQuantity(item.id, newQuantity);
       await _loadCartItems();
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error updating quantity: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error updating quantity: $e')));
     }
   }
 
@@ -79,13 +79,13 @@ class _CartScreenState extends State<CartScreen> {
       await _marketplaceService.removeFromCart(item.id);
       await _loadCartItems();
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Item removed from cart')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Item removed from cart')));
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error removing item: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error removing item: $e')));
     }
   }
 
@@ -95,7 +95,8 @@ class _CartScreenState extends State<CartScreen> {
       builder: (context) => AlertDialog(
         title: const Text('Clear Cart'),
         content: const Text(
-            'Are you sure you want to remove all items from your cart?'),
+          'Are you sure you want to remove all items from your cart?',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -108,17 +109,19 @@ class _CartScreenState extends State<CartScreen> {
                 await _marketplaceService.clearCart();
                 await _loadCartItems();
 
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Cart cleared')),
-                );
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(const SnackBar(content: Text('Cart cleared')));
               } catch (e) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text('Error clearing cart: $e')),
                 );
               }
             },
-            child:
-                const Text('Clear Cart', style: TextStyle(color: Colors.red)),
+            child: const Text(
+              'Clear Cart',
+              style: TextStyle(color: Colors.red),
+            ),
           ),
         ],
       ),
@@ -132,10 +135,8 @@ class _CartScreenState extends State<CartScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => CheckoutScreen(
-          cartItems: _cartItems,
-          totalAmount: _totalPrice,
-        ),
+        builder: (context) =>
+            CheckoutScreen(cartItems: _cartItems, totalAmount: _totalPrice),
       ),
     ).then((_) {
       setState(() => _isProcessing = false);
@@ -166,8 +167,8 @@ class _CartScreenState extends State<CartScreen> {
       body: _isLoading
           ? _buildLoadingState()
           : _cartItems.isEmpty
-              ? _buildEmptyCart()
-              : _buildCartItems(),
+          ? _buildEmptyCart()
+          : _buildCartItems(),
       bottomNavigationBar: _cartItems.isEmpty ? null : _buildCheckoutBar(),
     );
   }
@@ -198,26 +199,16 @@ class _CartScreenState extends State<CartScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.shopping_cart_outlined,
-            size: 80,
-            color: Colors.grey[400],
-          ),
+          Icon(Icons.shopping_cart_outlined, size: 80, color: Colors.grey[400]),
           const SizedBox(height: 16),
           const Text(
             'Your cart is empty',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
           Text(
             'Add items to your cart to proceed with checkout',
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.grey[600],
-            ),
+            style: TextStyle(fontSize: 16, color: Colors.grey[600]),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 24),
@@ -274,10 +265,7 @@ class _CartScreenState extends State<CartScreen> {
               children: [
                 const Text(
                   'Total:',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 Text(
                   '₹${_totalPrice.toStringAsFixed(2)}',

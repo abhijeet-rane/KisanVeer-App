@@ -181,17 +181,14 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                     ).animate().scale(
-                          duration: const Duration(milliseconds: 600),
-                          curve: Curves.easeOutBack,
-                        ),
+                      duration: const Duration(milliseconds: 600),
+                      curve: Curves.easeOutBack,
+                    ),
 
                     const SizedBox(height: 40),
 
                     // Welcome text
-                    Text(
-                      'Welcome Back!',
-                      style: AppTextStyles.h1,
-                    )
+                    Text('Welcome Back!', style: AppTextStyles.h1)
                         .animate()
                         .fadeIn(
                           duration: const Duration(milliseconds: 600),
@@ -213,9 +210,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         color: AppColors.textSecondary,
                       ),
                     ).animate().fadeIn(
-                          duration: const Duration(milliseconds: 600),
-                          delay: const Duration(milliseconds: 300),
-                        ),
+                      duration: const Duration(milliseconds: 600),
+                      delay: const Duration(milliseconds: 300),
+                    ),
 
                     const SizedBox(height: 40),
 
@@ -234,9 +231,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             prefixIcon: Icons.email_outlined,
                             validator: Validators.validateEmail,
                           ).animate().fadeIn(
-                                duration: const Duration(milliseconds: 600),
-                                delay: const Duration(milliseconds: 400),
-                              ),
+                            duration: const Duration(milliseconds: 600),
+                            delay: const Duration(milliseconds: 400),
+                          ),
 
                           const SizedBox(height: 24),
 
@@ -254,9 +251,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               return null;
                             },
                           ).animate().fadeIn(
-                                duration: const Duration(milliseconds: 600),
-                                delay: const Duration(milliseconds: 500),
-                              ),
+                            duration: const Duration(milliseconds: 600),
+                            delay: const Duration(milliseconds: 500),
+                          ),
 
                           const SizedBox(height: 16),
 
@@ -282,9 +279,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                           ).animate().fadeIn(
-                                duration: const Duration(milliseconds: 600),
-                                delay: const Duration(milliseconds: 600),
-                              ),
+                            duration: const Duration(milliseconds: 600),
+                            delay: const Duration(milliseconds: 600),
+                          ),
 
                           const SizedBox(height: 24),
 
@@ -327,9 +324,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             isLoading: _isLoading,
                             onPressed: _handleLogin,
                           ).animate().fadeIn(
-                                duration: const Duration(milliseconds: 600),
-                                delay: const Duration(milliseconds: 700),
-                              ),
+                            duration: const Duration(milliseconds: 600),
+                            delay: const Duration(milliseconds: 700),
+                          ),
 
                           const SizedBox(height: 24),
 
@@ -343,8 +340,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                               ),
                               Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 16),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                ),
                                 child: Text(
                                   'OR',
                                   style: AppTextStyles.bodySmall.copyWith(
@@ -360,9 +358,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ],
                           ).animate().fadeIn(
-                                duration: const Duration(milliseconds: 600),
-                                delay: const Duration(milliseconds: 800),
-                              ),
+                            duration: const Duration(milliseconds: 600),
+                            delay: const Duration(milliseconds: 800),
+                          ),
 
                           const SizedBox(height: 24),
 
@@ -374,9 +372,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             onPressed: _handleGoogleSignIn,
                             leadingIcon: Icons.g_mobiledata,
                           ).animate().fadeIn(
-                                duration: const Duration(milliseconds: 600),
-                                delay: const Duration(milliseconds: 900),
-                              ),
+                            duration: const Duration(milliseconds: 600),
+                            delay: const Duration(milliseconds: 900),
+                          ),
 
                           const SizedBox(height: 24),
 
@@ -388,7 +386,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                   .restoreSessionForBiometric();
                               if (success && mounted) {
                                 Navigator.pushReplacementNamed(
-                                    context, '/main');
+                                  context,
+                                  '/main',
+                                );
                               } else if (mounted) {
                                 setState(() {
                                   _errorMessage =
@@ -403,9 +403,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               });
                             },
                           ).animate().fadeIn(
-                                duration: const Duration(milliseconds: 600),
-                                delay: const Duration(milliseconds: 1000),
-                              ),
+                            duration: const Duration(milliseconds: 600),
+                            delay: const Duration(milliseconds: 1000),
+                          ),
 
                           // Register link
                           Center(
@@ -440,9 +440,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                           ).animate().fadeIn(
-                                duration: const Duration(milliseconds: 600),
-                                delay: const Duration(milliseconds: 1000),
-                              ),
+                            duration: const Duration(milliseconds: 600),
+                            delay: const Duration(milliseconds: 1000),
+                          ),
                         ],
                       ),
                     ),

@@ -99,10 +99,7 @@ class _CreditScoreScreenState extends State<CreditScoreScreen> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            Text(
-              'Your Credit Score',
-              style: AppTextStyles.h3,
-            ),
+            Text('Your Credit Score', style: AppTextStyles.h3),
             const SizedBox(height: 24),
             Stack(
               alignment: Alignment.center,
@@ -205,7 +202,10 @@ class _CreditScoreScreenState extends State<CreditScoreScreen> {
   }
 
   Widget _buildRecommendationItem(
-      String title, String subtitle, IconData icon) {
+    String title,
+    String subtitle,
+    IconData icon,
+  ) {
     return ListTile(
       leading: CircleAvatar(
         backgroundColor: AppColors.primary.withValues(alpha: 0.1),

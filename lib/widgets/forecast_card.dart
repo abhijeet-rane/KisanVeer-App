@@ -51,11 +51,7 @@ class ForecastCard extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                SvgPicture.asset(
-                  icon,
-                  height: 24,
-                  width: 24,
-                ),
+                SvgPicture.asset(icon, height: 24, width: 24),
                 const SizedBox(width: 8),
                 Flexible(
                   child: Text(

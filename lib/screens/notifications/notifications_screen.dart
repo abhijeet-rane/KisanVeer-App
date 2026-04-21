@@ -184,10 +184,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(
-        title: 'Notifications',
-        showBackButton: true,
-      ),
+      appBar: CustomAppBar(title: 'Notifications', showBackButton: true),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : Column(
@@ -267,7 +264,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                                   backgroundColor: notification.read
                                       ? Colors.white
                                       : _getNotificationColor(
-                                          notification.type),
+                                          notification.type,
+                                        ),
                                   child: Row(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
@@ -299,7 +297,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                                             const SizedBox(height: 8),
                                             Text(
                                               _formatTimestamp(
-                                                  notification.timestamp),
+                                                notification.timestamp,
+                                              ),
                                               style: TextStyle(
                                                 fontSize: 12,
                                                 color: Colors.grey.shade600,
@@ -311,7 +310,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                                                     Alignment.centerRight,
                                                 child: TextButton(
                                                   child: const Text(
-                                                      'Mark as Read'),
+                                                    'Mark as Read',
+                                                  ),
                                                   onPressed: () =>
                                                       _markAsRead(notification),
                                                 ),

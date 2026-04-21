@@ -43,11 +43,7 @@ class HourForecast extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 10),
-          SvgPicture.asset(
-            icon,
-            height: 28,
-            width: 28,
-          ),
+          SvgPicture.asset(icon, height: 28, width: 28),
           const SizedBox(height: 8),
           Text(
             temperature,

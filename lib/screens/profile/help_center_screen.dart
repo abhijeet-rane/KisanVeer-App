@@ -15,27 +15,27 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
     {
       'question': 'How do I add or change the crops I grow?',
       'answer':
-          'You can add or change your crops by going to your Profile, tapping on "Edit Profile", and then selecting the crops you grow from the list provided.'
+          'You can add or change your crops by going to your Profile, tapping on "Edit Profile", and then selecting the crops you grow from the list provided.',
     },
     {
       'question': 'How does the weather forecast help me with farming?',
       'answer':
-          'The weather forecast provides detailed information about expected weather conditions that affect your crops. Based on the current weather and forecast, the app provides specific recommendations for your crops to help you maximize yield and prevent damage.'
+          'The weather forecast provides detailed information about expected weather conditions that affect your crops. Based on the current weather and forecast, the app provides specific recommendations for your crops to help you maximize yield and prevent damage.',
     },
     {
       'question': 'Can I sell my produce directly through this app?',
       'answer':
-          'Yes! The Market tab allows you to list your produce for sale. You can also connect with buyers in your area who are looking for fresh produce directly from farmers.'
+          'Yes! The Market tab allows you to list your produce for sale. You can also connect with buyers in your area who are looking for fresh produce directly from farmers.',
     },
     {
       'question': 'How do I get financial assistance for farming?',
       'answer':
-          'Visit the Finance tab to view available financial products including loans, insurance, and subsidies specifically for farmers. You can apply directly through the app.'
+          'Visit the Finance tab to view available financial products including loans, insurance, and subsidies specifically for farmers. You can apply directly through the app.',
     },
     {
       'question': 'How do I connect with other farmers?',
       'answer':
-          'The Community tab allows you to connect with other farmers, join groups based on crops or location, and participate in discussions to share best practices.'
+          'The Community tab allows you to connect with other farmers, join groups based on crops or location, and participate in discussions to share best practices.',
     },
   ];
 
@@ -44,25 +44,25 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
       'title': 'Email Support',
       'icon': Icons.email,
       'action': 'support@kisanveer.com',
-      'type': 'email'
+      'type': 'email',
     },
     {
       'title': 'Call Helpline',
       'icon': Icons.phone,
       'action': '+91 8000FARMER',
-      'type': 'phone'
+      'type': 'phone',
     },
     {
       'title': 'WhatsApp Support',
       'icon': Icons.message,
       'action': '+91 9000FARMER',
-      'type': 'whatsapp'
+      'type': 'whatsapp',
     },
     {
       'title': 'Report a Problem',
       'icon': Icons.bug_report,
       'action': 'report',
-      'type': 'screen'
+      'type': 'screen',
     },
   ];
 
@@ -107,10 +107,7 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
             // Quick Contact Options
             const Text(
               'Contact Support',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 16),
 
@@ -124,10 +121,7 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
                 itemBuilder: (context, index) {
                   final option = _contactOptions[index];
                   return ListTile(
-                    leading: Icon(
-                      option['icon'],
-                      color: Colors.green,
-                    ),
+                    leading: Icon(option['icon'], color: Colors.green),
                     title: Text(option['title']),
                     subtitle: option['type'] != 'screen'
                         ? Text(option['action'])
@@ -145,10 +139,7 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
             // FAQs
             const Text(
               'Frequently Asked Questions',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 16),
 
@@ -163,9 +154,7 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
                   child: ExpansionTile(
                     title: Text(
                       faq['question'],
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                      ),
+                      style: const TextStyle(fontWeight: FontWeight.w600),
                     ),
                     iconColor: Colors.green,
                     collapsedIconColor: Colors.grey,
@@ -192,10 +181,7 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
             // Additional Resources
             const Text(
               'Additional Resources',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 16),
 
@@ -216,10 +202,7 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
                   ),
                   const Divider(height: 1),
                   ListTile(
-                    leading: const Icon(
-                      Icons.article,
-                      color: Colors.green,
-                    ),
+                    leading: const Icon(Icons.article, color: Colors.green),
                     title: const Text('User Guide'),
                     subtitle: const Text('Detailed app documentation'),
                     onTap: () {
@@ -228,10 +211,7 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
                   ),
                   const Divider(height: 1),
                   ListTile(
-                    leading: const Icon(
-                      Icons.forum,
-                      color: Colors.green,
-                    ),
+                    leading: const Icon(Icons.forum, color: Colors.green),
                     title: const Text('Community Forum'),
                     subtitle: const Text('Get help from other farmers'),
                     onTap: () {
@@ -255,9 +235,7 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
         final Uri emailUri = Uri(
           scheme: 'mailto',
           path: action,
-          queryParameters: {
-            'subject': 'Support Request - KisanVeer App',
-          },
+          queryParameters: {'subject': 'Support Request - KisanVeer App'},
         );
         if (await canLaunchUrl(emailUri)) {
           await launchUrl(emailUri);
@@ -303,8 +281,8 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
   }
 
   void _showErrorSnackbar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 }

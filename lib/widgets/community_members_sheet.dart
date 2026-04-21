@@ -9,7 +9,7 @@ class CommunityMembersSheet extends StatefulWidget {
   final Community community;
 
   const CommunityMembersSheet({Key? key, required this.community})
-      : super(key: key);
+    : super(key: key);
 
   @override
   State<CommunityMembersSheet> createState() => _CommunityMembersSheetState();
@@ -28,16 +28,17 @@ class _CommunityMembersSheetState extends State<CommunityMembersSheet> {
 
   Future<void> _loadMembers() async {
     try {
-      final members =
-          await _communityService.getCommunityMembers(widget.community.id);
+      final members = await _communityService.getCommunityMembers(
+        widget.community.id,
+      );
       setState(() {
         _members = members;
         _isLoading = false;
       });
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error loading members: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error loading members: $e')));
       setState(() => _isLoading = false);
     }
   }
@@ -85,8 +86,10 @@ class _CommunityMembersSheetState extends State<CommunityMembersSheet> {
               ),
               Flexible(
                 child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.blue.shade50,
                     borderRadius: BorderRadius.circular(20),
@@ -206,12 +209,14 @@ class _CommunityMembersSheetState extends State<CommunityMembersSheet> {
                           if (isAdmin) ...[
                             const SizedBox(width: 8),
                             Chip(
-                              label: Text('Admin',
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.white,
-                                  )),
+                              label: Text(
+                                'Admin',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.white,
+                                ),
+                              ),
                               backgroundColor: Colors.blue.shade700,
                             ),
                           ],

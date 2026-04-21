@@ -32,9 +32,7 @@ void main() {
     });
 
     test('parses crops from a comma-separated string', () {
-      final u = UserModel.fromJson({
-        'crops': 'wheat, rice , , cotton',
-      });
+      final u = UserModel.fromJson({'crops': 'wheat, rice , , cotton'});
       expect(u.crops, ['wheat', 'rice', 'cotton']);
     });
 
@@ -48,9 +46,7 @@ void main() {
     });
 
     test('falls back to photoUrl when profile_image_url is missing', () {
-      final u = UserModel.fromJson({
-        'photoUrl': 'https://cdn/fallback.png',
-      });
+      final u = UserModel.fromJson({'photoUrl': 'https://cdn/fallback.png'});
       expect(u.photoUrl, 'https://cdn/fallback.png');
     });
 

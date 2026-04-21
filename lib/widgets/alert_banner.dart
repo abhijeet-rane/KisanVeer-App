@@ -5,11 +5,8 @@ class AlertBanner extends StatelessWidget {
   final List<String> alerts;
   final VoidCallback onViewAll;
 
-  const AlertBanner({
-    Key? key,
-    required this.alerts,
-    required this.onViewAll,
-  }) : super(key: key);
+  const AlertBanner({Key? key, required this.alerts, required this.onViewAll})
+    : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -55,18 +52,12 @@ class AlertBanner extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               alerts.first, // Show first alert in the banner
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 14,
-              ),
+              style: const TextStyle(color: Colors.white, fontSize: 14),
             ),
             if (alerts.length > 1)
               Text(
                 '+${alerts.length - 1} more alerts',
-                style: const TextStyle(
-                  color: Colors.white70,
-                  fontSize: 12,
-                ),
+                style: const TextStyle(color: Colors.white70, fontSize: 12),
               ),
           ],
         ),

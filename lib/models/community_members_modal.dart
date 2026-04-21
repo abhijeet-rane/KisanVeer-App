@@ -5,7 +5,7 @@ class CommunityMembersModal extends StatelessWidget {
   final List<UserModel> members;
 
   const CommunityMembersModal({Key? key, required this.members})
-      : super(key: key);
+    : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -31,8 +31,7 @@ class CommunityMembersModal extends StatelessWidget {
                 final hasPhoto = photoUrl.isNotEmpty;
                 return ListTile(
                   leading: CircleAvatar(
-                    backgroundImage:
-                        hasPhoto ? NetworkImage(photoUrl) : null,
+                    backgroundImage: hasPhoto ? NetworkImage(photoUrl) : null,
                     child: hasPhoto ? null : const Icon(Icons.person),
                   ),
                   title: Text(

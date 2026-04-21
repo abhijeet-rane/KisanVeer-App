@@ -26,12 +26,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen>
   String? _error;
 
   // Define order status categories
-  final List<String> _tabLabels = [
-    'All',
-    'Active',
-    'Completed',
-    'Cancelled',
-  ];
+  final List<String> _tabLabels = ['All', 'Active', 'Completed', 'Cancelled'];
 
   @override
   void initState() {
@@ -108,9 +103,11 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen>
   String _formatStatus(String status) {
     return status
         .split('_')
-        .map((word) => word.isNotEmpty
-            ? '${word[0].toUpperCase()}${word.substring(1)}'
-            : '')
+        .map(
+          (word) => word.isNotEmpty
+              ? '${word[0].toUpperCase()}${word.substring(1)}'
+              : '',
+        )
         .join(' ');
   }
 
@@ -122,14 +119,16 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen>
     } else if (tabIndex == 1) {
       // Active: pending, payment_pending, confirmed, processing, shipped
       return _orders
-          .where((order) => [
-                'pending',
-                'payment_pending',
-                'confirmed',
-                'processing',
-                'shipped',
-                'active'
-              ].contains(order.status.toLowerCase()))
+          .where(
+            (order) => [
+              'pending',
+              'payment_pending',
+              'confirmed',
+              'processing',
+              'shipped',
+              'active',
+            ].contains(order.status.toLowerCase()),
+          )
           .toList();
     } else if (tabIndex == 2) {
       // Completed: completed
@@ -166,20 +165,20 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen>
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _error != null
-              ? _buildErrorWidget()
-              : ordersToDisplay.isEmpty
-                  ? _buildEmptyOrdersWidget()
-                  : RefreshIndicator(
-                      onRefresh: _loadOrders,
-                      child: ListView.builder(
-                        padding: const EdgeInsets.all(16),
-                        itemCount: ordersToDisplay.length,
-                        itemBuilder: (context, index) {
-                          final order = ordersToDisplay[index];
-                          return _buildOrderCard(order);
-                        },
-                      ),
-                    ),
+          ? _buildErrorWidget()
+          : ordersToDisplay.isEmpty
+          ? _buildEmptyOrdersWidget()
+          : RefreshIndicator(
+              onRefresh: _loadOrders,
+              child: ListView.builder(
+                padding: const EdgeInsets.all(16),
+                itemCount: ordersToDisplay.length,
+                itemBuilder: (context, index) {
+                  final order = ordersToDisplay[index];
+                  return _buildOrderCard(order);
+                },
+              ),
+            ),
     );
   }
 
@@ -188,11 +187,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(
-            Icons.error_outline,
-            color: Colors.red,
-            size: 60,
-          ),
+          const Icon(Icons.error_outline, color: Colors.red, size: 60),
           const SizedBox(height: 16),
           Text(
             _error ?? 'Something went wrong',
@@ -216,11 +211,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.shopping_bag_outlined,
-            color: Colors.grey[400],
-            size: 80,
-          ),
+          Icon(Icons.shopping_bag_outlined, color: Colors.grey[400], size: 80),
           const SizedBox(height: 16),
           Text(
             'No Orders Yet',
@@ -233,10 +224,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen>
           const SizedBox(height: 8),
           Text(
             'Your order history will appear here',
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.grey[600],
-            ),
+            style: TextStyle(fontSize: 16, color: Colors.grey[600]),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 24),
@@ -266,9 +254,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen>
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
       elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
         onTap: () => Navigator.push(
           context,
@@ -298,11 +284,11 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen>
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: _getStatusColor(order.status).withValues(alpha: 0.1),
+                      color: _getStatusColor(
+                        order.status,
+                      ).withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(4),
-                      border: Border.all(
-                        color: _getStatusColor(order.status),
-                      ),
+                      border: Border.all(color: _getStatusColor(order.status)),
                     ),
                     child: Text(
                       _formatStatus(order.status),
@@ -321,10 +307,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen>
                 children: [
                   Text(
                     formattedDate,
-                    style: TextStyle(
-                      color: Colors.grey[600],
-                      fontSize: 14,
-                    ),
+                    style: TextStyle(color: Colors.grey[600], fontSize: 14),
                   ),
                   Text(
                     '₹${order.totalAmount.toStringAsFixed(2)}',
@@ -342,15 +325,11 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen>
                 children: [
                   const Text(
                     'Items',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w500,
-                    ),
+                    style: TextStyle(fontWeight: FontWeight.w500),
                   ),
                   Text(
                     '${order.items?.length ?? 0} items',
-                    style: TextStyle(
-                      color: Colors.grey[700],
-                    ),
+                    style: TextStyle(color: Colors.grey[700]),
                   ),
                 ],
               ),
@@ -360,16 +339,12 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen>
                 children: [
                   const Text(
                     'Shipping to',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w500,
-                    ),
+                    style: TextStyle(fontWeight: FontWeight.w500),
                   ),
                   Flexible(
                     child: Text(
                       '${order.address.city}, ${order.address.state}',
-                      style: TextStyle(
-                        color: Colors.grey[700],
-                      ),
+                      style: TextStyle(color: Colors.grey[700]),
                       overflow: TextOverflow.ellipsis,
                       textAlign: TextAlign.right,
                     ),

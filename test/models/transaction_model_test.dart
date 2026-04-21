@@ -67,10 +67,7 @@ void main() {
 
   group('TransactionModel.copyWith', () {
     test('overrides only specified fields', () {
-      final t = TransactionModel.empty().copyWith(
-        amount: 99.0,
-        type: 'income',
-      );
+      final t = TransactionModel.empty().copyWith(amount: 99.0, type: 'income');
       expect(t.amount, 99.0);
       expect(t.type, 'income');
       expect(t.category, 'other'); // unchanged

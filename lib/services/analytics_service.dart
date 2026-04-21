@@ -58,14 +58,14 @@ class AnalyticsService {
   }
 
   void logScreenView(String screenName, {Map<String, dynamic>? parameters}) {
-    _logEvent('screen_view', {
-      'screen_name': screenName,
-      ...?parameters,
-    });
+    _logEvent('screen_view', {'screen_name': screenName, ...?parameters});
   }
 
-  void logButtonClick(String buttonName,
-      {String? screenName, Map<String, dynamic>? parameters}) {
+  void logButtonClick(
+    String buttonName, {
+    String? screenName,
+    Map<String, dynamic>? parameters,
+  }) {
     _logEvent('button_click', {
       'button_name': buttonName,
       if (screenName != null) 'screen_name': screenName,
@@ -89,8 +89,11 @@ class AnalyticsService {
     });
   }
 
-  void logPurchase(String orderId, double totalAmount,
-      {List<String>? productIds}) {
+  void logPurchase(
+    String orderId,
+    double totalAmount, {
+    List<String>? productIds,
+  }) {
     _logEvent('purchase', {
       'order_id': orderId,
       'total_amount': totalAmount,
@@ -107,12 +110,8 @@ class AnalyticsService {
     _logEvent('login', {'method': method});
   }
 
-  void logFeatureUsage(String featureName,
-      {Map<String, dynamic>? parameters}) {
-    _logEvent('feature_usage', {
-      'feature_name': featureName,
-      ...?parameters,
-    });
+  void logFeatureUsage(String featureName, {Map<String, dynamic>? parameters}) {
+    _logEvent('feature_usage', {'feature_name': featureName, ...?parameters});
   }
 
   void logError(String errorType, String message, {StackTrace? stackTrace}) {
@@ -121,11 +120,11 @@ class AnalyticsService {
       'message': message,
       if (stackTrace != null)
         'stack_trace': stackTrace.toString().substring(
-              0,
-              stackTrace.toString().length > 500
-                  ? 500
-                  : stackTrace.toString().length,
-            ),
+          0,
+          stackTrace.toString().length > 500
+              ? 500
+              : stackTrace.toString().length,
+        ),
     });
   }
 
@@ -164,14 +163,17 @@ class AnalyticsService {
           .insert(eventsToSend.map((e) => e.toRow()).toList());
 
       if (kDebugMode) {
-        AppLogger.d('Flushed ${eventsToSend.length} events',
-            tag: 'Analytics');
+        AppLogger.d('Flushed ${eventsToSend.length} events', tag: 'Analytics');
       }
     } catch (e, s) {
       // Re-queue so the next flush retries them.
       _eventQueue.insertAll(0, eventsToSend);
-      AppLogger.e('Failed to flush analytics',
-          tag: 'Analytics', error: e, stackTrace: s);
+      AppLogger.e(
+        'Failed to flush analytics',
+        tag: 'Analytics',
+        error: e,
+        stackTrace: s,
+      );
     }
   }
 
@@ -195,11 +197,11 @@ class AnalyticsEvent {
 
   /// Shape matches the `analytics_events` Supabase table.
   Map<String, dynamic> toRow() => {
-        'event_name': name,
-        'parameters': parameters,
-        'user_id': userId,
-        'occurred_at': timestamp.toUtc().toIso8601String(),
-      };
+    'event_name': name,
+    'parameters': parameters,
+    'user_id': userId,
+    'occurred_at': timestamp.toUtc().toIso8601String(),
+  };
 }
 
 /// Common event-name constants so callers stay consistent.

@@ -98,16 +98,24 @@ void main() {
   group('SchemeModel.getRequiredDocumentsList', () {
     test('splits on newlines', () {
       final s = _scheme(
-          requiredDocuments: 'Aadhaar card\nBank passbook\nLand record');
-      expect(s.getRequiredDocumentsList(),
-          ['Aadhaar card', 'Bank passbook', 'Land record']);
+        requiredDocuments: 'Aadhaar card\nBank passbook\nLand record',
+      );
+      expect(s.getRequiredDocumentsList(), [
+        'Aadhaar card',
+        'Bank passbook',
+        'Land record',
+      ]);
     });
 
     test('splits on commas and trims whitespace', () {
       final s = _scheme(
-          requiredDocuments: 'Aadhaar card,  Bank passbook , Land record ');
-      expect(s.getRequiredDocumentsList(),
-          ['Aadhaar card', 'Bank passbook', 'Land record']);
+        requiredDocuments: 'Aadhaar card,  Bank passbook , Land record ',
+      );
+      expect(s.getRequiredDocumentsList(), [
+        'Aadhaar card',
+        'Bank passbook',
+        'Land record',
+      ]);
     });
 
     test('handles literal "\\n" escape sequences from DB rows', () {
@@ -116,22 +124,26 @@ void main() {
     });
 
     test('returns an empty list for empty/blank input', () {
-      expect(_scheme(requiredDocuments: '').getRequiredDocumentsList(),
-          isEmpty);
-      expect(_scheme(requiredDocuments: ' , , \n ').getRequiredDocumentsList(),
-          isEmpty);
+      expect(
+        _scheme(requiredDocuments: '').getRequiredDocumentsList(),
+        isEmpty,
+      );
+      expect(
+        _scheme(requiredDocuments: ' , , \n ').getRequiredDocumentsList(),
+        isEmpty,
+      );
     });
   });
 }
 
 SchemeModel _scheme({String requiredDocuments = ''}) => SchemeModel(
-      id: 'sc1',
-      schemeName: 'X',
-      departmentName: 'Y',
-      overview: '',
-      benefits: '',
-      eligibility: '',
-      requiredDocuments: requiredDocuments,
-      createdAt: DateTime.utc(2026, 4, 21),
-      updatedAt: DateTime.utc(2026, 4, 21),
-    );
+  id: 'sc1',
+  schemeName: 'X',
+  departmentName: 'Y',
+  overview: '',
+  benefits: '',
+  eligibility: '',
+  requiredDocuments: requiredDocuments,
+  createdAt: DateTime.utc(2026, 4, 21),
+  updatedAt: DateTime.utc(2026, 4, 21),
+);

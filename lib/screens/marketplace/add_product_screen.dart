@@ -48,13 +48,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
     'Equipment',
   ];
 
-  final List<String> _units = [
-    'quintal',
-    'kg',
-    'dozen',
-    'piece',
-    'liter',
-  ];
+  final List<String> _units = ['quintal', 'kg', 'dozen', 'piece', 'liter'];
 
   @override
   void dispose() {
@@ -89,8 +83,9 @@ class _AddProductScreenState extends State<AddProductScreen> {
         // so we never persist a product with broken/missing image URLs.
         List<String> imageUrls = [];
         if (_selectedImages.isNotEmpty) {
-          imageUrls =
-              await _marketplaceService.uploadProductImages(_selectedImages);
+          imageUrls = await _marketplaceService.uploadProductImages(
+            _selectedImages,
+          );
         }
 
         // Add the product to database
@@ -156,10 +151,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
         elevation: 0,
         title: const Text(
           'Add New Product',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
@@ -176,8 +168,8 @@ class _AddProductScreenState extends State<AddProductScreen> {
               children: [
                 // Product images
                 _buildImageUploadSection().animate().fadeIn(
-                      duration: const Duration(milliseconds: 500),
-                    ),
+                  duration: const Duration(milliseconds: 500),
+                ),
 
                 const SizedBox(height: 24),
 
@@ -194,9 +186,9 @@ class _AddProductScreenState extends State<AddProductScreen> {
                     return null;
                   },
                 ).animate().fadeIn(
-                      duration: const Duration(milliseconds: 500),
-                      delay: const Duration(milliseconds: 100),
-                    ),
+                  duration: const Duration(milliseconds: 500),
+                  delay: const Duration(milliseconds: 100),
+                ),
 
                 const SizedBox(height: 16),
 
@@ -213,9 +205,9 @@ class _AddProductScreenState extends State<AddProductScreen> {
                     return null;
                   },
                 ).animate().fadeIn(
-                      duration: const Duration(milliseconds: 500),
-                      delay: const Duration(milliseconds: 150),
-                    ),
+                  duration: const Duration(milliseconds: 500),
+                  delay: const Duration(milliseconds: 150),
+                ),
 
                 // Contact phone
                 CustomTextField(
@@ -233,9 +225,9 @@ class _AddProductScreenState extends State<AddProductScreen> {
                     return null;
                   },
                 ).animate().fadeIn(
-                      duration: const Duration(milliseconds: 500),
-                      delay: const Duration(milliseconds: 200),
-                    ),
+                  duration: const Duration(milliseconds: 500),
+                  delay: const Duration(milliseconds: 200),
+                ),
 
                 // Contact email
                 CustomTextField(
@@ -253,9 +245,9 @@ class _AddProductScreenState extends State<AddProductScreen> {
                     return null;
                   },
                 ).animate().fadeIn(
-                      duration: const Duration(milliseconds: 500),
-                      delay: const Duration(milliseconds: 250),
-                    ),
+                  duration: const Duration(milliseconds: 500),
+                  delay: const Duration(milliseconds: 250),
+                ),
 
                 // Status dropdown
                 Padding(
@@ -268,19 +260,23 @@ class _AddProductScreenState extends State<AddProductScreen> {
                     ),
                     items: const [
                       DropdownMenuItem(
-                          value: 'available', child: Text('Available')),
+                        value: 'available',
+                        child: Text('Available'),
+                      ),
                       DropdownMenuItem(value: 'sold', child: Text('Sold')),
                       DropdownMenuItem(
-                          value: 'inactive', child: Text('Inactive')),
+                        value: 'inactive',
+                        child: Text('Inactive'),
+                      ),
                     ],
                     onChanged: (val) {
                       if (val != null) setState(() => _selectedStatus = val);
                     },
                   ),
                 ).animate().fadeIn(
-                      duration: const Duration(milliseconds: 500),
-                      delay: const Duration(milliseconds: 300),
-                    ),
+                  duration: const Duration(milliseconds: 500),
+                  delay: const Duration(milliseconds: 300),
+                ),
 
                 const SizedBox(height: 16),
 
@@ -291,16 +287,16 @@ class _AddProductScreenState extends State<AddProductScreen> {
                     fontWeight: FontWeight.w600,
                   ),
                 ).animate().fadeIn(
-                      duration: const Duration(milliseconds: 500),
-                      delay: const Duration(milliseconds: 350),
-                    ),
+                  duration: const Duration(milliseconds: 500),
+                  delay: const Duration(milliseconds: 350),
+                ),
 
                 const SizedBox(height: 8),
 
                 _buildCategorySelector().animate().fadeIn(
-                      duration: const Duration(milliseconds: 500),
-                      delay: const Duration(milliseconds: 350),
-                    ),
+                  duration: const Duration(milliseconds: 500),
+                  delay: const Duration(milliseconds: 350),
+                ),
 
                 const SizedBox(height: 16),
 
@@ -331,15 +327,12 @@ class _AddProductScreenState extends State<AddProductScreen> {
                       ),
                     ),
                     const SizedBox(width: 16),
-                    Expanded(
-                      flex: 1,
-                      child: _buildUnitDropdown(),
-                    ),
+                    Expanded(flex: 1, child: _buildUnitDropdown()),
                   ],
                 ).animate().fadeIn(
-                      duration: const Duration(milliseconds: 500),
-                      delay: const Duration(milliseconds: 400),
-                    ),
+                  duration: const Duration(milliseconds: 500),
+                  delay: const Duration(milliseconds: 400),
+                ),
 
                 const SizedBox(height: 16),
 
@@ -350,9 +343,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                   controller: _quantityController,
                   prefixIcon: Icons.production_quantity_limits,
                   keyboardType: TextInputType.number,
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly,
-                  ],
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter quantity';
@@ -363,9 +354,9 @@ class _AddProductScreenState extends State<AddProductScreen> {
                     return null;
                   },
                 ).animate().fadeIn(
-                      duration: const Duration(milliseconds: 500),
-                      delay: const Duration(milliseconds: 450),
-                    ),
+                  duration: const Duration(milliseconds: 500),
+                  delay: const Duration(milliseconds: 450),
+                ),
 
                 const SizedBox(height: 16),
 
@@ -390,9 +381,9 @@ class _AddProductScreenState extends State<AddProductScreen> {
                     ),
                   ],
                 ).animate().fadeIn(
-                      duration: const Duration(milliseconds: 500),
-                      delay: const Duration(milliseconds: 500),
-                    ),
+                  duration: const Duration(milliseconds: 500),
+                  delay: const Duration(milliseconds: 500),
+                ),
 
                 const SizedBox(height: 16),
 
@@ -414,9 +405,9 @@ class _AddProductScreenState extends State<AddProductScreen> {
                     return null;
                   },
                 ).animate().fadeIn(
-                      duration: const Duration(milliseconds: 500),
-                      delay: const Duration(milliseconds: 550),
-                    ),
+                  duration: const Duration(milliseconds: 500),
+                  delay: const Duration(milliseconds: 550),
+                ),
 
                 const SizedBox(height: 32),
 
@@ -427,9 +418,9 @@ class _AddProductScreenState extends State<AddProductScreen> {
                   isLoading: _isLoading,
                   width: double.infinity,
                 ).animate().fadeIn(
-                      duration: const Duration(milliseconds: 500),
-                      delay: const Duration(milliseconds: 600),
-                    ),
+                  duration: const Duration(milliseconds: 500),
+                  delay: const Duration(milliseconds: 600),
+                ),
 
                 const SizedBox(height: 20),
               ],
@@ -454,9 +445,9 @@ class _AddProductScreenState extends State<AddProductScreen> {
         });
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error picking images: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error picking images: $e')));
     }
   }
 
@@ -472,16 +463,12 @@ class _AddProductScreenState extends State<AddProductScreen> {
       children: [
         Text(
           'Product Images',
-          style: AppTextStyles.bodyMedium.copyWith(
-            fontWeight: FontWeight.w600,
-          ),
+          style: AppTextStyles.bodyMedium.copyWith(fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 8),
         Text(
           'Add up to 5 images of your product',
-          style: AppTextStyles.caption.copyWith(
-            color: AppColors.textSecondary,
-          ),
+          style: AppTextStyles.caption.copyWith(color: AppColors.textSecondary),
         ),
         const SizedBox(height: 16),
         SizedBox(
@@ -502,10 +489,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                           ? Colors.grey.shade200
                           : Colors.grey.shade300,
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                        color: Colors.grey.shade300,
-                        width: 1,
-                      ),
+                      border: Border.all(color: Colors.grey.shade300, width: 1),
                     ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -602,16 +586,18 @@ class _AddProductScreenState extends State<AddProductScreen> {
                   color: isSelected ? AppColors.primary : Colors.white,
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
-                    color:
-                        isSelected ? AppColors.primary : Colors.grey.shade300,
+                    color: isSelected
+                        ? AppColors.primary
+                        : Colors.grey.shade300,
                   ),
                 ),
                 child: Text(
                   category,
                   style: TextStyle(
                     color: isSelected ? Colors.white : AppColors.textPrimary,
-                    fontWeight:
-                        isSelected ? FontWeight.bold : FontWeight.normal,
+                    fontWeight: isSelected
+                        ? FontWeight.bold
+                        : FontWeight.normal,
                   ),
                 ),
               ),
@@ -629,9 +615,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: Colors.grey.shade300,
-        ),
+        border: Border.all(color: Colors.grey.shade300),
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
@@ -648,10 +632,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
             }
           },
           items: _units.map<DropdownMenuItem<String>>((String value) {
-            return DropdownMenuItem<String>(
-              value: value,
-              child: Text(value),
-            );
+            return DropdownMenuItem<String>(value: value, child: Text(value));
           }).toList(),
         ),
       ),

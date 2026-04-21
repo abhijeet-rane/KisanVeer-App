@@ -36,9 +36,11 @@ class ProfileService {
         'city': response['city']?.toString() ?? '',
         'pincode': response['pincode']?.toString() ?? '',
         'state': response['state']?.toString() ?? 'Maharashtra',
-        'createdAt': response['created_at']?.toString() ??
+        'createdAt':
+            response['created_at']?.toString() ??
             DateTime.now().toIso8601String(),
-        'lastActive': response['updated_at']?.toString() ??
+        'lastActive':
+            response['updated_at']?.toString() ??
             DateTime.now().toIso8601String(),
         'address': response['location']?.toString() ?? '',
       };
@@ -57,23 +59,29 @@ class ProfileService {
       if (userId == null) return false;
 
       // Update in the user_profiles table
-      await _client.from('user_profiles').update({
-        'display_name': user.name,
-        'phone': user.phoneNumber,
-        'profile_image_url': user.photoUrl,
-        'location': user.address,
-        'city': user.city,
-        'pincode': user.pincode,
-        'state': user.state,
-        'updated_at': DateTime.now().toIso8601String(),
-      }).eq('id', userId);
+      await _client
+          .from('user_profiles')
+          .update({
+            'display_name': user.name,
+            'phone': user.phoneNumber,
+            'profile_image_url': user.photoUrl,
+            'location': user.address,
+            'city': user.city,
+            'pincode': user.pincode,
+            'state': user.state,
+            'updated_at': DateTime.now().toIso8601String(),
+          })
+          .eq('id', userId);
 
       // Update crops in user_preferences
-      await _client.from('user_preferences').update({
-        // Store as Postgres array literal: '{crop1,crop2}'
-        'crops': '{${user.crops.join(',')}}',
-        'updated_at': DateTime.now().toIso8601String(),
-      }).eq('user_id', userId);
+      await _client
+          .from('user_preferences')
+          .update({
+            // Store as Postgres array literal: '{crop1,crop2}'
+            'crops': '{${user.crops.join(',')}}',
+            'updated_at': DateTime.now().toIso8601String(),
+          })
+          .eq('user_id', userId);
 
       return true;
     } catch (e) {
@@ -95,28 +103,28 @@ class ProfileService {
       final bucketName = 'profile-images';
 
       // Upload the file to the bucket
-      await _client.storage.from(bucketName).upload(
+      await _client.storage
+          .from(bucketName)
+          .upload(
             'profiles/$fileName',
             imageFile,
-            fileOptions: const FileOptions(
-              cacheControl: '3600',
-              upsert: true,
-            ),
+            fileOptions: const FileOptions(cacheControl: '3600', upsert: true),
           );
 
       // Get the public URL of the uploaded image
-      final imageUrl =
-          _client.storage.from(bucketName).getPublicUrl('profiles/$fileName');
+      final imageUrl = _client.storage
+          .from(bucketName)
+          .getPublicUrl('profiles/$fileName');
 
       // Update the user profile with the new image URL
-      await _client.from('user_profiles').update({
-        'profile_image_url': imageUrl,
-      }).eq('id', userId);
+      await _client
+          .from('user_profiles')
+          .update({'profile_image_url': imageUrl})
+          .eq('id', userId);
 
       return imageUrl;
     } catch (e) {
-      AppLogger.e('Error uploading profile image',
-          tag: 'Profile', error: e);
+      AppLogger.e('Error uploading profile image', tag: 'Profile', error: e);
       return null;
     }
   }
@@ -172,7 +180,9 @@ class ProfileService {
 
   // Change password
   Future<bool> changePassword(
-      String currentPassword, String newPassword) async {
+    String currentPassword,
+    String newPassword,
+  ) async {
     try {
       final userId = _client.auth.currentUser?.id;
       if (userId == null) return false;
@@ -184,11 +194,7 @@ class ProfileService {
       );
 
       // Update to the new password
-      await _client.auth.updateUser(
-        UserAttributes(
-          password: newPassword,
-        ),
-      );
+      await _client.auth.updateUser(UserAttributes(password: newPassword));
 
       // Log the password change
       await _client.from('password_change_log').insert({
@@ -217,8 +223,7 @@ class ProfileService {
 
       return PrivacySettingsModel.fromJson(response);
     } catch (e) {
-      AppLogger.e('Error getting privacy settings',
-          tag: 'Profile', error: e);
+      AppLogger.e('Error getting privacy settings', tag: 'Profile', error: e);
       return PrivacySettingsModel();
     }
   }
@@ -241,8 +246,7 @@ class ProfileService {
 
       return true;
     } catch (e) {
-      AppLogger.e('Error updating privacy settings',
-          tag: 'Profile', error: e);
+      AppLogger.e('Error updating privacy settings', tag: 'Profile', error: e);
       return false;
     }
   }

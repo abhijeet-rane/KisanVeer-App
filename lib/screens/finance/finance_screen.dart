@@ -115,7 +115,7 @@ class _FinanceScreenState extends State<FinanceScreen>
           controller: _tabController,
           indicatorColor: Colors.white,
           labelColor: Colors.white,
-          unselectedLabelColor: Colors.white.withOpacity(0.7),
+          unselectedLabelColor: Colors.white.withValues(alpha: 0.7),
           tabs: const [
             Tab(text: 'Dashboard'),
             Tab(text: 'Transactions'),
@@ -161,7 +161,7 @@ class _FinanceScreenState extends State<FinanceScreen>
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: AppColors.primary.withOpacity(0.1),
+                        color: AppColors.primary.withValues(alpha: 0.1),
                         shape: BoxShape.circle,
                       ),
                       child: const Icon(
@@ -285,7 +285,7 @@ class _FinanceScreenState extends State<FinanceScreen>
           leading: Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: (isIncome ? Colors.green : Colors.red).withOpacity(0.1),
+              color: (isIncome ? Colors.green : Colors.red).withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(
@@ -323,7 +323,7 @@ class _FinanceScreenState extends State<FinanceScreen>
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 8,
             offset: Offset(0, 4),
           ),
@@ -383,7 +383,7 @@ class _FinanceScreenState extends State<FinanceScreen>
     return Container(
       padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.9),
+        color: Colors.white.withValues(alpha: 0.9),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
@@ -552,7 +552,7 @@ class _FinanceScreenState extends State<FinanceScreen>
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color:
-                        (isIncome ? Colors.green : Colors.red).withOpacity(0.1),
+                        (isIncome ? Colors.green : Colors.red).withValues(alpha: 0.1),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
@@ -623,7 +623,7 @@ class _FinanceScreenState extends State<FinanceScreen>
           children: [
             ListTile(
               leading: CircleAvatar(
-                backgroundColor: Colors.green.withOpacity(0.1),
+                backgroundColor: Colors.green.withValues(alpha: 0.1),
                 child: const Icon(Icons.add, color: Colors.green),
               ),
               title: const Text('Add Income'),
@@ -634,7 +634,7 @@ class _FinanceScreenState extends State<FinanceScreen>
             ),
             ListTile(
               leading: CircleAvatar(
-                backgroundColor: Colors.red.withOpacity(0.1),
+                backgroundColor: Colors.red.withValues(alpha: 0.1),
                 child: const Icon(Icons.remove, color: Colors.red),
               ),
               title: const Text('Add Expense'),
@@ -645,7 +645,7 @@ class _FinanceScreenState extends State<FinanceScreen>
             ),
             ListTile(
               leading: CircleAvatar(
-                backgroundColor: AppColors.primary.withOpacity(0.1),
+                backgroundColor: AppColors.primary.withValues(alpha: 0.1),
                 child:
                     const Icon(Icons.account_balance, color: AppColors.primary),
               ),

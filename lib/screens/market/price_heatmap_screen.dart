@@ -447,7 +447,7 @@ class _PriceHeatmapScreenState extends State<PriceHeatmapScreen> {
                     width: 40,
                     height: 40,
                     decoration: BoxDecoration(
-                      color: color.withOpacity(0.7),
+                      color: color.withValues(alpha: 0.7),
                       shape: BoxShape.circle,
                       border: Border.all(
                         color: Colors.white,
@@ -455,7 +455,7 @@ class _PriceHeatmapScreenState extends State<PriceHeatmapScreen> {
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
+                          color: Colors.black.withValues(alpha: 0.2),
                           blurRadius: 5,
                           spreadRadius: 1,
                         ),
@@ -508,7 +508,7 @@ class _PriceHeatmapScreenState extends State<PriceHeatmapScreen> {
         borderRadius: BorderRadius.circular(8),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 4,
             spreadRadius: 1,
           ),

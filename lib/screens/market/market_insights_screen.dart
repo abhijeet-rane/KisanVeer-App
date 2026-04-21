@@ -166,7 +166,7 @@ class _MarketInsightsScreenState extends State<MarketInsightsScreen> {
         color: AppColors.primary,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -192,7 +192,7 @@ class _MarketInsightsScreenState extends State<MarketInsightsScreen> {
           Text(
             'Track real-time agricultural market prices, trends, and insights to make informed decisions for your farming business.',
             style: AppTextStyles.bodyMedium
-                .copyWith(color: Colors.white.withOpacity(0.9)),
+                .copyWith(color: Colors.white.withValues(alpha: 0.9)),
           ),
         ],
       ),
@@ -276,7 +276,7 @@ class _MarketInsightsScreenState extends State<MarketInsightsScreen> {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: iconColor.withOpacity(0.1),
+                color: iconColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(
@@ -334,7 +334,7 @@ class _MarketInsightsScreenState extends State<MarketInsightsScreen> {
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -530,7 +530,7 @@ class _MarketInsightsScreenState extends State<MarketInsightsScreen> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: iconColor.withOpacity(0.1),
+                  color: iconColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Icon(

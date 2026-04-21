@@ -164,7 +164,7 @@ class _CommunityMembersSheetState extends State<CommunityMembersSheet> {
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withValues(alpha: 0.05),
                   blurRadius: 6,
                   offset: const Offset(0, 4),
                 ),

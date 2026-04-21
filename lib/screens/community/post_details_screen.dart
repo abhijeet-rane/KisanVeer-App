@@ -203,7 +203,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                               placeholder: (context, url) => Container(
                                 color: Theme.of(context)
                                     .colorScheme
-                                    .surfaceVariant,
+                                    .surfaceContainerHighest,
                                 child: const Center(
                                   child: CircularProgressIndicator(),
                                 ),
@@ -233,7 +233,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                           (tag) => Chip(
                             label: Text(tag),
                             backgroundColor:
-                                Theme.of(context).colorScheme.surfaceVariant,
+                                Theme.of(context).colorScheme.surfaceContainerHighest,
                           ),
                         )
                         .toList(),
@@ -279,7 +279,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
               color: Theme.of(context).colorScheme.surface,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
+                  color: Colors.black.withValues(alpha: 0.1),
                   blurRadius: 4,
                   offset: const Offset(0, -2),
                 ),

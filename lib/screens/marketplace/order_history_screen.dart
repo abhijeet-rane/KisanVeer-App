@@ -158,7 +158,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen>
             controller: _tabController,
             indicatorColor: Colors.white,
             labelColor: Colors.white,
-            unselectedLabelColor: Colors.white.withOpacity(0.7),
+            unselectedLabelColor: Colors.white.withValues(alpha: 0.7),
             tabs: _tabLabels.map((label) => Tab(text: label)).toList(),
           ),
         ),
@@ -298,7 +298,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen>
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: _getStatusColor(order.status).withOpacity(0.1),
+                      color: _getStatusColor(order.status).withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(4),
                       border: Border.all(
                         color: _getStatusColor(order.status),

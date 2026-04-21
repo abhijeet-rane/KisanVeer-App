@@ -473,7 +473,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                       borderRadius: BorderRadius.circular(20),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.blue.shade300.withOpacity(0.3),
+                          color: Colors.blue.shade300.withValues(alpha: 0.3),
                           blurRadius: 12,
                           offset: const Offset(0, 6),
                         ),
@@ -489,7 +489,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                             Text(
                               DateFormat('EEEE, MMM d').format(DateTime.now()),
                               style: AppTextStyles.bodySmall.copyWith(
-                                color: Colors.white.withOpacity(0.9),
+                                color: Colors.white.withValues(alpha: 0.9),
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
@@ -513,7 +513,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                                     fontWeight: FontWeight.bold,
                                     shadows: [
                                       Shadow(
-                                        color: Colors.black.withOpacity(0.2),
+                                        color: Colors.black.withValues(alpha: 0.2),
                                         blurRadius: 4,
                                       ),
                                     ],
@@ -523,7 +523,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                                 Text(
                                   currentWeather['condition'],
                                   style: AppTextStyles.bodyMedium.copyWith(
-                                    color: Colors.white.withOpacity(0.9),
+                                    color: Colors.white.withValues(alpha: 0.9),
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
@@ -534,7 +534,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 12, vertical: 6),
                                   decoration: BoxDecoration(
-                                    color: Colors.white.withOpacity(0.2),
+                                    color: Colors.white.withValues(alpha: 0.2),
                                     borderRadius: BorderRadius.circular(14),
                                   ),
                                   child: Text(
@@ -640,7 +640,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
         Text(
           label,
           style: AppTextStyles.bodySmall.copyWith(
-            color: Colors.white.withOpacity(0.8),
+            color: Colors.white.withValues(alpha: 0.8),
           ),
         ),
         const SizedBox(height: 4),

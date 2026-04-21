@@ -233,7 +233,7 @@ class _GasSensorMonitorScreenState extends State<GasSensorMonitorScreen> {
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16)),
               elevation: 4,
-              color: statusColor.withOpacity(0.12),
+              color: statusColor.withValues(alpha: 0.12),
               child: Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: Column(
@@ -449,7 +449,7 @@ class _GasSensorMonitorScreenState extends State<GasSensorMonitorScreen> {
                             dotData: FlDotData(show: true),
                             belowBarData: BarAreaData(
                                 show: true,
-                                color: Colors.green.withOpacity(0.2)),
+                                color: Colors.green.withValues(alpha: 0.2)),
                           ),
                         ],
                       ),
@@ -560,7 +560,7 @@ class _GasSensorMonitorScreenState extends State<GasSensorMonitorScreen> {
                             dotData: FlDotData(show: true),
                             belowBarData: BarAreaData(
                                 show: true,
-                                color: Colors.blue.withOpacity(0.2)),
+                                color: Colors.blue.withValues(alpha: 0.2)),
                           ),
                         ],
                       ),

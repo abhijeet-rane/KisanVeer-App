@@ -317,7 +317,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: _getStatusColor(_order!.status).withOpacity(0.1),
+                    color: _getStatusColor(_order!.status).withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(4),
                     border: Border.all(
                       color: _getStatusColor(_order!.status),

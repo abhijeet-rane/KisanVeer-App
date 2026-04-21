@@ -270,16 +270,16 @@ class _CommunitiesScreenState extends State<CommunitiesScreen> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(18),
                     ),
-                    color: Colors.white.withOpacity(0.8), // Glass effect
-                    shadowColor: Colors.black.withOpacity(0.3),
+                    color: Colors.white.withValues(alpha: 0.8), // Glass effect
+                    shadowColor: Colors.black.withValues(alpha: 0.3),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(18),
                       child: Container(
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: [
-                              Colors.blue.withOpacity(0.1),
-                              Colors.blueAccent.withOpacity(0.1)
+                              Colors.blue.withValues(alpha: 0.1),
+                              Colors.blueAccent.withValues(alpha: 0.1)
                             ],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
@@ -287,7 +287,7 @@ class _CommunitiesScreenState extends State<CommunitiesScreen> {
                           borderRadius: BorderRadius.circular(18),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.blueAccent.withOpacity(0.2),
+                              color: Colors.blueAccent.withValues(alpha: 0.2),
                               blurRadius: 12,
                               offset: const Offset(0, 6),
                             ),
@@ -308,7 +308,7 @@ class _CommunitiesScreenState extends State<CommunitiesScreen> {
                                       shape: BoxShape.circle,
                                       boxShadow: [
                                         BoxShadow(
-                                          color: Colors.blue.withOpacity(0.3),
+                                          color: Colors.blue.withValues(alpha: 0.3),
                                           blurRadius: 10,
                                           spreadRadius: 2,
                                         ),
@@ -370,7 +370,7 @@ class _CommunitiesScreenState extends State<CommunitiesScreen> {
                                       boxShadow: [
                                         BoxShadow(
                                           color: Colors.blue.shade300
-                                              .withOpacity(0.6),
+                                              .withValues(alpha: 0.6),
                                           blurRadius: 12,
                                           offset: const Offset(0, 4),
                                         ),
@@ -404,7 +404,7 @@ class _CommunitiesScreenState extends State<CommunitiesScreen> {
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
-                            Colors.blueAccent.withOpacity(0.2),
+                            Colors.blueAccent.withValues(alpha: 0.2),
                             Colors.white
                           ],
                           begin: Alignment.topLeft,
@@ -413,7 +413,7 @@ class _CommunitiesScreenState extends State<CommunitiesScreen> {
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
+                            color: Colors.black.withValues(alpha: 0.1),
                             blurRadius: 10,
                             spreadRadius: 2,
                             offset: const Offset(0, 4),
@@ -458,10 +458,10 @@ class _CommunitiesScreenState extends State<CommunitiesScreen> {
                                       const EdgeInsets.symmetric(horizontal: 8),
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(16),
-                                    color: Colors.white.withOpacity(0.9),
+                                    color: Colors.white.withValues(alpha: 0.9),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: Colors.black.withOpacity(0.08),
+                                        color: Colors.black.withValues(alpha: 0.08),
                                         blurRadius: 10,
                                         spreadRadius: 2,
                                         offset: const Offset(0, 3),

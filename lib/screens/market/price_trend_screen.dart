@@ -653,7 +653,7 @@ class _PriceTrendScreenState extends State<PriceTrendScreen> {
                       dotData: FlDotData(show: true),
                       belowBarData: BarAreaData(
                         show: true,
-                        color: AppColors.primary.withOpacity(0.2),
+                        color: AppColors.primary.withValues(alpha: 0.2),
                       ),
                     ),
                   ],

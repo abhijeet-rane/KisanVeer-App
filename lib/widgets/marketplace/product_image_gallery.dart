@@ -175,7 +175,7 @@ class _ProductImageGalleryState extends State<ProductImageGallery> {
                   shape: BoxShape.circle,
                   color: _currentIndex == index
                       ? Theme.of(context).primaryColor
-                      : Colors.grey.withOpacity(0.5),
+                      : Colors.grey.withValues(alpha: 0.5),
                 ),
               ),
             ),

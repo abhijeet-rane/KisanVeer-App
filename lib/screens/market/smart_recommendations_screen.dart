@@ -320,7 +320,7 @@ class _SmartRecommendationsScreenState
                         }
                       });
                     },
-                    selectedColor: AppColors.primary.withOpacity(0.2),
+                    selectedColor: AppColors.primary.withValues(alpha: 0.2),
                     checkmarkColor: AppColors.primary,
                     backgroundColor: Colors.grey.shade100,
                   );
@@ -473,7 +473,7 @@ class _SmartRecommendationsScreenState
               decoration: BoxDecoration(
                 color:
                     _getConfidenceColor(recommendation.confidenceScore ?? 0.0)
-                        .withOpacity(0.1),
+                        .withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(4),
                 border: Border.all(
                   color: _getConfidenceColor(
@@ -717,7 +717,7 @@ class _SmartRecommendationsScreenState
             dotData: FlDotData(show: false),
             belowBarData: BarAreaData(
               show: true,
-              color: AppColors.primary.withOpacity(0.2),
+              color: AppColors.primary.withValues(alpha: 0.2),
             ),
           ),
         ],

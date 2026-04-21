@@ -207,7 +207,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 children: [
                   CircleAvatar(
                     radius: 60,
-                    backgroundColor: AppColors.primary.withOpacity(0.1),
+                    backgroundColor: AppColors.primary.withValues(alpha: 0.1),
                     backgroundImage: _imageFile != null
                         ? FileImage(_imageFile!) as ImageProvider<Object>
                         : (_userModel?.photoUrl.isNotEmpty == true
@@ -372,7 +372,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     _selectedCrops.remove(value);
                   });
                 },
-                chipColor: AppColors.primary.withOpacity(0.1),
+                chipColor: AppColors.primary.withValues(alpha: 0.1),
                 textStyle: const TextStyle(color: AppColors.primary),
               ),
               decoration: BoxDecoration(

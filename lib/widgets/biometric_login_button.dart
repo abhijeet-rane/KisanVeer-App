@@ -122,7 +122,7 @@ class _BiometricLoginButtonState extends State<BiometricLoginButton>
           children: [
             Expanded(
                 child:
-                    Divider(color: AppColors.textSecondary.withOpacity(0.3))),
+                    Divider(color: AppColors.textSecondary.withValues(alpha: 0.3))),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Text(
@@ -135,7 +135,7 @@ class _BiometricLoginButtonState extends State<BiometricLoginButton>
             ),
             Expanded(
                 child:
-                    Divider(color: AppColors.textSecondary.withOpacity(0.3))),
+                    Divider(color: AppColors.textSecondary.withValues(alpha: 0.3))),
           ],
         ),
         const SizedBox(height: 20),
@@ -150,9 +150,9 @@ class _BiometricLoginButtonState extends State<BiometricLoginButton>
               height: 72,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: AppColors.primary.withOpacity(0.1),
+                color: AppColors.primary.withValues(alpha: 0.1),
                 border: Border.all(
-                  color: AppColors.primary.withOpacity(0.3),
+                  color: AppColors.primary.withValues(alpha: 0.3),
                   width: 2,
                 ),
               ),

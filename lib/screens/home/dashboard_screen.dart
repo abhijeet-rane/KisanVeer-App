@@ -231,7 +231,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 vertical: 12,
                               ),
                               decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.2),
+                                color: Colors.white.withValues(alpha: 0.2),
                                 borderRadius: BorderRadius.circular(15),
                               ),
                               child: Row(
@@ -578,14 +578,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
             colors: _isLoadingWeather
                 ? [
                     const Color(0xFF3686FF),
-                    const Color(0xFF3686FF).withOpacity(0.7),
+                    const Color(0xFF3686FF).withValues(alpha: 0.7),
                   ]
                 : _getWeatherGradient(
                     _weatherData?['currentWeather']?['condition']),
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.blue.withOpacity(0.2),
+              color: Colors.blue.withValues(alpha: 0.2),
               blurRadius: 10,
               offset: const Offset(0, 5),
             ),
@@ -627,7 +627,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 child: Text(
                                   _weatherData?['location'] ?? 'Your Location',
                                   style: TextStyle(
-                                    color: Colors.white.withOpacity(0.9),
+                                    color: Colors.white.withValues(alpha: 0.9),
                                     fontSize: 14,
                                   ),
                                   overflow: TextOverflow.ellipsis,
@@ -649,7 +649,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           Text(
                             _getCropAdvice(_weatherData),
                             style: TextStyle(
-                              color: Colors.white.withOpacity(0.9),
+                              color: Colors.white.withValues(alpha: 0.9),
                               fontSize: 14,
                             ),
                             maxLines: 2,
@@ -664,7 +664,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           width: 80,
                           height: 80,
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.2),
+                            color: Colors.white.withValues(alpha: 0.2),
                             shape: BoxShape.circle,
                           ),
                           child: Icon(
@@ -801,8 +801,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   horizontal: 8, vertical: 2),
                               decoration: BoxDecoration(
                                 color: isProfit
-                                    ? Colors.green.withOpacity(0.1)
-                                    : Colors.red.withOpacity(0.1),
+                                    ? Colors.green.withValues(alpha: 0.1)
+                                    : Colors.red.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               child: Text(
@@ -834,7 +834,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.05),
+                  color: AppColors.primary.withValues(alpha: 0.05),
                   borderRadius: const BorderRadius.only(
                     bottomLeft: Radius.circular(16),
                     bottomRight: Radius.circular(16),
@@ -885,7 +885,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: Colors.blue.withOpacity(0.1),
+                color: Colors.blue.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
@@ -904,7 +904,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: Colors.orange.withOpacity(0.1),
+                color: Colors.orange.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
@@ -924,7 +924,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               width: double.infinity,
               padding: const EdgeInsets.symmetric(vertical: 12),
               decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.05),
+                color: AppColors.primary.withValues(alpha: 0.05),
                 borderRadius: const BorderRadius.only(
                   bottomLeft: Radius.circular(16),
                   bottomRight: Radius.circular(16),

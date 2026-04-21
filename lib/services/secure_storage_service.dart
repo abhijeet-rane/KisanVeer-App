@@ -5,9 +5,6 @@ import 'package:kisan_veer/utils/app_logger.dart';
 /// Uses AES-256 encryption on Android and Keychain on iOS
 class SecureStorageService {
   static const _storage = FlutterSecureStorage(
-    aOptions: AndroidOptions(
-      encryptedSharedPreferences: true,
-    ),
     iOptions: IOSOptions(
       accessibility: KeychainAccessibility.first_unlock_this_device,
     ),

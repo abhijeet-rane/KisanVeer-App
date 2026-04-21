@@ -44,12 +44,13 @@ class _SchemeDetailsScreenState extends State<SchemeDetailsScreen> {
     }
   }
 
-  void _launchURL(String url) async {
-    if (await canLaunch(url)) {
-      await launch(url);
-    } else {
+  Future<void> _launchURL(String url) async {
+    final uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } else if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Could not open link')),
+        const SnackBar(content: Text('Could not open link')),
       );
     }
   }

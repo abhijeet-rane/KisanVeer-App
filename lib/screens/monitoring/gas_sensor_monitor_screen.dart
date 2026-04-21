@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:kisan_veer/utils/app_logger.dart';
 import '../../services/sensor_service.dart';
 
 const Map<String, Map<String, int>> cropMoistureThresholds = {
@@ -143,8 +144,9 @@ class _GasSensorMonitorScreenState extends State<GasSensorMonitorScreen> {
     final bool isLive = _isLive();
     final Color moistureColor = _getMoistureColor(moistureValue);
     final String moistureStatus = _getMoistureStatus(moistureValue);
-    print(
-        "Live moisture value: $moistureValue, status: $moistureStatus, crop: $_selectedCrop");
+    AppLogger.d(
+        'Live moisture value: $moistureValue, status: $moistureStatus, crop: $_selectedCrop',
+        tag: 'Sensor');
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

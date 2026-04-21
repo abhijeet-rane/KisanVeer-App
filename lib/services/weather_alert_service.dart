@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kisan_veer/utils/app_logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class WeatherAlertService {
@@ -22,7 +23,8 @@ class WeatherAlertService {
             (weatherData['forecast'] as List).map((item) =>
                 Map<String, dynamic>.from(item as Map<String, dynamic>)));
       } catch (e) {
-        print('Error casting forecast data: $e');
+        AppLogger.w('Error casting forecast data',
+            tag: 'WeatherAlert', error: e);
         forecast = null;
       }
     }
@@ -77,7 +79,8 @@ class WeatherAlertService {
             forecast.firstWhere((day) => day['day'] == 'Tomorrow');
       } catch (e) {
         // Fallback in case of any errors
-        print('Error accessing forecast data: $e');
+        AppLogger.w('Error accessing forecast data',
+            tag: 'WeatherAlert', error: e);
         tomorrowWeather = defaultDay;
       }
 

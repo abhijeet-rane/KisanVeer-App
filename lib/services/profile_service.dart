@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:kisan_veer/models/privacy_settings_model.dart';
 import 'package:kisan_veer/models/user_model.dart';
+import 'package:kisan_veer/utils/app_logger.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:path/path.dart' as path;
 import 'package:uuid/uuid.dart';
@@ -44,7 +45,7 @@ class ProfileService {
 
       return UserModel.fromJson(userData);
     } catch (e) {
-      print('Error getting user profile: $e');
+      AppLogger.e('Error getting user profile', tag: 'Profile', error: e);
       return null;
     }
   }
@@ -76,7 +77,7 @@ class ProfileService {
 
       return true;
     } catch (e) {
-      print('Error updating user profile: $e');
+      AppLogger.e('Error updating user profile', tag: 'Profile', error: e);
       return false;
     }
   }
@@ -114,7 +115,8 @@ class ProfileService {
 
       return imageUrl;
     } catch (e) {
-      print('Error uploading profile image: $e');
+      AppLogger.e('Error uploading profile image',
+          tag: 'Profile', error: e);
       return null;
     }
   }
@@ -163,7 +165,7 @@ class ProfileService {
 
       return true;
     } catch (e) {
-      print('Error submitting report: $e');
+      AppLogger.e('Error submitting report', tag: 'Profile', error: e);
       return false;
     }
   }
@@ -196,7 +198,7 @@ class ProfileService {
 
       return true;
     } catch (e) {
-      print('Error changing password: $e');
+      AppLogger.e('Error changing password', tag: 'Profile', error: e);
       return false;
     }
   }
@@ -215,7 +217,8 @@ class ProfileService {
 
       return PrivacySettingsModel.fromJson(response);
     } catch (e) {
-      print('Error getting privacy settings: $e');
+      AppLogger.e('Error getting privacy settings',
+          tag: 'Profile', error: e);
       return PrivacySettingsModel();
     }
   }
@@ -238,7 +241,8 @@ class ProfileService {
 
       return true;
     } catch (e) {
-      print('Error updating privacy settings: $e');
+      AppLogger.e('Error updating privacy settings',
+          tag: 'Profile', error: e);
       return false;
     }
   }
@@ -274,7 +278,7 @@ class ProfileService {
 
       return true;
     } catch (e) {
-      print('Error deleting account: $e');
+      AppLogger.e('Error deleting account', tag: 'Profile', error: e);
       return false;
     }
   }

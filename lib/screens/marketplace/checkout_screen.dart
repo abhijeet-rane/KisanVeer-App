@@ -8,6 +8,7 @@ import 'package:kisan_veer/services/analytics_service.dart';
 import 'package:kisan_veer/services/marketplace_service.dart';
 import 'package:kisan_veer/services/profile_service.dart';
 import 'package:kisan_veer/services/supabase_service.dart';
+import 'package:kisan_veer/utils/app_logger.dart';
 import 'package:kisan_veer/widgets/custom_button.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:uuid/uuid.dart';
@@ -83,7 +84,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         await _loadProfileAddressIfNeeded();
       }
     } catch (e) {
-      print('Error loading addresses: $e');
+      AppLogger.e('Error loading addresses', tag: 'Checkout', error: e);
       setState(() {
         _isLoading = false;
       });
@@ -167,7 +168,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         );
       }
     } catch (e) {
-      print('Error saving address: $e');
+      AppLogger.e('Error saving address', tag: 'Checkout', error: e);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error saving address: $e')),
@@ -220,7 +221,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     try {
       _razorpay.open(options);
     } catch (e) {
-      print('Error: $e');
+      AppLogger.e('Checkout error', tag: 'Checkout', error: e);
       setState(() {
         _processingPayment = false;
         _razorpayError = e.toString();
@@ -232,7 +233,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   }
 
   Future<void> _handlePaymentSuccess(PaymentSuccessResponse response) async {
-    print('Payment success: ${response.paymentId}');
+    AppLogger.success('Payment success: ${response.paymentId}',
+        tag: 'Checkout');
 
     try {
       // Determine which address to use
@@ -282,7 +284,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         );
       }
     } catch (e) {
-      print('Error creating order: $e');
+      AppLogger.e('Error creating order', tag: 'Checkout', error: e);
       if (mounted) {
         setState(() => _processingPayment = false);
         ScaffoldMessenger.of(context).showSnackBar(
@@ -293,7 +295,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   }
 
   void _handlePaymentError(PaymentFailureResponse response) {
-    print('Payment error: ${response.message}');
+    AppLogger.w('Payment error: ${response.message}', tag: 'Checkout');
     setState(() {
       _processingPayment = false;
       _razorpayError = response.message ?? 'Payment failed';
@@ -304,7 +306,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   }
 
   void _handleExternalWallet(ExternalWalletResponse response) {
-    print('External wallet: ${response.walletName}');
+    AppLogger.i('External wallet: ${response.walletName}', tag: 'Checkout');
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Payment through: ${response.walletName}')),
     );

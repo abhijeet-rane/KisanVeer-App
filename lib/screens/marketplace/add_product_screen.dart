@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:kisan_veer/constants/app_colors.dart';
 import 'package:kisan_veer/constants/app_text_styles.dart';
 import 'package:kisan_veer/services/marketplace_service.dart';
+import 'package:kisan_veer/utils/app_logger.dart';
 import 'package:kisan_veer/widgets/custom_button.dart';
 import 'package:kisan_veer/widgets/custom_text_field.dart';
 
@@ -141,7 +142,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
             ),
           );
         }
-        print('Error adding product: $e');
+        AppLogger.e('Error adding product', tag: 'AddProduct', error: e);
       }
     }
   }

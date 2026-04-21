@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:kisan_veer/models/financial_models.dart';
+import 'package:kisan_veer/utils/app_logger.dart';
 
 class FinancialService {
   final SupabaseClient _supabase = Supabase.instance.client;
@@ -137,7 +138,7 @@ class FinancialService {
         'user_id': userId,
       });
     } catch (e) {
-      print('Error updating loan: $e');
+      AppLogger.e('Error updating loan', tag: 'Finance', error: e);
       rethrow;
     }
   }
@@ -335,7 +336,8 @@ class FinancialService {
               payment.paymentDate.isAtSameMomentAs(endDate);
         }).length;
       } catch (e) {
-        print('Error getting payments for loan ${loan.id}: $e');
+        AppLogger.w('Error getting payments for loan ${loan.id}',
+            tag: 'Finance', error: e);
         // Continue with other loans if one fails
         continue;
       }

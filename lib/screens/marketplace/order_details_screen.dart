@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:kisan_veer/constants/app_colors.dart';
 import 'package:kisan_veer/models/marketplace_models.dart';
 import 'package:kisan_veer/services/marketplace_service.dart';
+import 'package:kisan_veer/utils/app_logger.dart';
 import 'package:kisan_veer/widgets/custom_button.dart';
 
 class OrderDetailsScreen extends StatefulWidget {
@@ -59,7 +60,8 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
         });
       }
     } catch (e) {
-      print('Error loading order details: $e');
+      AppLogger.e('Error loading order details',
+          tag: 'OrderDetails', error: e);
       if (mounted) {
         setState(() {
           _error = 'Failed to load order details: $e';
@@ -114,7 +116,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
         );
       }
     } catch (e) {
-      print('Error cancelling order: $e');
+      AppLogger.e('Error cancelling order', tag: 'OrderDetails', error: e);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

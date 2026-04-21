@@ -3,6 +3,7 @@ import 'package:geocoding/geocoding.dart';
 import 'package:kisan_veer/constants/app_colors.dart';
 import 'package:kisan_veer/constants/app_text_styles.dart';
 import 'package:kisan_veer/services/weather_service.dart';
+import 'package:kisan_veer/utils/app_logger.dart';
 
 class LocationSearchScreen extends StatefulWidget {
   const LocationSearchScreen({Key? key}) : super(key: key);
@@ -37,7 +38,8 @@ class _LocationSearchScreenState extends State<LocationSearchScreen> {
         _isLoading = false;
       });
     } catch (e) {
-      print('Error loading recent searches: $e');
+      AppLogger.w('Error loading recent searches',
+          tag: 'LocationSearch', error: e);
       setState(() {
         _isLoading = false;
       });
@@ -64,7 +66,8 @@ class _LocationSearchScreenState extends State<LocationSearchScreen> {
         _isSearching = false;
       });
     } catch (e) {
-      print('Error performing search: $e');
+      AppLogger.e('Error performing search',
+          tag: 'LocationSearch', error: e);
       setState(() {
         _searchResults = [];
         _isSearching = false;
@@ -113,7 +116,8 @@ class _LocationSearchScreenState extends State<LocationSearchScreen> {
 
       return suggestions;
     } catch (e) {
-      print('Error getting suggestions: $e');
+      AppLogger.w('Error getting suggestions',
+          tag: 'LocationSearch', error: e);
       return [];
     }
   }

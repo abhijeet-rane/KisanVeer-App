@@ -14,6 +14,7 @@ import 'package:kisan_veer/screens/marketplace/product_details_screen.dart';
 import 'package:kisan_veer/screens/marketplace/seller_pending_orders_screen.dart';
 import 'package:kisan_veer/services/auth_service.dart';
 import 'package:kisan_veer/services/marketplace_service.dart';
+import 'package:kisan_veer/utils/app_logger.dart';
 import 'package:kisan_veer/widgets/custom_button.dart';
 import 'package:kisan_veer/widgets/marketplace/product_card.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -120,7 +121,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen>
         _isLoading = false;
       });
     } catch (e) {
-      print('Error loading user data: $e');
+      AppLogger.e('Error loading user data', tag: 'Marketplace', error: e);
       setState(() {
         _isLoading = false;
       });
@@ -151,7 +152,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen>
         });
       }
     } catch (e) {
-      print('Error loading products: $e');
+      AppLogger.e('Error loading products', tag: 'Marketplace', error: e);
       setState(() {
         _isLoading = false;
       });

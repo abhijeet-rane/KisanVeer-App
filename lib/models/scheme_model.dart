@@ -53,8 +53,6 @@ class SchemeModel {
   }
 
   factory SchemeModel.fromMap(Map<String, dynamic> map) {
-    print('Parsing SchemeModel from map:');
-    print(map);
     return SchemeModel(
       id: map['id'] ?? '',
       schemeName: map['scheme_name'] ?? '',

@@ -7,6 +7,7 @@ import 'package:kisan_veer/models/marketplace_models.dart';
 import 'package:kisan_veer/screens/marketplace/marketplace_screen_fixed.dart';
 import 'package:kisan_veer/screens/marketplace/order_details_screen.dart';
 import 'package:kisan_veer/services/marketplace_service.dart';
+import 'package:kisan_veer/utils/app_logger.dart';
 import 'package:kisan_veer/widgets/custom_button.dart';
 
 class OrderHistoryScreen extends StatefulWidget {
@@ -73,7 +74,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen>
         });
       }
     } catch (e) {
-      print('Error loading orders: $e');
+      AppLogger.e('Error loading orders', tag: 'OrderHistory', error: e);
       if (mounted) {
         setState(() {
           _error = 'Failed to load orders: $e';

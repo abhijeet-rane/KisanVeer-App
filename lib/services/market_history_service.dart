@@ -2,6 +2,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:kisan_veer/models/market_models.dart';
+import 'package:kisan_veer/utils/app_logger.dart';
 
 class MarketHistoryService {
   final String _baseUrl =
@@ -60,7 +61,8 @@ class MarketHistoryService {
 
       return [];
     } catch (e) {
-      print('Error fetching historical market data: $e');
+      AppLogger.e('Error fetching historical market data',
+          tag: 'MarketHistory', error: e);
       throw Exception('Failed to fetch historical market data: $e');
     }
   }

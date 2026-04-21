@@ -2,6 +2,7 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:kisan_veer/services/weather_service.dart';
 import 'package:kisan_veer/services/auth_service.dart';
+import 'package:kisan_veer/utils/app_logger.dart';
 import 'package:flutter/material.dart' show Color;
 import 'package:geolocator/geolocator.dart';
 
@@ -120,7 +121,8 @@ class NotificationsService {
         notificationDetails,
       );
     } catch (e) {
-      print('Error showing weather notification: $e');
+      AppLogger.e('Error showing weather notification',
+          tag: 'Notifications', error: e);
     }
   }
 

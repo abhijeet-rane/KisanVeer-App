@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:kisan_veer/utils/app_logger.dart';
 import '../../models/scheme_model.dart';
 import '../../services/schemes_service.dart';
 import '../../services/profile_service.dart';
 import 'scheme_details_screen.dart';
 import 'my_applications_screen.dart';
-import 'admin_panel_screen.dart'; // Add this import statement
+import 'admin_panel_screen.dart';
 
 class SchemesListingScreen extends StatefulWidget {
   const SchemesListingScreen({Key? key}) : super(key: key);
@@ -125,10 +126,8 @@ class _SchemesListingScreenState extends State<SchemesListingScreen> {
         _errorMessage = 'Failed to load schemes: $e';
         _isLoading = false;
       });
-      // Print error and stack trace to the console for debugging
-      print('Error in _loadSchemes:');
-      print(e);
-      print(stack);
+      AppLogger.e('Error in _loadSchemes',
+          tag: 'Schemes', error: e, stackTrace: stack);
     }
   }
 

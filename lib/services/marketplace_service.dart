@@ -173,7 +173,8 @@ class MarketplaceService {
         seller: UserProfile.fromJson(userProfile),
       );
     } catch (e, stack) {
-      print('Error adding product: $e\n$stack');
+      AppLogger.e('Error adding product',
+          tag: 'Marketplace', error: e, stackTrace: stack);
       rethrow;
     }
   }
@@ -832,64 +833,11 @@ class MarketplaceService {
 
       return null;
     } catch (e) {
-      print('Error getting delivery date: $e');
+      AppLogger.w('Error getting delivery date',
+          tag: 'Marketplace', error: e);
       return null;
     }
   }
-
-  // Future<void> updateOrderStatus(String orderId, String status, {String? notes}) async {
-  //   final userId = _supabase.auth.currentUser?.id;
-  //   if (userId == null) {
-  //     throw Exception('User not authenticated');
-  //   }
-
-  //   // Verify the user is the seller of at least one item in this order
-  //   final sellerCheck = await _supabase
-  //       .from('order_items')
-  //       .select('id')
-  //       .eq('order_id', orderId)
-  //       .eq('seller_id', userId);
-
-  //   if (sellerCheck.isEmpty) {
-  //     throw Exception('You are not authorized to update this order');
-  //   }
-
-  //   // Update order status
-  //   await _supabase
-  //       .from('orders')
-  //       .update({
-  //         'status': status,
-  //         'updated_at': DateTime.now().toIso8601String(),
-  //       })
-  //       .eq('id', orderId);
-
-  //   // Add status update to history
-  //   await _supabase.from('order_status_history').insert({
-  //     'id': _uuid.v4(),
-  //     'order_id': orderId,
-  //     'status': status,
-  //     'notes': notes ?? 'Status updated to $status by seller',
-  //     'created_at': DateTime.now().toIso8601String(),
-  //     'created_by': userId,
-  //   });
-
-  //   // Update delivery date if order is marked as shipped
-  //   if (status.toLowerCase() == 'shipped') {
-  //     // Calculate estimated delivery date (5 days from now)
-  //     final estimatedDelivery = DateTime.now().add(const Duration(days: 5));
-
-  //     try {
-  //       await _supabase.from('order_delivery').upsert({
-  //         'order_id': orderId,
-  //         'estimated_delivery_date': estimatedDelivery.toIso8601String(),
-  //         'updated_at': DateTime.now().toIso8601String(),
-  //       });
-  //     } catch (e) {
-  //       print('Error updating delivery date: $e');
-  //       // Continue even if delivery date update fails
-  //     }
-  //   }
-  // }
 
   // Create a stream for order updates
   Stream<Order> getOrderUpdatesStream(String orderId) async* {
@@ -904,7 +852,8 @@ class MarketplaceService {
         final updatedOrder = await getOrderWithItems(orderId);
         yield updatedOrder;
       } catch (e) {
-        print('Error polling order updates: $e');
+        AppLogger.w('Error polling order updates',
+          tag: 'Marketplace', error: e);
       }
     }
   }
@@ -923,7 +872,8 @@ class MarketplaceService {
         final updatedStatusHistory = await getOrderStatusHistory(orderId);
         yield updatedStatusHistory;
       } catch (e) {
-        print('Error polling status history updates: $e');
+        AppLogger.w('Error polling status history updates',
+            tag: 'Marketplace', error: e);
       }
     }
   }
@@ -1023,7 +973,8 @@ class MarketplaceService {
           yield data;
         }
       } catch (e) {
-        print('Error polling order updates: $e');
+        AppLogger.w('Error polling order updates',
+          tag: 'Marketplace', error: e);
       }
 
       // Wait before polling again
@@ -1065,7 +1016,8 @@ class MarketplaceService {
           processedIds = processedIds.sublist(processedIds.length - 100);
         }
       } catch (e) {
-        print('Error polling notifications: $e');
+        AppLogger.w('Error polling notifications',
+            tag: 'Marketplace', error: e);
       }
 
       // Wait before polling again
@@ -1116,7 +1068,8 @@ class MarketplaceService {
 
       return true;
     } catch (e) {
-      print('Error updating order status: $e');
+      AppLogger.e('Error updating order status',
+          tag: 'Marketplace', error: e);
       return false;
     }
   }
@@ -1138,7 +1091,7 @@ class MarketplaceService {
         'created_at': DateTime.now().toIso8601String(),
       });
     } catch (e) {
-      print('Error adding review: $e');
+      AppLogger.e('Error adding review', tag: 'Marketplace', error: e);
       throw Exception('Failed to add review: $e');
     }
   }
@@ -1282,7 +1235,8 @@ class MarketplaceService {
         'orders_count': ordersCount.length,
       };
     } catch (e) {
-      print('Error fetching marketplace stats: $e');
+      AppLogger.e('Error fetching marketplace stats',
+          tag: 'Marketplace', error: e);
       return {
         'top_categories': [],
         'products_count': 0,
@@ -1303,7 +1257,8 @@ class MarketplaceService {
 
       return response.map((row) => Product.fromJson(row)).toList();
     } catch (e) {
-      print('Error fetching seller products: $e');
+      AppLogger.e('Error fetching seller products',
+          tag: 'Marketplace', error: e);
       return [];
     }
   }

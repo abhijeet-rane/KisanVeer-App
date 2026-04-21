@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:kisan_veer/models/market_models.dart';
 import 'package:kisan_veer/services/market_history_service.dart';
+import 'package:kisan_veer/utils/app_logger.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class MarketService {
@@ -23,7 +24,7 @@ class MarketService {
 
       return response['key_value'] as String;
     } catch (e) {
-      print('Error fetching API key: $e');
+      AppLogger.e('Error fetching API key', tag: 'Market', error: e);
       throw Exception('Failed to fetch API key');
     }
   }
@@ -71,7 +72,7 @@ class MarketService {
         throw Exception('Failed to fetch data: ${response.statusCode}');
       }
     } catch (e) {
-      print('Error in fetchMarketData: $e');
+      AppLogger.e('Error in fetchMarketData', tag: 'Market', error: e);
       throw Exception('Failed to fetch market data: $e');
     }
   }
@@ -193,10 +194,8 @@ class MarketService {
         stateArrivals: stateArrivals,
       );
     } catch (e, stacktrace) {
-      print('Error in getDailyMarketSummary: $e');
-      print('❌ Error parsing record: $json');
-      print('❌ Exception: $e');
-      print('❌ Stacktrace: $stacktrace');
+      AppLogger.e('Error in getDailyMarketSummary',
+          tag: 'Market', error: e, stackTrace: stacktrace);
       throw Exception('Failed to fetch daily market summary: $e');
     }
   }
@@ -299,7 +298,7 @@ class MarketService {
 
       return trends;
     } catch (e) {
-      print('Error in getPriceTrends: $e');
+      AppLogger.e('Error in getPriceTrends', tag: 'Market', error: e);
       // Fallback to mock data in case of error
       return _generateMockPriceTrends(commodity, days);
     }
@@ -378,7 +377,7 @@ class MarketService {
 
       return result;
     } catch (e) {
-      print('Error in getCommodityPriceMap: $e');
+      AppLogger.e('Error in getCommodityPriceMap', tag: 'Market', error: e);
       throw Exception('Failed to fetch commodity price map: $e');
     }
   }
@@ -450,7 +449,8 @@ class MarketService {
           }
         } catch (e) {
           // Skip this commodity if there's an error
-          print('Error processing $commodity: $e');
+          AppLogger.w('Error processing commodity $commodity',
+              tag: 'Market', error: e);
           continue;
         }
       }
@@ -461,7 +461,8 @@ class MarketService {
 
       return recommendations.take(5).toList();
     } catch (e) {
-      print('Error in getSmartRecommendations: $e');
+      AppLogger.e('Error in getSmartRecommendations',
+          tag: 'Market', error: e);
       throw Exception('Failed to generate recommendations: $e');
     }
   }
@@ -523,7 +524,8 @@ class MarketService {
             }
           }
         } catch (e) {
-          print('Error fetching initial price: $e');
+          AppLogger.w('Error fetching initial price',
+              tag: 'Market', error: e);
           // Continue with initialPrice = 0 if there's an error
         }
       }
@@ -539,7 +541,7 @@ class MarketService {
         'pinned_at': DateTime.now().toIso8601String(),
       });
     } catch (e) {
-      print('Error in pinCommodity: $e');
+      AppLogger.e('Error in pinCommodity', tag: 'Market', error: e);
       throw Exception('Failed to pin commodity: $e');
     }
   }
@@ -633,7 +635,8 @@ class MarketService {
                     await _supabase.from('pinned_commodities').update(
                         {'initial_price': initialPrice}).eq('id', pinned.id);
                   } catch (e) {
-                    print('Error updating initial price: $e');
+                    AppLogger.w('Error updating initial price',
+                        tag: 'Market', error: e);
                   }
                 }
               }
@@ -656,18 +659,21 @@ class MarketService {
                   .from('pinned_commodities')
                   .update({'current_price': todayPrice}).eq('id', pinned.id);
             } catch (e) {
-              print('Error updating current price: $e');
+              AppLogger.w('Error updating current price',
+                  tag: 'Market', error: e);
             }
           }
         } catch (e) {
-          print('Error fetching price for ${pinned.commodity}: $e');
+          AppLogger.w('Error fetching price for ${pinned.commodity}',
+              tag: 'Market', error: e);
           // Keep default values if there's an error
         }
       }
 
       return pinnedList;
     } catch (e) {
-      print('Error in getPinnedCommodities: $e');
+      AppLogger.e('Error in getPinnedCommodities',
+          tag: 'Market', error: e);
       throw Exception('Failed to get pinned commodities: $e');
     }
   }
@@ -686,7 +692,7 @@ class MarketService {
           .eq('id', pinnedId)
           .eq('user_id', userId);
     } catch (e) {
-      print('Error in unpinCommodity: $e');
+      AppLogger.e('Error in unpinCommodity', tag: 'Market', error: e);
       throw Exception('Failed to unpin commodity: $e');
     }
   }
@@ -717,7 +723,7 @@ class MarketService {
             alertCondition, // Changed from alert_condition to condition_type to match DB schema
       });
     } catch (e) {
-      print('Error in createPriceAlert: $e');
+      AppLogger.e('Error in createPriceAlert', tag: 'Market', error: e);
       throw Exception('Failed to create price alert: $e');
     }
   }
@@ -737,7 +743,7 @@ class MarketService {
           .map((json) => PriceAlert.fromJson(json))
           .toList();
     } catch (e) {
-      print('Error in getPriceAlerts: $e');
+      AppLogger.e('Error in getPriceAlerts', tag: 'Market', error: e);
       throw Exception('Failed to get price alerts: $e');
     }
   }
@@ -756,7 +762,7 @@ class MarketService {
           .eq('id', alertId)
           .eq('user_id', userId);
     } catch (e) {
-      print('Error in deletePriceAlert: $e');
+      AppLogger.e('Error in deletePriceAlert', tag: 'Market', error: e);
       throw Exception('Failed to delete price alert: $e');
     }
   }
@@ -776,7 +782,7 @@ class MarketService {
 
       return states.toList()..sort();
     } catch (e) {
-      print('Error in getStates: $e');
+      AppLogger.e('Error in getStates', tag: 'Market', error: e);
       throw Exception('Failed to get states: $e');
     }
   }
@@ -796,7 +802,7 @@ class MarketService {
 
       return districts.toList()..sort();
     } catch (e) {
-      print('Error in getDistricts: $e');
+      AppLogger.e('Error in getDistricts', tag: 'Market', error: e);
       throw Exception('Failed to get districts: $e');
     }
   }
@@ -824,7 +830,8 @@ class MarketService {
 
       return markets.toList()..sort();
     } catch (e) {
-      print('Error in getMarketsForCommodity: $e');
+      AppLogger.e('Error in getMarketsForCommodity',
+          tag: 'Market', error: e);
       throw Exception('Failed to fetch markets for commodity: $e');
     }
   }
@@ -847,7 +854,7 @@ class MarketService {
 
       return markets.toList()..sort();
     } catch (e) {
-      print('Error in getMarkets: $e');
+      AppLogger.e('Error in getMarkets', tag: 'Market', error: e);
       throw Exception('Failed to get markets: $e');
     }
   }
@@ -885,7 +892,7 @@ class MarketService {
 
       return commodities.toList()..sort();
     } catch (e) {
-      print('Error in getCommodities: $e');
+      AppLogger.e('Error in getCommodities', tag: 'Market', error: e);
       throw Exception('Failed to get commodities: $e');
     }
   }
@@ -965,7 +972,8 @@ class MarketService {
             ));
           }
         } catch (e) {
-          print('Error processing market $market: $e');
+          AppLogger.w('Error processing market $market',
+              tag: 'Market', error: e);
           // Still add the market even if there was an error
           result.add(MarketComparison(
             market: market,
@@ -990,7 +998,7 @@ class MarketService {
 
       return result;
     } catch (e) {
-      print('Error in compareMarkets: $e');
+      AppLogger.e('Error in compareMarkets', tag: 'Market', error: e);
       throw Exception('Failed to compare markets: $e');
     }
   }
@@ -1023,7 +1031,7 @@ class MarketService {
         };
       }
     } catch (e) {
-      print('Error in getUserPreferences: $e');
+      AppLogger.e('Error in getUserPreferences', tag: 'Market', error: e);
       // Return default values on error
       return {
         'user_id': _supabase.auth.currentUser?.id,
@@ -1071,7 +1079,8 @@ class MarketService {
             .eq('user_id', userId);
       }
     } catch (e) {
-      print('Error in updateUserPreferences: $e');
+      AppLogger.e('Error in updateUserPreferences',
+          tag: 'Market', error: e);
       throw Exception('Failed to update user preferences: $e');
     }
   }
@@ -1172,7 +1181,8 @@ class MarketService {
             recommendations.add(cropRecommendation);
           }
         } catch (e) {
-          print('Error processing crop $commodity: $e');
+          AppLogger.w('Error processing crop $commodity',
+              tag: 'Market', error: e);
           continue;
         }
       }
@@ -1183,7 +1193,8 @@ class MarketService {
 
       return recommendations;
     } catch (e) {
-      print('Error in getCropRecommendations: $e');
+      AppLogger.e('Error in getCropRecommendations',
+          tag: 'Market', error: e);
       throw Exception('Failed to generate crop recommendations: $e');
     }
   }
@@ -1257,14 +1268,17 @@ class MarketService {
             }
           }
         } catch (e) {
-          print(
-              'Error updating pinned commodity ${pinnedCommodity.commodity}: $e');
+          AppLogger.w(
+              'Error updating pinned commodity ${pinnedCommodity.commodity}',
+              tag: 'Market',
+              error: e);
           // Continue with next commodity
           continue;
         }
       }
     } catch (e) {
-      print('Error in updatePinnedCommodityPrices: $e');
+      AppLogger.e('Error in updatePinnedCommodityPrices',
+          tag: 'Market', error: e);
       throw Exception('Failed to update pinned commodity prices: $e');
     }
   }
@@ -1310,7 +1324,7 @@ class MarketService {
                 userId); // Ensure user can only update their own alerts
       }
     } catch (e) {
-      print('Error in updatePriceAlert: $e');
+      AppLogger.e('Error in updatePriceAlert', tag: 'Market', error: e);
       throw Exception('Failed to update price alert: $e');
     }
   }

@@ -292,7 +292,7 @@ class WeatherService {
 
       return allAdvice;
     } catch (e) {
-      print('Error getting farming advice: $e');
+      AppLogger.e('Error getting farming advice', tag: 'Weather', error: e);
       return _generateAdvice(currentWeather);
     }
   }
@@ -447,7 +447,7 @@ class WeatherService {
 
       return weatherData;
     } catch (e) {
-      print('Error fetching weather data: $e');
+      AppLogger.e('Error fetching weather data', tag: 'Weather', error: e);
       throw Exception('Failed to fetch weather data: $e');
     }
   }
@@ -512,7 +512,7 @@ class WeatherService {
 
       return weatherData;
     } catch (e) {
-      print('Error searching location: $e');
+      AppLogger.e('Error searching location', tag: 'Weather', error: e);
       throw Exception('Failed to find weather for location: $e');
     }
   }

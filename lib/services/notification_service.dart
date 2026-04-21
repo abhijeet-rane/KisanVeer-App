@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:kisan_veer/models/notification_model.dart';
 import 'package:kisan_veer/services/storage_service.dart';
+import 'package:kisan_veer/utils/app_logger.dart';
 import 'package:rxdart/rxdart.dart';
 
 class NotificationService {
@@ -54,7 +55,8 @@ class NotificationService {
       // Load notification history
       await _loadNotificationHistory();
     } catch (e) {
-      print('Error initializing notification service: $e');
+      AppLogger.e('Error initializing notification service',
+          tag: 'Notifications', error: e);
     }
   }
 
@@ -134,7 +136,8 @@ class NotificationService {
         // Notify listeners to handle navigation
         notificationSubject.add(notificationModel);
       } catch (e) {
-        print('Error parsing notification payload: $e');
+        AppLogger.w('Error parsing notification payload',
+            tag: 'Notifications', error: e);
       }
     }
   }

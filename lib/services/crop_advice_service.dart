@@ -1,3 +1,4 @@
+import 'package:kisan_veer/utils/app_logger.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:intl/intl.dart';
 
@@ -356,7 +357,7 @@ class CropAdviceService {
       _userCropsCache = defaultCrops;
       return defaultCrops;
     } catch (e) {
-      print('Error getting user crops: $e');
+      AppLogger.w('Error getting user crops', tag: 'CropAdvice', error: e);
       final defaultCrops = _getDefaultCrops();
       _userCropsCache = defaultCrops;
       return defaultCrops;
@@ -384,7 +385,7 @@ class CropAdviceService {
           .from('user_preferences')
           .upsert({'user_id': userId, 'crops': crops}).select();
     } catch (e) {
-      print('Error saving user crops: $e');
+      AppLogger.e('Error saving user crops', tag: 'CropAdvice', error: e);
     }
   }
 
@@ -403,7 +404,8 @@ class CropAdviceService {
       try {
         userCrops = await getUserCrops();
       } catch (e) {
-        print('Error getting user crops: $e');
+        AppLogger.w('Error getting user crops',
+            tag: 'CropAdvice', error: e);
         userCrops = ['wheat', 'rice']; // Default crops
       }
     }
@@ -459,7 +461,8 @@ class CropAdviceService {
         }
       }
     } catch (e) {
-      print('Error fetching crop advice from database: $e');
+      AppLogger.w('Error fetching crop advice from database',
+          tag: 'CropAdvice', error: e);
       // Continue to fallback generation if database fetch fails
     }
 

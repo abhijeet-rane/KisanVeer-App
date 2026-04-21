@@ -3,6 +3,7 @@ import 'package:kisan_veer/constants/app_colors.dart';
 import 'package:kisan_veer/constants/app_text_styles.dart';
 import 'package:kisan_veer/models/market_models.dart';
 import 'package:kisan_veer/services/market_service.dart';
+import 'package:kisan_veer/utils/app_logger.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:intl/intl.dart';
 
@@ -114,7 +115,7 @@ class _PriceAlertsScreenState extends State<PriceAlertsScreen> {
         }
       });
     } catch (e) {
-      print('Error loading states: $e');
+      AppLogger.e('Error loading states', tag: 'PriceAlerts', error: e);
     }
   }
 
@@ -136,7 +137,7 @@ class _PriceAlertsScreenState extends State<PriceAlertsScreen> {
         }
       });
     } catch (e) {
-      print('Error loading districts: $e');
+      AppLogger.e('Error loading districts', tag: 'PriceAlerts', error: e);
     }
   }
 
@@ -158,7 +159,7 @@ class _PriceAlertsScreenState extends State<PriceAlertsScreen> {
         }
       });
     } catch (e) {
-      print('Error loading markets: $e');
+      AppLogger.e('Error loading markets', tag: 'PriceAlerts', error: e);
     }
   }
 

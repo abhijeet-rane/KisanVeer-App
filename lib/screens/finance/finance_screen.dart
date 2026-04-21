@@ -9,9 +9,7 @@ import 'package:kisan_veer/widgets/custom_card.dart';
 import 'package:kisan_veer/screens/finance/add_loan_screen.dart';
 import 'package:kisan_veer/screens/finance/add_transaction_screen.dart';
 import 'package:kisan_veer/screens/finance/credit_score_screen.dart';
-import 'package:kisan_veer/screens/finance/loan_payment_screen.dart';
 import 'package:kisan_veer/screens/finance/financial_reports_screen.dart';
-import 'package:kisan_veer/screens/finance/loan_details_screen.dart';
 import 'package:kisan_veer/widgets/loan_card.dart';
 
 class FinanceScreen extends StatefulWidget {
@@ -408,16 +406,6 @@ class _FinanceScreenState extends State<FinanceScreen>
         ],
       ),
     );
-  }
-
-  String _formatAmount(double amount) {
-    final formatted = amount.toStringAsFixed(2);
-    final parts = formatted.split('.');
-    final wholePart = parts[0].replaceAllMapped(
-      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-      (Match m) => '${m[1]},',
-    );
-    return '$wholePart.${parts[1]}';
   }
 
   Widget _buildTransactionsTab() {

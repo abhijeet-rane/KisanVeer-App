@@ -171,32 +171,6 @@ class NotificationsService {
 ''';
   }
 
-  /// Returns an emoji based on weather condition
-  static String _getWeatherEmoji(String condition) {
-    switch (condition.toLowerCase()) {
-      case 'clear':
-      case 'sunny':
-        return '☀️';
-      case 'clouds':
-      case 'partly cloudy':
-        return '⛅';
-      case 'cloudy':
-      case 'overcast':
-        return '☁️';
-      case 'rain':
-      case 'drizzle':
-        return '🌧️';
-      case 'thunderstorm':
-        return '⛈️';
-      case 'snow':
-        return '❄️';
-      case 'mist':
-      case 'fog':
-        return '🌫️';
-      default:
-        return '🌤️';
-    }
-  }
 
   /// Returns HTML for weather icons in the main display
   static String _getWeatherIconForMain(String condition) {

@@ -2,7 +2,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:kisan_veer/models/market_models.dart';
-import 'package:intl/intl.dart';
 
 class MarketHistoryService {
   final String _baseUrl =

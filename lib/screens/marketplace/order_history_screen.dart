@@ -32,14 +32,6 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen>
     'Cancelled',
   ];
 
-  // Map of status filters for each tab
-  final Map<int, String?> _statusFilters = {
-    0: null, // All orders
-    1: null, // Active tab: fetch all, filter client-side
-    2: null, // Completed tab: fetch all, filter client-side
-    3: null, // Cancelled tab: fetch all, filter client-side
-  };
-
   @override
   void initState() {
     super.initState();

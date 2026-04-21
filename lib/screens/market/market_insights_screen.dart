@@ -41,8 +41,6 @@ class _MarketInsightsScreenState extends State<MarketInsightsScreen> {
         _errorMessage = null;
       });
 
-      // Get daily market summary for top commodities
-      final summary = await _marketService.getDailyMarketSummary();
       final pinned = await _marketService.getPinnedCommodities();
 
       setState(() {

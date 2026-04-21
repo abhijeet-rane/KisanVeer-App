@@ -6,7 +6,6 @@ import 'package:kisan_veer/constants/app_colors.dart';
 import 'package:kisan_veer/models/marketplace_models.dart';
 import 'package:kisan_veer/services/marketplace_service.dart';
 import 'package:kisan_veer/widgets/custom_button.dart';
-import 'package:timeline_tile/timeline_tile.dart';
 
 class OrderDetailsScreen extends StatefulWidget {
   final String orderId;

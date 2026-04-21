@@ -377,6 +377,41 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   delay: const Duration(milliseconds: 900),
                                 ),
 
+                            const SizedBox(height: 30),
+
+                            // Government schemes
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Government Schemes',
+                                  style: AppTextStyles.h3,
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            const SchemesListingScreen(),
+                                      ),
+                                    );
+                                  },
+                                  child: const Text('See All'),
+                                ),
+                              ],
+                            ).animate().fadeIn(
+                                  duration: const Duration(milliseconds: 600),
+                                  delay: const Duration(milliseconds: 1000),
+                                ),
+
+                            const SizedBox(height: 16),
+
+                            _buildGovernmentSchemesCard().animate().fadeIn(
+                                  duration: const Duration(milliseconds: 600),
+                                  delay: const Duration(milliseconds: 1100),
+                                ),
+
                             const SizedBox(height: 24),
                           ],
                         ),
@@ -668,45 +703,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  Widget _buildActionItem(IconData icon, String title, Color color) {
-    return GestureDetector(
-      onTap: () {
-        // Navigate based on action
-      },
-      child: Column(
-        children: [
-          Container(
-            width: 56,
-            height: 56,
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
-              shape: BoxShape.circle,
-            ),
-            child: Center(
-              child: Icon(
-                icon,
-                color: color,
-                size: 28,
-              ),
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            title,
-            style: AppTextStyles.caption.copyWith(
-              color: AppColors.textPrimary,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-    );
-  }
-
-  // Import the necessary services and models at the top if not already imported:
-  // import 'package:kisan_veer/services/market_service.dart';
-  // import 'package:kisan_veer/models/market_models.dart';
-
   Widget _buildMarketInsightsCard() {
     final MarketService _marketService = MarketService();
     return FutureBuilder<List<PinnedCommodity>>(
@@ -871,6 +867,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Widget _buildGovernmentSchemesCard() {
+    void _openSchemes() {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const SchemesListingScreen(),
+        ),
+      );
+    }
+
     return CustomCard(
       padding: EdgeInsets.zero,
       child: Column(
@@ -891,9 +896,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             title: const Text('PM-KISAN Scheme'),
             subtitle: const Text('Income support of ₹6000 per year'),
             trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-            onTap: () {
-              // Navigate to scheme details
-            },
+            onTap: _openSchemes,
           ),
           const Divider(height: 1),
           ListTile(
@@ -912,28 +915,29 @@ class _DashboardScreenState extends State<DashboardScreen> {
             title: const Text('Pradhan Mantri Krishi Sinchai Yojana'),
             subtitle: const Text('Irrigation support for farmers'),
             trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-            onTap: () {
-              // Navigate to scheme details
-            },
+            onTap: _openSchemes,
           ),
           const Divider(height: 1),
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(vertical: 12),
-            decoration: BoxDecoration(
-              color: AppColors.primary.withOpacity(0.05),
-              borderRadius: const BorderRadius.only(
-                bottomLeft: Radius.circular(16),
-                bottomRight: Radius.circular(16),
+          InkWell(
+            onTap: _openSchemes,
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              decoration: BoxDecoration(
+                color: AppColors.primary.withOpacity(0.05),
+                borderRadius: const BorderRadius.only(
+                  bottomLeft: Radius.circular(16),
+                  bottomRight: Radius.circular(16),
+                ),
               ),
-            ),
-            child: Text(
-              'View all schemes',
-              style: AppTextStyles.bodyMedium.copyWith(
-                color: AppColors.primary,
-                fontWeight: FontWeight.w600,
+              child: Text(
+                'View all schemes',
+                style: AppTextStyles.bodyMedium.copyWith(
+                  color: AppColors.primary,
+                  fontWeight: FontWeight.w600,
+                ),
+                textAlign: TextAlign.center,
               ),
-              textAlign: TextAlign.center,
             ),
           ),
         ],

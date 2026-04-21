@@ -1241,14 +1241,9 @@ class MarketService {
             if (prices.isNotEmpty) {
               final avgPrice = prices.reduce((a, b) => a + b) / prices.length;
 
-              // Update pinned commodity
-              double priceChange = 0.0;
-              if (pinnedCommodity.initialPrice > 0) {
-                priceChange = ((avgPrice - pinnedCommodity.initialPrice) /
-                        pinnedCommodity.initialPrice) *
-                    100;
-              } else {
-                // If this is the first update, set initial price
+              // Seed the initial price on the first refresh so future
+              // price-change percentages are comparable to this snapshot.
+              if (pinnedCommodity.initialPrice <= 0) {
                 await _supabase.from('pinned_commodities').update({
                   'initial_price': avgPrice,
                 }).eq('id', pinnedCommodity.id);

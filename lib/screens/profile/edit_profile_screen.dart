@@ -5,6 +5,7 @@ import 'package:kisan_veer/models/user_model.dart';
 import 'package:kisan_veer/services/profile_service.dart';
 import 'package:kisan_veer/constants/app_colors.dart';
 import 'package:kisan_veer/widgets/custom_button.dart';
+import 'package:multi_select_flutter/multi_select_flutter.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({Key? key}) : super(key: key);
@@ -330,6 +331,54 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               label: 'Pincode',
               prefixIcon: Icons.pin_drop,
               keyboardType: TextInputType.number,
+            ),
+
+            const SizedBox(height: 30),
+
+            // Crops
+            const Text(
+              'My Crops',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: AppColors.primary,
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'Select crops you grow so the app can tailor market prices and weather advice.',
+              style: TextStyle(fontSize: 13, color: Colors.black54),
+            ),
+            const SizedBox(height: 12),
+            MultiSelectBottomSheetField<String>(
+              initialValue: _selectedCrops,
+              items: _availableCrops
+                  .map((crop) => MultiSelectItem<String>(
+                      crop, crop[0].toUpperCase() + crop.substring(1)))
+                  .toList(),
+              title: const Text('Select Crops'),
+              buttonText: const Text('Tap to pick crops'),
+              buttonIcon: const Icon(Icons.eco, color: AppColors.primary),
+              searchable: true,
+              listType: MultiSelectListType.CHIP,
+              onConfirm: (values) {
+                setState(() {
+                  _selectedCrops = values.cast<String>();
+                });
+              },
+              chipDisplay: MultiSelectChipDisplay<String>(
+                onTap: (value) {
+                  setState(() {
+                    _selectedCrops.remove(value);
+                  });
+                },
+                chipColor: AppColors.primary.withOpacity(0.1),
+                textStyle: const TextStyle(color: AppColors.primary),
+              ),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.grey.shade400),
+              ),
             ),
 
             const SizedBox(height: 30),

@@ -5,7 +5,6 @@ import 'package:kisan_veer/models/market_models.dart';
 import 'package:kisan_veer/services/market_service.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:intl/intl.dart';
 
 class SmartRecommendationsScreen extends StatefulWidget {
   const SmartRecommendationsScreen({Key? key}) : super(key: key);

@@ -34,8 +34,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   bool _isDarkMode = false;
   String _selectedLanguage = 'English';
   bool _notificationsEnabled = true;
-  bool _biometricEnabled = false;
-  bool _biometricAvailable = false;
   final ScrollController _scrollController = ScrollController();
   final GlobalKey _settingsKey = GlobalKey();
 
@@ -77,24 +75,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ],
     },
   ];
-
-  void _scrollToSettings() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final RenderObject? renderObject =
-          _settingsKey.currentContext?.findRenderObject();
-      if (renderObject is RenderBox) {
-        _scrollController.animateTo(
-          renderObject
-                  .localToGlobal(Offset.zero,
-                      ancestor: context.findRenderObject())
-                  .dy +
-              _scrollController.offset,
-          duration: Duration(milliseconds: 500),
-          curve: Curves.easeInOut,
-        );
-      }
-    });
-  }
 
   @override
   void initState() {

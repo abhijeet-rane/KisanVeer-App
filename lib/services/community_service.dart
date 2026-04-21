@@ -2,13 +2,17 @@ import 'dart:io';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:kisan_veer/models/community_models.dart';
 import 'package:uuid/uuid.dart';
-import 'dart:convert';
 
 class CommunityService {
   final _supabase = Supabase.instance.client;
 
   // Posts
-  Future<List<Post>> getPosts({String? category, String? searchQuery}) async {
+  Future<List<Post>> getPosts({
+    String? category,
+    String? searchQuery,
+    int offset = 0,
+    int limit = 10,
+  }) async {
     var query = _supabase.from('posts').select('*, user_profiles!inner(*)');
 
     if (category != null) {
@@ -21,7 +25,9 @@ class CommunityService {
           .filter('content', 'ilike', '%$searchQuery%');
     }
 
-    final response = await query;
+    final response = await query
+        .order('created_at', ascending: false)
+        .range(offset, offset + limit - 1);
     final userId = _supabase.auth.currentUser?.id;
 
     if (userId != null) {
@@ -168,12 +174,6 @@ class CommunityService {
     if (userId == null) {
       throw Exception('User not authenticated');
     }
-
-    final userProfile = await _supabase
-        .from('user_profiles')
-        .select()
-        .eq('id', userId)
-        .single();
 
     var uuid = Uuid();
 

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:kisan_veer/constants/app_colors.dart';
 import 'package:kisan_veer/constants/app_text_styles.dart';
 import 'package:kisan_veer/screens/community/community_screen.dart';
-import 'package:kisan_veer/screens/finance/finance_screen.dart';
 import 'package:kisan_veer/screens/home/dashboard_screen.dart';
 import 'package:kisan_veer/screens/marketplace/marketplace_screen_fixed.dart';
 import 'package:kisan_veer/screens/profile/profile_screen.dart';

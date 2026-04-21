@@ -193,6 +193,18 @@ class _DailyDashboardScreenState extends State<DailyDashboardScreen> {
             ),
             _buildVolatilityList(),
 
+            // State arrivals
+            if (_summary.stateArrivals.isNotEmpty) ...[
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
+                child: Text(
+                  'Top States by Arrivals',
+                  style: AppTextStyles.h3,
+                ),
+              ),
+              _buildStateArrivalsChart(),
+            ],
+
             const SizedBox(height: 32),
           ],
         ),

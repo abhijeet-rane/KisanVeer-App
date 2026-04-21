@@ -46,14 +46,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   String? _contactEmail;
   String? _currentUserId;
   bool _isSeller = false;
-  String? _selectedState;
-  String? _selectedDistrict;
-  List<String> _states = [
-    'State 1',
-    'State 2',
-    'State 3'
-  ]; // Replace with actual states
-  List<String> _districts = [];
 
   @override
   void initState() {
@@ -62,36 +54,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     _reviewsFuture = _marketplaceService.getProductReviews(widget.productId);
     _loadCartCount();
     _initProductExtras();
-    _states = [
-      'Maharashtra',
-      'Gujarat',
-      'Madhya Pradesh',
-      'Rajasthan',
-      'Karnataka',
-      'Uttar Pradesh',
-      'Punjab',
-      'Haryana',
-      'Bihar',
-      'West Bengal',
-      'Tamil Nadu',
-      'Andhra Pradesh',
-      'Telangana',
-      'Kerala',
-      'Odisha',
-      'Chhattisgarh',
-      'Jharkhand',
-      'Assam',
-      'Goa',
-      'Delhi',
-      'Others'
-    ];
-    if (_selectedState == null) {
-      _selectedState = '';
-    }
-    if (_selectedDistrict == null) {
-      _selectedDistrict = '';
-    }
-    _districts = [];
   }
 
   Future<void> _loadCartCount() async {
@@ -196,11 +158,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     }
   }
 
-  List<String> _getDistrictsForState(String state) {
-    // Replace with actual logic to get districts for a state
-    return ['District 1', 'District 2', 'District 3'];
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -221,9 +178,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
           }
 
           final product = snapshot.data!;
-          // Reset dropdowns so they are not set by default from product/location
-          _selectedState = null;
-          _selectedDistrict = null;
           return _buildProductDetails(product);
         },
       ),

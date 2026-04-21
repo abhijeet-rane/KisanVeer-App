@@ -280,25 +280,6 @@ class _FinancialReportsScreenState extends State<FinancialReportsScreen> {
     );
   }
 
-  LineChartBarData _createLineBarsData(
-      List<double> data, Color color, String label) {
-    return LineChartBarData(
-      spots: List.generate(
-        data.length,
-        (index) => FlSpot(index.toDouble(), data[index]),
-      ),
-      isCurved: true,
-      color: color,
-      barWidth: 3,
-      isStrokeCapRound: true,
-      dotData: FlDotData(show: true),
-      belowBarData: BarAreaData(
-        show: true,
-        color: color.withOpacity(0.1),
-      ),
-    );
-  }
-
   Widget _buildLegendItem(String label, Color color) {
     return Row(
       children: [

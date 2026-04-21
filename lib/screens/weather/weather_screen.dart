@@ -9,6 +9,7 @@ import 'package:kisan_veer/widgets/hour_forecast.dart';
 import 'package:kisan_veer/services/weather_service.dart';
 import 'package:kisan_veer/screens/weather/location_search_screen.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:kisan_veer/utils/app_logger.dart';
 import '../../services/notifications_service.dart';
 
 class WeatherScreen extends StatefulWidget {
@@ -30,17 +31,20 @@ class _WeatherScreenState extends State<WeatherScreen> {
   void initState() {
     super.initState();
     _loadWeatherData();
+    _loadUserCrops();
     NotificationsService.showWelcomeNotification();
   }
 
   Future<void> _loadUserCrops() async {
     try {
       final crops = await _weatherService.getUserCrops();
+      if (!mounted) return;
       setState(() {
         _userCrops = crops;
       });
-    } catch (e) {
-      print('Error loading user crops: $e');
+    } catch (e, s) {
+      AppLogger.e('Error loading user crops',
+          tag: 'Weather', error: e, stackTrace: s);
     }
   }
 
@@ -74,20 +78,22 @@ class _WeatherScreenState extends State<WeatherScreen> {
           _errorMessage = 'other';
         }
       });
-      print('Error fetching weather data: $e');
+      AppLogger.e('Error fetching weather data',
+          tag: 'Weather', error: e);
     }
   }
 
   Future<void> _loadAlerts() async {
     try {
       final alerts = await _weatherService.getWeatherAlerts();
-      // Get just the messages from alerts
       final alertMessages = alerts.map((a) => a['message'] as String).toList();
+      if (!mounted) return;
       setState(() {
         _alerts = alertMessages;
       });
-    } catch (e) {
-      print('Error loading alerts: $e');
+    } catch (e, s) {
+      AppLogger.e('Error loading weather alerts',
+          tag: 'Weather', error: e, stackTrace: s);
     }
   }
 
@@ -126,91 +132,141 @@ class _WeatherScreenState extends State<WeatherScreen> {
     final availableCrops = _weatherService.getAllCropTypes();
     final selectedCrops = List<String>.from(_userCrops);
 
-    await showDialog(
+    final shouldSave = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Select Your Crops'),
-        content: SizedBox(
-          width: double.maxFinite,
-          height: 300,
-          child: ListView.builder(
-            itemCount: availableCrops.length,
-            itemBuilder: (context, index) {
-              final crop = availableCrops[index];
-              return CheckboxListTile(
-                title: Text(crop[0].toUpperCase() + crop.substring(1)),
-                value: selectedCrops.contains(crop),
-                onChanged: (bool? value) {
-                  if (value == true) {
-                    selectedCrops.add(crop);
-                  } else {
-                    selectedCrops.remove(crop);
-                  }
-                  // Rebuild the dialog
-                  (context as Element).markNeedsBuild();
-                },
-              );
-            },
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () async {
-              // Save the selected crops
-              await _weatherService.saveUserCrops(selectedCrops);
-              setState(() {
-                _userCrops = selectedCrops;
-                _isLoading = true; // Show loading indicator while refreshing
-              });
-
-              // Completely reload weather data and force a refresh of crop advice
-              await _weatherService
-                  .clearWeatherCache(); // Add this method to WeatherService
-              await _loadWeatherData();
-
-              // Show confirmation to the user
-              if (mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Crop selections updated'),
-                    duration: Duration(seconds: 2),
-                  ),
-                );
-              }
-
-              Navigator.pop(context);
-            },
-            child: const Text('Save'),
-          ),
-        ],
-      ),
+      builder: (dialogContext) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              title: const Text('Select Your Crops'),
+              content: SizedBox(
+                width: double.maxFinite,
+                height: 300,
+                child: ListView.builder(
+                  itemCount: availableCrops.length,
+                  itemBuilder: (context, index) {
+                    final crop = availableCrops[index];
+                    final label = crop.isEmpty
+                        ? crop
+                        : crop[0].toUpperCase() + crop.substring(1);
+                    return CheckboxListTile(
+                      title: Text(label),
+                      value: selectedCrops.contains(crop),
+                      onChanged: (bool? value) {
+                        setDialogState(() {
+                          if (value == true) {
+                            selectedCrops.add(crop);
+                          } else {
+                            selectedCrops.remove(crop);
+                          }
+                        });
+                      },
+                    );
+                  },
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(dialogContext, false),
+                  child: const Text('Cancel'),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.pop(dialogContext, true),
+                  child: const Text('Save'),
+                ),
+              ],
+            );
+          },
+        );
+      },
     );
+
+    if (shouldSave != true) return;
+
+    try {
+      await _weatherService.saveUserCrops(selectedCrops);
+      if (!mounted) return;
+      setState(() {
+        _userCrops = selectedCrops;
+        _isLoading = true;
+      });
+
+      await _weatherService.clearWeatherCache();
+      await _loadWeatherData();
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Crop selections updated'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+    } catch (e, s) {
+      AppLogger.e('Failed to save user crops',
+          tag: 'Weather', error: e, stackTrace: s);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Could not save crop selections'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   Widget _buildLocationHeader() {
     final location = _weatherData?['location'] ?? 'Unknown Location';
+    final cropsLabel = _userCrops.isEmpty
+        ? 'My Crops'
+        : _userCrops.length == 1
+            ? _userCrops.first[0].toUpperCase() + _userCrops.first.substring(1)
+            : '${_userCrops.length} crops';
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Row(
-            children: [
-              const Icon(Icons.location_on,
-                  size: 20, color: AppColors.textSecondary),
-              const SizedBox(width: 4),
-              Text(
-                location,
-                style: AppTextStyles.bodyMedium.copyWith(
-                  color: AppColors.textSecondary,
+          Expanded(
+            child: Row(
+              children: [
+                const Icon(Icons.location_on,
+                    size: 20, color: AppColors.textSecondary),
+                const SizedBox(width: 4),
+                Flexible(
+                  child: Text(
+                    location,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTextStyles.bodyMedium.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
                 ),
+              ],
+            ),
+          ),
+          GestureDetector(
+            onTap: _showCropSelectionDialog,
+            child: Container(
+              margin: const EdgeInsets.only(right: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: AppColors.primary,
+                borderRadius: BorderRadius.circular(20),
               ),
-            ],
+              child: Row(
+                children: [
+                  const Icon(Icons.eco, size: 16, color: Colors.white),
+                  const SizedBox(width: 4),
+                  Text(
+                    cropsLabel,
+                    style: AppTextStyles.bodySmall.copyWith(
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
           GestureDetector(
             onTap: _searchLocation,
@@ -358,16 +414,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
               ),
               const SizedBox(height: 16),
               ElevatedButton(
-                onPressed: () async {
-                  if (_errorMessage == 'locationDisabled') {
-                    await Geolocator.openLocationSettings();
-                  } else if (_errorMessage == 'permissionDenied') {
-                    await Geolocator.requestPermission();
-                  } else if (_errorMessage == 'permissionPermanentlyDenied') {
-                    await Geolocator.openAppSettings();
-                  }
-                  _loadWeatherData();
-                },
+                onPressed: _handleLocationRequest,
                 child: Text(
                   _errorMessage == 'locationDisabled'
                       ? 'Open Settings'

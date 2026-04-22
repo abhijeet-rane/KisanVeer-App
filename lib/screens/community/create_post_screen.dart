@@ -1,5 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:kisan_veer/constants/app_colors.dart';
+import 'package:kisan_veer/widgets/ui/ui.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:kisan_veer/models/community_models.dart';
 import 'package:kisan_veer/services/community_service.dart';
@@ -111,8 +113,10 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Create Post'),
+      backgroundColor: AppColors.background,
+      appBar: AppAppBar(
+        title: 'New post',
+        showBack: true,
         actions: [
           TextButton(
             onPressed: _isLoading ? null : _createPost,

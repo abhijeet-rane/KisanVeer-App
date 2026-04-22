@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:kisan_veer/constants/app_colors.dart';
+import 'package:kisan_veer/widgets/ui/ui.dart';
 import '../../services/financial_service.dart';
 
 class AddTransactionScreen extends StatefulWidget {
@@ -102,9 +104,10 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Add ${widget.isIncome ? "Income" : "Expense"}'),
-        backgroundColor: widget.isIncome ? Colors.green : Colors.red,
+      backgroundColor: AppColors.background,
+      appBar: AppAppBar(
+        title: widget.isIncome ? 'Add income' : 'Add expense',
+        showBack: true,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),

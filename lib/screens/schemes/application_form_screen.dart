@@ -1,5 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:kisan_veer/constants/app_colors.dart';
+import 'package:kisan_veer/widgets/ui/ui.dart';
 import 'package:file_picker/file_picker.dart';
 import '../../models/scheme_model.dart';
 import '../../models/application_model.dart';
@@ -299,7 +301,8 @@ class _ApplicationFormScreenState extends State<ApplicationFormScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Apply for Scheme')),
+      backgroundColor: AppColors.background,
+      appBar: const AppAppBar(title: 'Apply for scheme', showBack: true),
       body: _errorMessage.isNotEmpty
           ? Center(child: Text(_errorMessage))
           : SingleChildScrollView(

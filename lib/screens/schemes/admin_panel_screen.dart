@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kisan_veer/widgets/ui/ui.dart';
 import '../../models/scheme_model.dart';
 import '../../models/application_model.dart';
 import '../../services/schemes_service.dart';
@@ -315,16 +316,16 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
   Widget build(BuildContext context) {
     if (_loading)
       return Scaffold(
-        appBar: AppBar(title: Text('Admin Panel')),
+        appBar: const AppAppBar(title: 'Admin panel', showBack: true),
         body: Center(child: CircularProgressIndicator()),
       );
     if (!_isAdmin)
       return Scaffold(
-        appBar: AppBar(title: Text('Admin Panel')),
+        appBar: const AppAppBar(title: 'Admin panel', showBack: true),
         body: Center(child: Text(_error)),
       );
     return Scaffold(
-      appBar: AppBar(title: Text('Admin Panel')),
+      appBar: const AppAppBar(title: 'Admin panel', showBack: true),
       body: Column(
         children: [
           TabBar(

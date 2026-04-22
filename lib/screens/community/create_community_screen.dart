@@ -1,5 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:kisan_veer/constants/app_colors.dart';
+import 'package:kisan_veer/widgets/ui/ui.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:kisan_veer/services/community_service.dart';
 
@@ -64,7 +66,8 @@ class _CreateCommunityScreenState extends State<CreateCommunityScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Create Community'), elevation: 0),
+      backgroundColor: AppColors.background,
+      appBar: const AppAppBar(title: 'Create community', showBack: true),
       body: Form(
         key: _formKey,
         child: ListView(

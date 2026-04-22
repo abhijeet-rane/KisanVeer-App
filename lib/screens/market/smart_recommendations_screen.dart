@@ -1,10 +1,11 @@
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:kisan_veer/constants/app_colors.dart';
 import 'package:kisan_veer/constants/app_text_styles.dart';
 import 'package:kisan_veer/models/market_models.dart';
 import 'package:kisan_veer/services/market_service.dart';
-import 'package:flutter_animate/flutter_animate.dart';
-import 'package:fl_chart/fl_chart.dart';
+import 'package:kisan_veer/widgets/ui/ui.dart';
 
 class SmartRecommendationsScreen extends StatefulWidget {
   const SmartRecommendationsScreen({Key? key}) : super(key: key);
@@ -206,22 +207,20 @@ class _SmartRecommendationsScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: const Text('Smart Recommendations'),
-        backgroundColor: AppColors.primary,
-        elevation: 0,
-        foregroundColor: Colors.white,
+      backgroundColor: AppColors.background,
+      appBar: AppAppBar(
+        title: 'Smart picks',
+        showBack: true,
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh),
+            icon: const Icon(Icons.refresh_rounded),
             onPressed: _generateRecommendations,
             tooltip: 'Refresh recommendations',
           ),
         ],
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const AppLoadingState(message: 'Computing recommendations…')
           : _buildBody(),
     );
   }

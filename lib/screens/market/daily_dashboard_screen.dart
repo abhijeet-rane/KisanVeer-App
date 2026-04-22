@@ -1,14 +1,24 @@
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:intl/intl.dart';
 import 'package:kisan_veer/constants/app_colors.dart';
+import 'package:kisan_veer/constants/app_motion.dart';
+import 'package:kisan_veer/constants/app_radii.dart';
+import 'package:kisan_veer/constants/app_spacing.dart';
 import 'package:kisan_veer/constants/app_text_styles.dart';
 import 'package:kisan_veer/models/market_models.dart';
 import 'package:kisan_veer/services/market_service.dart';
-import 'package:fl_chart/fl_chart.dart';
-import 'package:flutter_animate/flutter_animate.dart';
-import 'package:intl/intl.dart';
+import 'package:kisan_veer/utils/app_logger.dart';
+import 'package:kisan_veer/widgets/ui/ui.dart';
 
+/// V2 daily market dashboard.
+///
+/// Summary of the day's top commodities, most volatile markets, and
+/// leading states by arrivals. Charts stay fl_chart-powered but the
+/// surrounding chrome (cards, headers, error states) uses v2 tokens.
 class DailyDashboardScreen extends StatefulWidget {
-  const DailyDashboardScreen({Key? key}) : super(key: key);
+  const DailyDashboardScreen({super.key});
 
   @override
   State<DailyDashboardScreen> createState() => _DailyDashboardScreenState();
@@ -16,11 +26,10 @@ class DailyDashboardScreen extends StatefulWidget {
 
 class _DailyDashboardScreenState extends State<DailyDashboardScreen> {
   final MarketService _marketService = MarketService();
+
   bool _isLoading = true;
   String? _errorMessage;
-
-  // Data from API
-  late DailyMarketSummary _summary;
+  DailyMarketSummary? _summary;
 
   @override
   void initState() {
@@ -29,20 +38,20 @@ class _DailyDashboardScreenState extends State<DailyDashboardScreen> {
   }
 
   Future<void> _loadDashboardData() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
     try {
-      setState(() {
-        _isLoading = true;
-        _errorMessage = null;
-      });
-
-      // Get daily market summary
       final summary = await _marketService.getDailyMarketSummary();
-
+      if (!mounted) return;
       setState(() {
         _summary = summary;
         _isLoading = false;
       });
     } catch (e) {
+      AppLogger.e('Daily dashboard load failed', tag: 'DailyDash', error: e);
+      if (!mounted) return;
       setState(() {
         _errorMessage = e.toString();
         _isLoading = false;
@@ -53,380 +62,132 @@ class _DailyDashboardScreenState extends State<DailyDashboardScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: const Text('Daily Market Dashboard'),
-        backgroundColor: AppColors.primary,
-        elevation: 0,
-        foregroundColor: Colors.white,
+      backgroundColor: AppColors.background,
+      appBar: AppAppBar(
+        title: 'Daily dashboard',
+        showBack: true,
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: _loadDashboardData,
+            icon: const Icon(Icons.refresh_rounded),
+            onPressed: _isLoading ? null : _loadDashboardData,
+            tooltip: 'Refresh',
           ),
         ],
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const AppLoadingState(message: 'Loading market data…')
           : _errorMessage != null
-          ? _buildErrorView()
+          ? AppErrorState(
+              title: 'Could not load market data',
+              message: _errorMessage,
+              onRetry: _loadDashboardData,
+            )
           : _buildDashboard(),
     );
   }
 
-  Widget _buildErrorView() {
-    return RefreshIndicator(
-      onRefresh: _loadDashboardData,
-      child: SingleChildScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        child: SizedBox(
-          height: MediaQuery.of(context).size.height,
-          child: Center(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.error_outline,
-                    size: 80,
-                    color: Colors.red.shade300,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Failed to load market data',
-                    style: AppTextStyles.h3,
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    _errorMessage ?? 'Unknown error',
-                    style: AppTextStyles.bodyMedium,
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 24),
-                  ElevatedButton(
-                    onPressed: _loadDashboardData,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 32,
-                        vertical: 12,
-                      ),
-                    ),
-                    child: const Text('Try Again'),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget _buildDashboard() {
-    final today = DateFormat(
-      'dd MMM yyyy',
-    ).format(DateFormat('dd/MM/yyyy').parse(_summary.date));
+    final summary = _summary!;
+    String dateLine;
+    try {
+      dateLine = DateFormat(
+        'EEEE, d MMMM yyyy',
+      ).format(DateFormat('dd/MM/yyyy').parse(summary.date));
+    } catch (_) {
+      dateLine = summary.date;
+    }
 
     return RefreshIndicator(
       onRefresh: _loadDashboardData,
-      child: SingleChildScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Date card
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Card(
-                elevation: 2,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.calendar_today,
-                        color: AppColors.primary,
-                        size: 24,
-                      ),
-                      const SizedBox(width: 12),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Market Data for',
-                            style: AppTextStyles.bodySmall,
-                          ),
-                          Text(today, style: AppTextStyles.h3),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-
-            // Top commodities
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-              child: Text('Top Commodities by Price', style: AppTextStyles.h3),
-            ),
-            _buildTopCommoditiesChart(),
-
-            // Market volatility
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
-              child: Text(
-                'Markets with Highest Price Volatility',
-                style: AppTextStyles.h3,
-              ),
-            ),
-            _buildVolatilityList(),
-
-            // State arrivals
-            if (_summary.stateArrivals.isNotEmpty) ...[
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
-                child: Text('Top States by Arrivals', style: AppTextStyles.h3),
-              ),
-              _buildStateArrivalsChart(),
-            ],
-
-            const SizedBox(height: 32),
-          ],
+      color: AppColors.primary,
+      child: ListView(
+        physics: const BouncingScrollPhysics(
+          parent: AlwaysScrollableScrollPhysics(),
         ),
+        padding: const EdgeInsets.all(AppSpacing.space16),
+        children: [
+          _DateBanner(dateLine: dateLine),
+          const SizedBox(height: AppSpacing.space20),
+          _ChartSection(
+            title: 'Top commodities',
+            subtitle: 'By average price in ₹ per quintal',
+            chart: SizedBox(
+              height: 240,
+              child: _TopCommoditiesChart(commodities: summary.topCommodities),
+            ),
+          ).animate().fadeIn(duration: AppMotion.slow),
+          const SizedBox(height: AppSpacing.space20),
+          _VolatilityCard(markets: summary.topVolatileMarkets).animate().fadeIn(
+            duration: AppMotion.slow,
+            delay: const Duration(milliseconds: 100),
+          ),
+          if (summary.stateArrivals.isNotEmpty) ...[
+            const SizedBox(height: AppSpacing.space20),
+            _ChartSection(
+              title: 'Top states by arrivals',
+              subtitle: 'Quantity in quintals',
+              chart: SizedBox(
+                height: 240,
+                child: _StateArrivalsChart(
+                  states: summary.stateArrivals.take(5).toList(),
+                ),
+              ),
+            ).animate().fadeIn(
+              duration: AppMotion.slow,
+              delay: const Duration(milliseconds: 200),
+            ),
+          ],
+          const SizedBox(height: AppSpacing.space24),
+        ],
       ),
     );
   }
+}
 
-  Widget _buildTopCommoditiesChart() {
-    return Container(
-          height: 300,
-          padding: const EdgeInsets.all(16),
-          child: Card(
-            elevation: 2,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Expanded(
-                    child: BarChart(
-                      BarChartData(
-                        alignment: BarChartAlignment.spaceAround,
-                        maxY: _summary.topCommodities.isEmpty
-                            ? 100
-                            : _summary.topCommodities.first.averagePrice * 1.2,
-                        gridData: FlGridData(
-                          horizontalInterval: 1000,
-                          show: true,
-                          drawVerticalLine: false,
-                          getDrawingHorizontalLine: (value) => FlLine(
-                            color: Colors.grey.shade200,
-                            strokeWidth: 1,
-                          ),
-                        ),
-                        borderData: FlBorderData(show: false),
-                        titlesData: FlTitlesData(
-                          leftTitles: AxisTitles(
-                            sideTitles: SideTitles(
-                              showTitles: true,
-                              getTitlesWidget: (value, meta) {
-                                return Padding(
-                                  padding: const EdgeInsets.only(right: 8.0),
-                                  child: Text(
-                                    value.toInt().toString(),
-                                    style: AppTextStyles.bodySmall.copyWith(
-                                      color: Colors.grey,
-                                      fontSize: 10,
-                                    ),
-                                  ),
-                                );
-                              },
-                              reservedSize: 40,
-                            ),
-                          ),
-                          rightTitles: AxisTitles(
-                            sideTitles: SideTitles(showTitles: false),
-                          ),
-                          topTitles: AxisTitles(
-                            sideTitles: SideTitles(showTitles: false),
-                          ),
-                          bottomTitles: AxisTitles(
-                            sideTitles: SideTitles(
-                              showTitles: true,
-                              getTitlesWidget: (value, meta) {
-                                if (value >= _summary.topCommodities.length ||
-                                    value < 0) {
-                                  return const SizedBox.shrink();
-                                }
-                                final commodity =
-                                    _summary.topCommodities[value.toInt()];
-                                return Padding(
-                                  padding: const EdgeInsets.only(top: 8.0),
-                                  child: RotatedBox(
-                                    quarterTurns: 1,
-                                    child: Text(
-                                      commodity.commodity,
-                                      style: AppTextStyles.bodySmall.copyWith(
-                                        color: Colors.grey,
-                                        fontSize: 10,
-                                      ),
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                );
-                              },
-                              reservedSize: 40,
-                            ),
-                          ),
-                        ),
-                        barGroups: List.generate(
-                          _summary.topCommodities.length,
-                          (index) {
-                            final commodity = _summary.topCommodities[index];
-                            return BarChartGroupData(
-                              x: index,
-                              barRods: [
-                                BarChartRodData(
-                                  toY: commodity.averagePrice,
-                                  color: Colors.green,
-                                  width: 20,
-                                  borderRadius: const BorderRadius.only(
-                                    topLeft: Radius.circular(4),
-                                    topRight: Radius.circular(4),
-                                  ),
-                                ),
-                              ],
-                            );
-                          },
-                        ),
-                      ),
-                      duration: const Duration(milliseconds: 500),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Price in ₹ per Quintal',
-                    style: AppTextStyles.bodySmall.copyWith(color: Colors.grey),
-                    textAlign: TextAlign.center,
-                  ),
-                ],
-              ),
-            ),
-          ),
-        )
-        .animate()
-        .fadeIn(duration: 500.ms)
-        .slideY(
-          begin: 0.1,
-          end: 0,
-          duration: 500.ms,
-          curve: Curves.easeOutQuad,
-        );
-  }
+class _DateBanner extends StatelessWidget {
+  const _DateBanner({required this.dateLine});
 
-  Widget _buildVolatilityList() {
-    return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Card(
-            elevation: 2,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  ...List.generate(_summary.topVolatileMarkets.length, (index) {
-                    final market = _summary.topVolatileMarkets[index];
-                    return _volatilityItem(market, index);
-                  }),
-                ],
-              ),
-            ),
-          ),
-        )
-        .animate()
-        .fadeIn(duration: 500.ms, delay: 200.ms)
-        .slideY(
-          begin: 0.1,
-          end: 0,
-          duration: 500.ms,
-          delay: 200.ms,
-          curve: Curves.easeOutQuad,
-        );
-  }
+  final String dateLine;
 
-  Widget _volatilityItem(MarketVolatility market, int index) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12.0),
+  @override
+  Widget build(BuildContext context) {
+    return AppCard(
+      padding: const EdgeInsets.all(AppSpacing.space16),
       child: Row(
         children: [
           Container(
-            width: 28,
-            height: 28,
+            width: 48,
+            height: 48,
+            alignment: Alignment.center,
             decoration: BoxDecoration(
-              color: AppColors.primary,
-              borderRadius: BorderRadius.circular(14),
+              color: AppColors.primaryContainer.withValues(alpha: 0.6),
+              borderRadius: AppRadii.brMd,
             ),
-            child: Center(
-              child: Text(
-                '${index + 1}',
-                style: AppTextStyles.bodyMedium.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+            child: const Icon(
+              Icons.calendar_today_rounded,
+              color: AppColors.primary,
+              size: 22,
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: AppSpacing.space12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        market.commodity,
-                        style: AppTextStyles.subtitle,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    Text(
-                      '₹${market.volatility.toStringAsFixed(2)}',
-                      style: AppTextStyles.bodyMedium.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.red,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 4),
                 Text(
-                  'at ${market.marketName}',
-                  style: AppTextStyles.bodySmall.copyWith(color: Colors.grey),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                  'Market data for',
+                  style: AppTextStyles.labelSmall.copyWith(
+                    color: AppColors.onSurfaceVariant,
+                    letterSpacing: 0.4,
+                  ),
                 ),
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    Text(
-                      'Range: ₹${market.minPrice.toStringAsFixed(2)} - ₹${market.maxPrice.toStringAsFixed(2)}',
-                      style: AppTextStyles.bodySmall,
-                    ),
-                  ],
+                const SizedBox(height: 2),
+                Text(
+                  dateLine,
+                  style: AppTextStyles.titleMedium.copyWith(
+                    color: AppColors.onSurface,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ],
             ),
@@ -435,130 +196,368 @@ class _DailyDashboardScreenState extends State<DailyDashboardScreen> {
       ),
     );
   }
+}
 
-  Widget _buildStateArrivalsChart() {
-    // Sort states by arrivals
-    final topStates = _summary.stateArrivals.take(5).toList();
+class _ChartSection extends StatelessWidget {
+  const _ChartSection({
+    required this.title,
+    required this.subtitle,
+    required this.chart,
+  });
 
-    return Container(
-          height: 300,
-          padding: const EdgeInsets.all(16),
-          child: Card(
-            elevation: 2,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
+  final String title;
+  final String subtitle;
+  final Widget chart;
+
+  @override
+  Widget build(BuildContext context) {
+    return AppCard(
+      padding: const EdgeInsets.all(AppSpacing.space16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: AppTextStyles.titleMedium.copyWith(
+              color: AppColors.onSurface,
+              fontWeight: FontWeight.w700,
             ),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Expanded(
-                    child: BarChart(
-                      BarChartData(
-                        alignment: BarChartAlignment.spaceAround,
-                        maxY: topStates.isEmpty
-                            ? 100
-                            : topStates.first.totalQuantity * 1.2,
-                        gridData: FlGridData(
-                          horizontalInterval: 1000,
-                          show: true,
-                          drawVerticalLine: false,
-                          getDrawingHorizontalLine: (value) => FlLine(
-                            color: Colors.grey.shade200,
-                            strokeWidth: 1,
-                          ),
-                        ),
-                        borderData: FlBorderData(show: false),
-                        titlesData: FlTitlesData(
-                          leftTitles: AxisTitles(
-                            sideTitles: SideTitles(
-                              showTitles: true,
-                              getTitlesWidget: (value, meta) {
-                                return Padding(
-                                  padding: const EdgeInsets.only(right: 8.0),
-                                  child: Text(
-                                    (value / 1000).toStringAsFixed(1) + 'K',
-                                    style: AppTextStyles.bodySmall.copyWith(
-                                      color: Colors.grey,
-                                      fontSize: 10,
-                                    ),
-                                  ),
-                                );
-                              },
-                              reservedSize: 40,
-                            ),
-                          ),
-                          rightTitles: AxisTitles(
-                            sideTitles: SideTitles(showTitles: false),
-                          ),
-                          topTitles: AxisTitles(
-                            sideTitles: SideTitles(showTitles: false),
-                          ),
-                          bottomTitles: AxisTitles(
-                            sideTitles: SideTitles(
-                              showTitles: true,
-                              getTitlesWidget: (value, meta) {
-                                if (value >= topStates.length || value < 0) {
-                                  return const SizedBox.shrink();
-                                }
-                                final state = topStates[value.toInt()];
-                                return Padding(
-                                  padding: const EdgeInsets.only(top: 8.0),
-                                  child: Text(
-                                    state.state,
-                                    style: AppTextStyles.bodySmall.copyWith(
-                                      color: Colors.grey,
-                                      fontSize: 10,
-                                    ),
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                );
-                              },
-                              reservedSize: 40,
-                            ),
-                          ),
-                        ),
-                        barGroups: List.generate(topStates.length, (index) {
-                          final state = topStates[index];
-                          return BarChartGroupData(
-                            x: index,
-                            barRods: [
-                              BarChartRodData(
-                                toY: state.totalQuantity,
-                                color: Colors.green.shade600,
-                                width: 20,
-                                borderRadius: const BorderRadius.only(
-                                  topLeft: Radius.circular(4),
-                                  topRight: Radius.circular(4),
-                                ),
-                              ),
-                            ],
-                          );
-                        }),
-                      ),
-                      duration: const Duration(milliseconds: 500),
-                    ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            subtitle,
+            style: AppTextStyles.bodySmall.copyWith(
+              color: AppColors.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.space16),
+          chart,
+        ],
+      ),
+    );
+  }
+}
+
+class _TopCommoditiesChart extends StatelessWidget {
+  const _TopCommoditiesChart({required this.commodities});
+
+  final List<CommoditySummary> commodities;
+
+  @override
+  Widget build(BuildContext context) {
+    if (commodities.isEmpty) {
+      return const Center(
+        child: Text(
+          'No commodity data',
+          style: TextStyle(color: AppColors.onSurfaceVariant),
+        ),
+      );
+    }
+
+    return BarChart(
+      BarChartData(
+        alignment: BarChartAlignment.spaceAround,
+        maxY: commodities.first.averagePrice * 1.2,
+        gridData: FlGridData(
+          show: true,
+          drawVerticalLine: false,
+          horizontalInterval: 1000,
+          getDrawingHorizontalLine: (_) =>
+              FlLine(color: AppColors.outlineVariant, strokeWidth: 1),
+        ),
+        borderData: FlBorderData(show: false),
+        titlesData: FlTitlesData(
+          leftTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              reservedSize: 40,
+              getTitlesWidget: (value, meta) => Padding(
+                padding: const EdgeInsets.only(right: AppSpacing.space8),
+                child: Text(
+                  value.toInt().toString(),
+                  style: AppTextStyles.labelSmall.copyWith(
+                    color: AppColors.onSurfaceVariant,
                   ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Quantity in Quintals',
-                    style: AppTextStyles.bodySmall.copyWith(color: Colors.grey),
-                    textAlign: TextAlign.center,
-                  ),
-                ],
+                ),
               ),
             ),
           ),
-        )
-        .animate()
-        .fadeIn(duration: 500.ms, delay: 400.ms)
-        .slideY(
-          begin: 0.1,
-          end: 0,
-          duration: 500.ms,
-          delay: 400.ms,
-          curve: Curves.easeOutQuad,
-        );
+          rightTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
+          topTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
+          bottomTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              reservedSize: 60,
+              getTitlesWidget: (value, meta) {
+                final idx = value.toInt();
+                if (idx < 0 || idx >= commodities.length) {
+                  return const SizedBox.shrink();
+                }
+                return Padding(
+                  padding: const EdgeInsets.only(top: AppSpacing.space8),
+                  child: RotatedBox(
+                    quarterTurns: 1,
+                    child: Text(
+                      commodities[idx].commodity,
+                      style: AppTextStyles.labelSmall.copyWith(
+                        color: AppColors.onSurfaceVariant,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
+        barGroups: [
+          for (int i = 0; i < commodities.length; i++)
+            BarChartGroupData(
+              x: i,
+              barRods: [
+                BarChartRodData(
+                  toY: commodities[i].averagePrice,
+                  color: AppColors.primary,
+                  width: 18,
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(AppRadii.xs),
+                  ),
+                ),
+              ],
+            ),
+        ],
+      ),
+      duration: const Duration(milliseconds: 500),
+    );
+  }
+}
+
+class _StateArrivalsChart extends StatelessWidget {
+  const _StateArrivalsChart({required this.states});
+
+  final List<StateArrival> states;
+
+  @override
+  Widget build(BuildContext context) {
+    if (states.isEmpty) {
+      return const Center(
+        child: Text(
+          'No arrivals data',
+          style: TextStyle(color: AppColors.onSurfaceVariant),
+        ),
+      );
+    }
+
+    return BarChart(
+      BarChartData(
+        alignment: BarChartAlignment.spaceAround,
+        maxY: states.first.totalQuantity * 1.2,
+        gridData: FlGridData(
+          show: true,
+          drawVerticalLine: false,
+          horizontalInterval: 1000,
+          getDrawingHorizontalLine: (_) =>
+              FlLine(color: AppColors.outlineVariant, strokeWidth: 1),
+        ),
+        borderData: FlBorderData(show: false),
+        titlesData: FlTitlesData(
+          leftTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              reservedSize: 48,
+              getTitlesWidget: (value, meta) => Padding(
+                padding: const EdgeInsets.only(right: AppSpacing.space8),
+                child: Text(
+                  '${(value / 1000).toStringAsFixed(1)}K',
+                  style: AppTextStyles.labelSmall.copyWith(
+                    color: AppColors.onSurfaceVariant,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          rightTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
+          topTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
+          bottomTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              reservedSize: 40,
+              getTitlesWidget: (value, meta) {
+                final idx = value.toInt();
+                if (idx < 0 || idx >= states.length) {
+                  return const SizedBox.shrink();
+                }
+                return Padding(
+                  padding: const EdgeInsets.only(top: AppSpacing.space8),
+                  child: Text(
+                    states[idx].state,
+                    style: AppTextStyles.labelSmall.copyWith(
+                      color: AppColors.onSurfaceVariant,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
+        barGroups: [
+          for (int i = 0; i < states.length; i++)
+            BarChartGroupData(
+              x: i,
+              barRods: [
+                BarChartRodData(
+                  toY: states[i].totalQuantity,
+                  color: AppColors.tertiary,
+                  width: 18,
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(AppRadii.xs),
+                  ),
+                ),
+              ],
+            ),
+        ],
+      ),
+      duration: const Duration(milliseconds: 500),
+    );
+  }
+}
+
+class _VolatilityCard extends StatelessWidget {
+  const _VolatilityCard({required this.markets});
+
+  final List<MarketVolatility> markets;
+
+  @override
+  Widget build(BuildContext context) {
+    return AppCard(
+      padding: const EdgeInsets.all(AppSpacing.space16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Most volatile markets',
+            style: AppTextStyles.titleMedium.copyWith(
+              color: AppColors.onSurface,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            'Where prices swung the most today',
+            style: AppTextStyles.bodySmall.copyWith(
+              color: AppColors.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.space16),
+          if (markets.isEmpty)
+            Text(
+              'No volatile markets for today',
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: AppColors.onSurfaceVariant,
+              ),
+            )
+          else
+            for (int i = 0; i < markets.length; i++) ...[
+              _VolatilityRow(rank: i + 1, market: markets[i]),
+              if (i < markets.length - 1)
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: AppSpacing.space8),
+                  child: Divider(
+                    height: 1,
+                    thickness: 1,
+                    color: AppColors.outlineVariant,
+                  ),
+                ),
+            ],
+        ],
+      ),
+    );
+  }
+}
+
+class _VolatilityRow extends StatelessWidget {
+  const _VolatilityRow({required this.rank, required this.market});
+
+  final int rank;
+  final MarketVolatility market;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          width: 28,
+          height: 28,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: AppColors.primary,
+            borderRadius: AppRadii.brFull,
+          ),
+          child: Text(
+            '$rank',
+            style: AppTextStyles.labelLarge.copyWith(
+              color: Colors.white,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ),
+        const SizedBox(width: AppSpacing.space12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      market.commodity,
+                      style: AppTextStyles.titleSmall.copyWith(
+                        color: AppColors.onSurface,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  Text(
+                    '±₹${market.volatility.toStringAsFixed(0)}',
+                    style: AppTextStyles.titleSmall.copyWith(
+                      color: AppColors.danger,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 2),
+              Text(
+                'at ${market.marketName}',
+                style: AppTextStyles.bodySmall.copyWith(
+                  color: AppColors.onSurfaceVariant,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(height: 2),
+              Text(
+                'Range: ₹${market.minPrice.toStringAsFixed(0)} – ₹${market.maxPrice.toStringAsFixed(0)}',
+                style: AppTextStyles.labelSmall.copyWith(
+                  color: AppColors.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
   }
 }

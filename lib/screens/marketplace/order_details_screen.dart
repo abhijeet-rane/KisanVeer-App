@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:kisan_veer/constants/app_colors.dart';
+import 'package:kisan_veer/widgets/ui/ui.dart';
 import 'package:kisan_veer/models/marketplace_models.dart';
 import 'package:kisan_veer/services/marketplace_service.dart';
 import 'package:kisan_veer/utils/app_logger.dart';
@@ -177,16 +178,10 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Order Details',
-          style: TextStyle(color: Colors.white),
-        ),
-        backgroundColor: AppColors.primary,
-        elevation: 0,
-      ),
+      backgroundColor: AppColors.background,
+      appBar: const AppAppBar(title: 'Order details', showBack: true),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const AppLoadingState(message: 'Loading order…')
           : _error != null
           ? _buildErrorWidget()
           : _order == null

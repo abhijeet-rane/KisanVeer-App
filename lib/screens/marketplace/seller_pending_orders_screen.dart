@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:kisan_veer/constants/app_colors.dart';
+import 'package:kisan_veer/screens/marketplace/order_details_screen.dart';
+import 'package:kisan_veer/services/marketplace_service.dart';
+import 'package:kisan_veer/widgets/ui/ui.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'order_details_screen.dart';
-import '../../services/marketplace_service.dart'; // Correct import for MarketplaceService
 
 class SellerPendingOrdersScreen extends StatefulWidget {
   final String sellerId;
@@ -87,12 +89,9 @@ class _SellerPendingOrdersScreenState extends State<SellerPendingOrdersScreen> {
             ),
             ElevatedButton(
               onPressed: () {
-                Navigator.push(
+                Navigator.of(
                   context,
-                  MaterialPageRoute(
-                    builder: (context) => OrderDetailsScreen(orderId: orderId),
-                  ),
-                );
+                ).push(AppPageRoute.of(OrderDetailsScreen(orderId: orderId)));
               },
               child: const Text('View Details'),
             ),
@@ -105,11 +104,16 @@ class _SellerPendingOrdersScreenState extends State<SellerPendingOrdersScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Pending Orders to Fulfill')),
+      backgroundColor: AppColors.background,
+      appBar: const AppAppBar(title: 'Pending orders', showBack: true),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const AppLoadingState(message: 'Loading pending orders…')
           : _orders.isEmpty
-          ? const Center(child: Text('No pending orders to fulfill.'))
+          ? const AppEmptyState(
+              icon: Icons.inbox_outlined,
+              title: 'No pending orders',
+              message: 'All caught up — no orders waiting to be fulfilled.',
+            )
           : ListView.builder(
               itemCount: _orders.length,
               itemBuilder: (context, index) => _buildOrderCard(_orders[index]),

@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:kisan_veer/constants/app_colors.dart';
+import 'package:kisan_veer/widgets/ui/ui.dart';
 import 'package:kisan_veer/models/marketplace_models.dart';
 import 'package:kisan_veer/models/user_models.dart';
 import 'package:kisan_veer/screens/marketplace/cart_screen.dart';
@@ -193,10 +194,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
             action: SnackBarAction(
               label: 'VIEW CART',
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const CartScreen()),
-                );
+                Navigator.of(context).push(AppPageRoute.of(const CartScreen()));
               },
             ),
           ),
@@ -243,14 +241,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
 
   Widget _buildLoadingState() {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ),
+      backgroundColor: AppColors.background,
+      appBar: const AppAppBar(showBack: true),
       body: Shimmer.fromColors(
         baseColor: Colors.grey[300]!,
         highlightColor: Colors.grey[100]!,
@@ -291,18 +283,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
 
   Widget _buildErrorState(String error) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: const Text(
-          'Product Details',
-          style: TextStyle(color: Colors.black),
-        ),
-      ),
+      backgroundColor: AppColors.background,
+      appBar: const AppAppBar(title: 'Product', showBack: true),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -359,12 +341,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                 IconButton(
                   icon: const Icon(Icons.shopping_cart, color: Colors.black),
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const CartScreen(),
-                      ),
-                    ).then((_) => _loadCartCount());
+                    Navigator.of(context)
+                        .push(AppPageRoute.of(const CartScreen()))
+                        .then((_) => _loadCartCount());
                   },
                 ),
                 if (_cartItemCount > 0)

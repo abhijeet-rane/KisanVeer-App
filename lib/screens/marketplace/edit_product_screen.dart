@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kisan_veer/models/marketplace_models.dart';
 import 'package:kisan_veer/services/marketplace_service.dart';
 import 'package:kisan_veer/constants/app_colors.dart';
+import 'package:kisan_veer/widgets/ui/ui.dart';
 
 class EditProductScreen extends StatefulWidget {
   final Product product;
@@ -111,12 +112,10 @@ class _EditProductScreenState extends State<EditProductScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Edit Product'),
-        backgroundColor: AppColors.primary,
-      ),
+      backgroundColor: AppColors.background,
+      appBar: const AppAppBar(title: 'Edit product', showBack: true),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const AppLoadingState(message: 'Loading product…')
           : SingleChildScrollView(
               padding: const EdgeInsets.all(20),
               child: Form(

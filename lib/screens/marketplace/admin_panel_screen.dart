@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kisan_veer/services/marketplace_service.dart';
 import 'package:kisan_veer/models/marketplace_models.dart';
 import 'package:kisan_veer/constants/app_colors.dart';
+import 'package:kisan_veer/widgets/ui/ui.dart';
 import 'dart:async';
 import 'package:kisan_veer/screens/marketplace/edit_product_screen.dart';
 
@@ -77,10 +78,8 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Admin Panel'),
-        backgroundColor: AppColors.primary,
-      ),
+      backgroundColor: AppColors.background,
+      appBar: const AppAppBar(title: 'Admin panel', showBack: true),
       body: Column(
         children: [
           Padding(
@@ -117,7 +116,7 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
           ),
           Expanded(
             child: _isLoading
-                ? const Center(child: CircularProgressIndicator())
+                ? const AppLoadingState(message: 'Loading products…')
                 : _error != null
                 ? Center(child: Text(_error!))
                 : ListView.builder(
@@ -161,13 +160,12 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
                                   color: Colors.blue,
                                 ),
                                 onPressed: () async {
-                                  final updated = await Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
+                                  final updated = await Navigator.of(context)
+                                      .push(
+                                        AppPageRoute.of(
                                           EditProductScreen(product: product),
-                                    ),
-                                  );
+                                        ),
+                                      );
                                   if (updated == true) _loadUserProducts();
                                 },
                                 tooltip: 'Edit',

@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:kisan_veer/constants/app_colors.dart';
+import 'package:kisan_veer/widgets/ui/ui.dart';
 import 'package:kisan_veer/models/marketplace_models.dart';
 import 'package:kisan_veer/screens/marketplace/order_confirmation_screen.dart';
 import 'package:kisan_veer/services/analytics_service.dart';
@@ -280,11 +281,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
       if (mounted) {
         setState(() => _processingPayment = false);
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => OrderConfirmationScreen(order: order),
-          ),
+        Navigator.of(context).pushReplacement(
+          AppPageRoute.of(OrderConfirmationScreen(order: order)),
         );
       }
     } catch (e) {
@@ -319,14 +317,10 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
-      appBar: AppBar(
-        title: const Text('Checkout', style: TextStyle(color: Colors.white)),
-        backgroundColor: AppColors.primary,
-        elevation: 0,
-      ),
+      backgroundColor: AppColors.background,
+      appBar: const AppAppBar(title: 'Checkout', showBack: true),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const AppLoadingState(message: 'Preparing checkout…')
           : SingleChildScrollView(
               padding: const EdgeInsets.all(16),
               child: Column(

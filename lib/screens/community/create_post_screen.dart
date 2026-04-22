@@ -99,9 +99,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error creating post: $e')));
+        AppSnackBar.error(context, 'Could not create post');
       }
     } finally {
       if (mounted) {

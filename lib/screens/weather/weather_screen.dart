@@ -125,12 +125,8 @@ class _WeatherScreenState extends State<WeatherScreen> {
     await _weatherService.clearCache();
     await _loadWeatherData();
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Weather data refreshed'),
-        duration: Duration(seconds: 2),
-      ),
-    );
+    if (!mounted) return;
+    AppSnackBar.success(context, 'Weather data refreshed');
   }
 
   Future<void> _showCropSelectionDialog() async {
@@ -200,12 +196,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
       await _loadWeatherData();
 
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Crop selections updated'),
-          duration: Duration(seconds: 2),
-        ),
-      );
+      AppSnackBar.success(context, 'Crop selections updated');
     } catch (e, s) {
       AppLogger.e(
         'Failed to save user crops',
@@ -214,12 +205,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
         stackTrace: s,
       );
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Could not save crop selections'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      AppSnackBar.error(context, 'Could not save crop selections');
     }
   }
 

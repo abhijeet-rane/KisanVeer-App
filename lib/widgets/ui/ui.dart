@@ -23,4 +23,5 @@ export 'app_navigation_bar.dart';
 export 'app_page_route.dart';
 export 'app_section_header.dart';
 export 'app_skeleton.dart';
+export 'app_snackbar.dart';
 export 'app_text_field.dart';

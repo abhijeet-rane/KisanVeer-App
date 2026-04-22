@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kisan_veer/constants/app_colors.dart';
 import 'package:kisan_veer/services/biometric_service.dart';
 import 'package:kisan_veer/utils/haptic_utils.dart';
+import 'package:kisan_veer/widgets/ui/ui.dart';
 
 /// Biometric login button widget with animation
 /// Shows fingerprint/face icon based on available biometrics
@@ -94,13 +95,7 @@ class _BiometricLoginButtonState extends State<BiometricLoginButton>
 
   void _showErrorSnackBar(String message) {
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: AppColors.error,
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
+    AppSnackBar.error(context, message);
   }
 
   @override
@@ -115,33 +110,10 @@ class _BiometricLoginButtonState extends State<BiometricLoginButton>
       return const SizedBox.shrink();
     }
 
+    // The consuming screen (login) already provides section separation,
+    // so this widget just renders the pulsing circle + label.
     return Column(
       children: [
-        // Divider with "or" text
-        Row(
-          children: [
-            Expanded(
-              child: Divider(
-                color: AppColors.textSecondary.withValues(alpha: 0.3),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Text(
-                'or',
-                style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
-              ),
-            ),
-            Expanded(
-              child: Divider(
-                color: AppColors.textSecondary.withValues(alpha: 0.3),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 20),
-
-        // Biometric button
         GestureDetector(
           onTap: _authenticate,
           child: ScaleTransition(
@@ -151,9 +123,9 @@ class _BiometricLoginButtonState extends State<BiometricLoginButton>
               height: 72,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: AppColors.primary.withValues(alpha: 0.1),
+                color: AppColors.primary.withValues(alpha: 0.12),
                 border: Border.all(
-                  color: AppColors.primary.withValues(alpha: 0.3),
+                  color: AppColors.primary.withValues(alpha: 0.35),
                   width: 2,
                 ),
               ),
@@ -179,11 +151,9 @@ class _BiometricLoginButtonState extends State<BiometricLoginButton>
           ),
         ),
         const SizedBox(height: 12),
-
-        // Label
         Text(
           'Login with $_biometricTypeName',
-          style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
+          style: TextStyle(color: AppColors.onSurfaceVariant, fontSize: 14),
         ),
       ],
     );
@@ -251,9 +221,7 @@ class _BiometricSettingsToggleState extends State<BiometricSettingsToggle> {
   }
 
   void _showSnackBar(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message), behavior: SnackBarBehavior.floating),
-    );
+    AppSnackBar.info(context, message);
   }
 
   @override

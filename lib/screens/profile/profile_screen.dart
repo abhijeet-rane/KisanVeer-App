@@ -80,12 +80,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     } catch (e) {
       AppLogger.e('Error signing out', tag: 'Profile', error: e);
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error signing out: ${e.toString()}'),
-          backgroundColor: AppColors.danger,
-        ),
-      );
+      AppSnackBar.error(context, 'Could not sign out. Please try again.');
     }
   }
 
@@ -502,21 +497,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
       await CacheService().clearCache();
       await OfflineStorageService().clearAll();
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Cache cleared successfully'),
-          backgroundColor: AppColors.success,
-        ),
-      );
+      AppSnackBar.success(context, 'Cache cleared');
     } catch (e) {
       AppLogger.e('Failed to clear cache', tag: 'Profile', error: e);
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to clear cache: $e'),
-          backgroundColor: AppColors.danger,
-        ),
-      );
+      AppSnackBar.error(context, 'Could not clear cache');
     }
   }
 

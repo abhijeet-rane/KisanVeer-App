@@ -77,12 +77,7 @@ class _CommunityScreenState extends State<CommunityScreen>
     } catch (e) {
       AppLogger.e('Community load failed', tag: 'Community', error: e);
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Could not load community'),
-          backgroundColor: AppColors.danger,
-        ),
-      );
+      AppSnackBar.error(context, 'Could not load community');
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -128,9 +123,7 @@ class _CommunityScreenState extends State<CommunityScreen>
 
   Future<void> _createPost() async {
     if (_categories.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Still loading categories, try again')),
-      );
+      AppSnackBar.info(context, 'Still loading categories, try again');
       return;
     }
     final result = await Navigator.of(
@@ -309,12 +302,7 @@ class _CommunityScreenState extends State<CommunityScreen>
     } catch (e) {
       AppLogger.e('Toggle post like failed', tag: 'Community', error: e);
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Could not update like'),
-          backgroundColor: AppColors.danger,
-        ),
-      );
+      AppSnackBar.error(context, 'Could not update like');
     }
   }
 }

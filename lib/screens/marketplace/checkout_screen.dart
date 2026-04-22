@@ -164,9 +164,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       });
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Address saved successfully')),
-        );
+        AppSnackBar.success(context, 'Address saved');
       }
     } catch (e) {
       AppLogger.e('Error saving address', tag: 'Checkout', error: e);
@@ -184,9 +182,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     }
 
     if (_selectedAddress == null && !_useNewAddress) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select or add an address')),
-      );
+      AppSnackBar.warning(context, 'Select or add an address first');
       return;
     }
 
@@ -196,11 +192,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     String? apiKey = await _supabaseService.getPaymentApiKey('razorpay_key');
     if (apiKey == null) {
       setState(() => _processingPayment = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Error: Unable to retrieve payment API key'),
-        ),
-      );
+      AppSnackBar.error(context, 'Could not start payment. Please try again.');
       return;
     }
 
@@ -302,16 +294,15 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       _processingPayment = false;
       _razorpayError = response.message ?? 'Payment failed';
     });
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Payment failed: ${response.message}')),
+    AppSnackBar.error(
+      context,
+      'Payment failed: ${response.message ?? 'Unknown error'}',
     );
   }
 
   void _handleExternalWallet(ExternalWalletResponse response) {
     AppLogger.i('External wallet: ${response.walletName}', tag: 'Checkout');
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Payment through: ${response.walletName}')),
-    );
+    AppSnackBar.info(context, 'Payment via ${response.walletName}');
   }
 
   @override

@@ -7,9 +7,10 @@ import 'package:kisan_veer/screens/market/pinned_commodities_screen.dart';
 import 'package:kisan_veer/screens/market/price_alerts_screen.dart';
 import 'package:kisan_veer/services/localization_service.dart';
 import 'package:kisan_veer/screens/onboarding/splash_screen.dart';
-import 'package:kisan_veer/services/notifications_service.dart';
 import 'package:kisan_veer/services/analytics_service.dart';
 import 'package:kisan_veer/services/auth_service.dart';
+import 'package:kisan_veer/services/notifications_service.dart';
+import 'package:kisan_veer/services/storage_service.dart';
 import 'package:kisan_veer/widgets/ui/app_page_route.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -25,6 +26,11 @@ void main() async {
 
   // Load environment variables
   await dotenv.load(fileName: ".env");
+
+  // Initialize local key/value storage — must happen before any screen
+  // that reads from SharedPreferences (profile badge count, cached
+  // notification history, language prefs, etc).
+  await StorageService().init();
 
   // Initialize Supabase using the values from .env
   await Supabase.initialize(

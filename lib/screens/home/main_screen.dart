@@ -5,6 +5,7 @@ import 'package:kisan_veer/screens/marketplace/marketplace_screen_fixed.dart';
 import 'package:kisan_veer/screens/profile/profile_screen.dart';
 import 'package:kisan_veer/screens/weather/weather_screen.dart';
 import 'package:kisan_veer/services/notification_service.dart';
+import 'package:kisan_veer/utils/app_logger.dart';
 import 'package:kisan_veer/utils/weather_notification_manager.dart';
 import 'package:kisan_veer/widgets/ui/app_navigation_bar.dart';
 
@@ -40,9 +41,17 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   Future<void> _updateUnreadNotificationsCount() async {
-    final count = await _notificationService.getUnreadCount();
-    if (!mounted) return;
-    setState(() => _unreadNotificationsCount = count);
+    // Defensive: if the notification service blows up (e.g. storage not
+    // ready, JSON corruption), swallow the error and leave the badge
+    // count at whatever it was. A broken badge should never crash the
+    // user's navigation.
+    try {
+      final count = await _notificationService.getUnreadCount();
+      if (!mounted) return;
+      setState(() => _unreadNotificationsCount = count);
+    } catch (e) {
+      AppLogger.w('Failed to update notification badge: $e', tag: 'MainScreen');
+    }
   }
 
   void _onTabChanged(int index) {

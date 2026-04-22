@@ -612,7 +612,7 @@ class _ServicesGrid extends StatelessWidget {
     ),
     _Service(
       icon: Icons.trending_up_rounded,
-      label: 'Market insights',
+      label: 'Insights',
       tint: Color(0xFF1565C0),
       bg: Color(0xFFE3F2FD),
     ),
@@ -642,13 +642,13 @@ class _ServicesGrid extends StatelessWidget {
     ),
     _Service(
       icon: Icons.sensors_rounded,
-      label: 'Farm sensors',
+      label: 'Sensors',
       tint: Color(0xFF455A64),
       bg: Color(0xFFECEFF1),
     ),
     _Service(
       icon: Icons.search_rounded,
-      label: 'Price finder',
+      label: 'Prices',
       tint: Color(0xFF1565C0),
       bg: Color(0xFFE3F2FD),
     ),
@@ -658,7 +658,7 @@ class _ServicesGrid extends StatelessWidget {
     switch (s.label) {
       case 'Marketplace':
         return const MarketplaceScreen();
-      case 'Market insights':
+      case 'Insights':
         return const MarketInsightsScreen();
       case 'Finance':
         return const FinanceScreen();
@@ -668,9 +668,9 @@ class _ServicesGrid extends StatelessWidget {
         return const CommunityScreen();
       case 'Schemes':
         return const SchemesListingScreen();
-      case 'Farm sensors':
+      case 'Sensors':
         return const GasSensorMonitorScreen();
-      case 'Price finder':
+      case 'Prices':
         return const PriceFinderScreen();
       default:
         return const MarketplaceScreen();
@@ -679,24 +679,32 @@ class _ServicesGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 4,
-        crossAxisSpacing: AppSpacing.space12,
-        mainAxisSpacing: AppSpacing.space12,
-        childAspectRatio: 0.85,
-      ),
-      itemCount: _services.length,
-      itemBuilder: (context, index) {
-        final s = _services[index];
-        return _ServiceTile(
-          service: s,
-          onTap: () => onNavigate(_screenFor(s)),
-        ).animate().fadeIn(
-          duration: AppMotion.base,
-          delay: Duration(milliseconds: 50 * index),
+    // Responsive columns: 4 on typical phones, 3 when really narrow
+    // (< 360dp). `mainAxisExtent` gives every tile a fixed height so a
+    // 2-line label never overflows no matter how wide the tile ends up.
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final crossAxisCount = constraints.maxWidth < 360 ? 3 : 4;
+        return GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: crossAxisCount,
+            crossAxisSpacing: AppSpacing.space12,
+            mainAxisSpacing: AppSpacing.space12,
+            mainAxisExtent: 108,
+          ),
+          itemCount: _services.length,
+          itemBuilder: (context, index) {
+            final s = _services[index];
+            return _ServiceTile(
+              service: s,
+              onTap: () => onNavigate(_screenFor(s)),
+            ).animate().fadeIn(
+              duration: AppMotion.base,
+              delay: Duration(milliseconds: 50 * index),
+            );
+          },
         );
       },
     );
@@ -725,9 +733,13 @@ class _ServiceTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppCard(
-      padding: const EdgeInsets.all(AppSpacing.space8),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.space4,
+        vertical: AppSpacing.space8,
+      ),
       onTap: onTap,
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
@@ -740,15 +752,17 @@ class _ServiceTile extends StatelessWidget {
             ),
             child: Icon(service.icon, color: service.tint, size: 22),
           ),
-          const SizedBox(height: AppSpacing.space8),
-          Text(
-            service.label,
-            textAlign: TextAlign.center,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: AppTextStyles.labelMedium.copyWith(
-              color: AppColors.onSurface,
-              fontWeight: FontWeight.w600,
+          const SizedBox(height: AppSpacing.space6),
+          Flexible(
+            child: Text(
+              service.label,
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: AppTextStyles.labelMedium.copyWith(
+                color: AppColors.onSurface,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
         ],

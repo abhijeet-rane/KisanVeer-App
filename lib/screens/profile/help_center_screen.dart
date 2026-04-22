@@ -1,288 +1,358 @@
 import 'package:flutter/material.dart';
+import 'package:kisan_veer/constants/app_colors.dart';
+import 'package:kisan_veer/constants/app_radii.dart';
+import 'package:kisan_veer/constants/app_spacing.dart';
+import 'package:kisan_veer/constants/app_text_styles.dart';
 import 'package:kisan_veer/screens/profile/report_problem_screen.dart';
-import 'package:kisan_veer/widgets/custom_card.dart';
+import 'package:kisan_veer/utils/app_logger.dart';
+import 'package:kisan_veer/widgets/ui/ui.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+/// V2 help-center screen.
+///
+/// Three-section layout: quick contact tiles, FAQs in expandable cards,
+/// and additional resources. Uses the shared v2 design system for a
+/// consistent look-and-feel.
 class HelpCenterScreen extends StatefulWidget {
-  const HelpCenterScreen({Key? key}) : super(key: key);
+  const HelpCenterScreen({super.key});
 
   @override
   State<HelpCenterScreen> createState() => _HelpCenterScreenState();
 }
 
 class _HelpCenterScreenState extends State<HelpCenterScreen> {
-  final List<Map<String, dynamic>> _faqItems = [
-    {
-      'question': 'How do I add or change the crops I grow?',
-      'answer':
-          'You can add or change your crops by going to your Profile, tapping on "Edit Profile", and then selecting the crops you grow from the list provided.',
-    },
-    {
-      'question': 'How does the weather forecast help me with farming?',
-      'answer':
-          'The weather forecast provides detailed information about expected weather conditions that affect your crops. Based on the current weather and forecast, the app provides specific recommendations for your crops to help you maximize yield and prevent damage.',
-    },
-    {
-      'question': 'Can I sell my produce directly through this app?',
-      'answer':
-          'Yes! The Market tab allows you to list your produce for sale. You can also connect with buyers in your area who are looking for fresh produce directly from farmers.',
-    },
-    {
-      'question': 'How do I get financial assistance for farming?',
-      'answer':
-          'Visit the Finance tab to view available financial products including loans, insurance, and subsidies specifically for farmers. You can apply directly through the app.',
-    },
-    {
-      'question': 'How do I connect with other farmers?',
-      'answer':
-          'The Community tab allows you to connect with other farmers, join groups based on crops or location, and participate in discussions to share best practices.',
-    },
+  static const List<_Faq> _faqs = [
+    _Faq(
+      question: 'How do I add or change the crops I grow?',
+      answer:
+          'Open your Profile, tap Edit profile, and choose the crops you grow from the list.',
+    ),
+    _Faq(
+      question: 'How does the weather forecast help me with farming?',
+      answer:
+          'The forecast turns weather data into crop-specific advice so you know when to irrigate, spray, or harvest to protect your yield.',
+    ),
+    _Faq(
+      question: 'Can I sell my produce directly through this app?',
+      answer:
+          'Yes. Use the Market tab to list your produce and connect with nearby buyers.',
+    ),
+    _Faq(
+      question: 'How do I get financial assistance for farming?',
+      answer:
+          'Visit the Finance tab to view loans, insurance, and subsidies targeted at farmers, and apply right from the app.',
+    ),
+    _Faq(
+      question: 'How do I connect with other farmers?',
+      answer:
+          'The Community tab lets you join crop- and location-based groups and share best practices.',
+    ),
   ];
 
-  final List<Map<String, dynamic>> _contactOptions = [
-    {
-      'title': 'Email Support',
-      'icon': Icons.email,
-      'action': 'support@kisanveer.com',
-      'type': 'email',
-    },
-    {
-      'title': 'Call Helpline',
-      'icon': Icons.phone,
-      'action': '+91 8000FARMER',
-      'type': 'phone',
-    },
-    {
-      'title': 'WhatsApp Support',
-      'icon': Icons.message,
-      'action': '+91 9000FARMER',
-      'type': 'whatsapp',
-    },
-    {
-      'title': 'Report a Problem',
-      'icon': Icons.bug_report,
-      'action': 'report',
-      'type': 'screen',
-    },
+  static const List<_Contact> _contacts = [
+    _Contact(
+      icon: Icons.mail_outline_rounded,
+      label: 'Email support',
+      value: 'support@kisanveer.com',
+      kind: _ContactKind.email,
+    ),
+    _Contact(
+      icon: Icons.call_outlined,
+      label: 'Call helpline',
+      value: '+91 8000 FARMER',
+      kind: _ContactKind.phone,
+    ),
+    _Contact(
+      icon: Icons.message_outlined,
+      label: 'WhatsApp support',
+      value: '+91 9000 FARMER',
+      kind: _ContactKind.whatsapp,
+    ),
+    _Contact(
+      icon: Icons.bug_report_outlined,
+      label: 'Report a problem',
+      value: 'Send us a detailed report',
+      kind: _ContactKind.screen,
+    ),
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Help Center'),
-        backgroundColor: Colors.green,
-        elevation: 0,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+      backgroundColor: AppColors.background,
+      appBar: const AppAppBar(title: 'Help center', showBack: true),
+      body: SafeArea(
+        child: ListView(
+          padding: const EdgeInsets.all(AppSpacing.space16),
           children: [
-            // Help image
-            Center(
-              child: Image.asset(
-                'assets/images/help_center.png',
-                height: 120,
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    height: 120,
-                    width: 120,
-                    decoration: BoxDecoration(
-                      color: Colors.green.withValues(alpha: 0.1),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.help_outline,
-                      size: 60,
-                      color: Colors.green,
-                    ),
-                  );
-                },
+            _Hero(),
+            const SizedBox(height: AppSpacing.space24),
+            Text(
+              'Contact support',
+              style: AppTextStyles.titleMedium.copyWith(
+                fontWeight: FontWeight.w700,
+                color: AppColors.onSurface,
               ),
             ),
-
-            const SizedBox(height: 24),
-
-            // Quick Contact Options
-            const Text(
-              'Contact Support',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-            ),
-            const SizedBox(height: 16),
-
-            CustomCard(
+            const SizedBox(height: AppSpacing.space12),
+            AppCard(
               padding: EdgeInsets.zero,
-              child: ListView.separated(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: _contactOptions.length,
-                separatorBuilder: (context, index) => const Divider(height: 1),
-                itemBuilder: (context, index) {
-                  final option = _contactOptions[index];
-                  return ListTile(
-                    leading: Icon(option['icon'], color: Colors.green),
-                    title: Text(option['title']),
-                    subtitle: option['type'] != 'screen'
-                        ? Text(option['action'])
-                        : null,
-                    onTap: () {
-                      _handleContactAction(option['type'], option['action']);
-                    },
-                  );
-                },
+              child: Column(
+                children: [
+                  for (int i = 0; i < _contacts.length; i++) ...[
+                    _ContactRow(
+                      contact: _contacts[i],
+                      onTap: () => _handleContact(_contacts[i]),
+                    ),
+                    if (i < _contacts.length - 1)
+                      const Divider(
+                        height: 1,
+                        thickness: 1,
+                        indent: AppSpacing.space56,
+                        color: AppColors.outlineVariant,
+                      ),
+                  ],
+                ],
               ),
             ),
-
-            const SizedBox(height: 24),
-
-            // FAQs
-            const Text(
-              'Frequently Asked Questions',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+            const SizedBox(height: AppSpacing.space32),
+            Text(
+              'Frequently asked',
+              style: AppTextStyles.titleMedium.copyWith(
+                fontWeight: FontWeight.w700,
+                color: AppColors.onSurface,
+              ),
             ),
-            const SizedBox(height: 16),
-
-            ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: _faqItems.length,
-              itemBuilder: (context, index) {
-                final faq = _faqItems[index];
-                return CustomCard(
-                  margin: const EdgeInsets.only(bottom: 12),
+            const SizedBox(height: AppSpacing.space12),
+            for (final faq in _faqs) ...[
+              AppCard(
+                padding: EdgeInsets.zero,
+                child: Theme(
+                  data: Theme.of(
+                    context,
+                  ).copyWith(dividerColor: Colors.transparent),
                   child: ExpansionTile(
-                    title: Text(
-                      faq['question'],
-                      style: const TextStyle(fontWeight: FontWeight.w600),
+                    tilePadding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.space16,
+                      vertical: AppSpacing.space4,
                     ),
-                    iconColor: Colors.green,
-                    collapsedIconColor: Colors.grey,
-                    tilePadding: EdgeInsets.zero,
+                    childrenPadding: const EdgeInsets.fromLTRB(
+                      AppSpacing.space16,
+                      0,
+                      AppSpacing.space16,
+                      AppSpacing.space16,
+                    ),
+                    iconColor: AppColors.primary,
+                    collapsedIconColor: AppColors.onSurfaceVariant,
+                    title: Text(
+                      faq.question,
+                      style: AppTextStyles.titleSmall.copyWith(
+                        color: AppColors.onSurface,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 16),
+                      Align(
+                        alignment: Alignment.centerLeft,
                         child: Text(
-                          faq['answer'],
-                          style: const TextStyle(
-                            color: Colors.black87,
+                          faq.answer,
+                          style: AppTextStyles.bodyMedium.copyWith(
+                            color: AppColors.onSurfaceVariant,
                             height: 1.5,
                           ),
                         ),
                       ),
                     ],
                   ),
-                );
-              },
-            ),
-
-            const SizedBox(height: 24),
-
-            // Additional Resources
-            const Text(
-              'Additional Resources',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-            ),
-            const SizedBox(height: 16),
-
-            CustomCard(
-              padding: EdgeInsets.zero,
-              child: Column(
-                children: [
-                  ListTile(
-                    leading: const Icon(
-                      Icons.video_library,
-                      color: Colors.green,
-                    ),
-                    title: const Text('Video Tutorials'),
-                    subtitle: const Text('Visual guides to using the app'),
-                    onTap: () {
-                      // Open video tutorials
-                    },
-                  ),
-                  const Divider(height: 1),
-                  ListTile(
-                    leading: const Icon(Icons.article, color: Colors.green),
-                    title: const Text('User Guide'),
-                    subtitle: const Text('Detailed app documentation'),
-                    onTap: () {
-                      // Open user guide
-                    },
-                  ),
-                  const Divider(height: 1),
-                  ListTile(
-                    leading: const Icon(Icons.forum, color: Colors.green),
-                    title: const Text('Community Forum'),
-                    subtitle: const Text('Get help from other farmers'),
-                    onTap: () {
-                      // Open community forum
-                    },
-                  ),
-                ],
+                ),
               ),
-            ),
-
-            const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.space12),
+            ],
+            const SizedBox(height: AppSpacing.space24),
           ],
         ),
       ),
     );
   }
 
-  void _handleContactAction(String type, String action) async {
-    switch (type) {
-      case 'email':
-        final Uri emailUri = Uri(
-          scheme: 'mailto',
-          path: action,
-          queryParameters: {'subject': 'Support Request - KisanVeer App'},
-        );
-        if (await canLaunchUrl(emailUri)) {
-          await launchUrl(emailUri);
-        } else {
-          _showErrorSnackbar('Could not open email app');
-        }
-        break;
-
-      case 'phone':
-        final Uri phoneUri = Uri(
-          scheme: 'tel',
-          path: action.replaceAll(RegExp(r'\s+'), ''),
-        );
-        if (await canLaunchUrl(phoneUri)) {
-          await launchUrl(phoneUri);
-        } else {
-          _showErrorSnackbar('Could not open phone app');
-        }
-        break;
-
-      case 'whatsapp':
-        final Uri whatsappUri = Uri.parse(
-          'https://wa.me/${action.replaceAll(RegExp(r'\s+'), '')}',
-        );
-        if (await canLaunchUrl(whatsappUri)) {
-          await launchUrl(whatsappUri);
-        } else {
-          _showErrorSnackbar('Could not open WhatsApp');
-        }
-        break;
-
-      case 'screen':
-        if (action == 'report') {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const ReportProblemScreen(),
+  Future<void> _handleContact(_Contact contact) async {
+    try {
+      switch (contact.kind) {
+        case _ContactKind.email:
+          await launchUrl(
+            Uri(
+              scheme: 'mailto',
+              path: contact.value,
+              queryParameters: {'subject': 'Support request — KisanVeer'},
             ),
           );
-        }
-        break;
+          break;
+        case _ContactKind.phone:
+          await launchUrl(
+            Uri(
+              scheme: 'tel',
+              path: contact.value.replaceAll(RegExp(r'\s+'), ''),
+            ),
+          );
+          break;
+        case _ContactKind.whatsapp:
+          await launchUrl(
+            Uri.parse(
+              'https://wa.me/${contact.value.replaceAll(RegExp(r'\s+'), '')}',
+            ),
+          );
+          break;
+        case _ContactKind.screen:
+          if (!mounted) return;
+          Navigator.of(
+            context,
+          ).push(AppPageRoute.of(const ReportProblemScreen()));
+          break;
+      }
+    } catch (e) {
+      AppLogger.e('Help contact failed', tag: 'HelpCenter', error: e);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Could not open that action')),
+      );
     }
   }
+}
 
-  void _showErrorSnackbar(String message) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(message)));
+class _Hero extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.space20),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: AppColors.brandGradient,
+        ),
+        borderRadius: AppRadii.brLg,
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 56,
+            height: 56,
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.2),
+              borderRadius: AppRadii.brFull,
+            ),
+            child: const Icon(
+              Icons.support_agent_rounded,
+              color: Colors.white,
+              size: 28,
+            ),
+          ),
+          const SizedBox(width: AppSpacing.space16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'How can we help?',
+                  style: AppTextStyles.titleLarge.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  'Browse FAQs or reach out — we reply within a day.',
+                  style: AppTextStyles.bodySmall.copyWith(
+                    color: Colors.white.withValues(alpha: 0.9),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
+}
+
+class _ContactRow extends StatelessWidget {
+  const _ContactRow({required this.contact, required this.onTap});
+
+  final _Contact contact;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.space16,
+          vertical: AppSpacing.space12,
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: AppColors.primaryContainer.withValues(alpha: 0.6),
+                borderRadius: AppRadii.brMd,
+              ),
+              child: Icon(contact.icon, color: AppColors.primary, size: 20),
+            ),
+            const SizedBox(width: AppSpacing.space12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    contact.label,
+                    style: AppTextStyles.bodyLarge.copyWith(
+                      color: AppColors.onSurface,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    contact.value,
+                    style: AppTextStyles.bodySmall.copyWith(
+                      color: AppColors.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(
+              Icons.chevron_right_rounded,
+              color: AppColors.onSurfaceVariant,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _Faq {
+  const _Faq({required this.question, required this.answer});
+  final String question;
+  final String answer;
+}
+
+enum _ContactKind { email, phone, whatsapp, screen }
+
+class _Contact {
+  const _Contact({
+    required this.icon,
+    required this.label,
+    required this.value,
+    required this.kind,
+  });
+
+  final IconData icon;
+  final String label;
+  final String value;
+  final _ContactKind kind;
 }

@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:kisan_veer/constants/app_colors.dart';
+import 'package:kisan_veer/constants/app_radii.dart';
+import 'package:kisan_veer/constants/app_spacing.dart';
+import 'package:kisan_veer/constants/app_text_styles.dart';
 import 'package:kisan_veer/models/privacy_settings_model.dart';
 import 'package:kisan_veer/services/profile_service.dart';
-import 'package:kisan_veer/constants/app_colors.dart';
-import 'package:kisan_veer/widgets/custom_button.dart';
-import 'package:kisan_veer/widgets/custom_card.dart';
+import 'package:kisan_veer/utils/app_logger.dart';
+import 'package:kisan_veer/widgets/ui/ui.dart';
 
+/// V2 privacy settings screen.
+///
+/// Grouped cards for each privacy area, with switches and segmented
+/// radios rendered inline on a consistent surface.
 class PrivacySettingsScreen extends StatefulWidget {
-  const PrivacySettingsScreen({Key? key}) : super(key: key);
+  const PrivacySettingsScreen({super.key});
 
   @override
   State<PrivacySettingsScreen> createState() => _PrivacySettingsScreenState();
@@ -17,345 +24,403 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
 
   bool _isLoading = true;
   bool _isSaving = false;
-
-  // Privacy settings
   late PrivacySettingsModel _settings;
 
   @override
   void initState() {
     super.initState();
-    _loadPrivacySettings();
+    _loadSettings();
   }
 
-  Future<void> _loadPrivacySettings() async {
-    setState(() {
-      _isLoading = true;
-    });
-
+  Future<void> _loadSettings() async {
+    setState(() => _isLoading = true);
     try {
       final settings = await _profileService.getPrivacySettings();
+      if (!mounted) return;
       setState(() {
         _settings = settings;
         _isLoading = false;
       });
     } catch (e) {
+      AppLogger.e('Load privacy settings failed', tag: 'Privacy', error: e);
+      if (!mounted) return;
       setState(() {
         _settings = PrivacySettingsModel();
         _isLoading = false;
       });
-
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error loading settings: $e')));
-      }
     }
   }
 
   Future<void> _saveSettings() async {
-    setState(() {
-      _isSaving = true;
-    });
-
+    setState(() => _isSaving = true);
     try {
-      final success = await _profileService.updatePrivacySettings(_settings);
-
-      if (success) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Privacy settings saved successfully'),
-              backgroundColor: Colors.green,
-            ),
-          );
-        }
-      } else {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Failed to save privacy settings'),
-              backgroundColor: Colors.red,
-            ),
-          );
-        }
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error saving settings: $e'),
-            backgroundColor: Colors.red,
+      final ok = await _profileService.updatePrivacySettings(_settings);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            ok ? 'Privacy settings saved' : 'Could not save — try again',
           ),
-        );
-      }
+          backgroundColor: ok ? AppColors.success : AppColors.danger,
+        ),
+      );
+    } catch (e) {
+      AppLogger.e('Save privacy settings failed', tag: 'Privacy', error: e);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Error saving — please try again'),
+          backgroundColor: AppColors.danger,
+        ),
+      );
     } finally {
-      if (mounted) {
-        setState(() {
-          _isSaving = false;
-        });
-      }
+      if (mounted) setState(() => _isSaving = false);
     }
-  }
-
-  // Non-async wrapper for _saveSettings
-  void _handleSaveSettings() {
-    _saveSettings();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Privacy Settings'),
-        backgroundColor: AppColors.primary,
-        elevation: 0,
-      ),
+      backgroundColor: AppColors.background,
+      appBar: const AppAppBar(title: 'Privacy', showBack: true),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+          ? const AppLoadingState(message: 'Loading preferences…')
+          : SafeArea(
+              child: ListView(
+                padding: const EdgeInsets.all(AppSpacing.space16),
                 children: [
-                  // Information
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: AppColors.primary.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: AppColors.primary.withValues(alpha: 0.2),
+                  _Hero(),
+                  const SizedBox(height: AppSpacing.space24),
+                  _buildSwitchCard(
+                    icon: Icons.location_on_outlined,
+                    title: 'Share my location',
+                    subtitle: 'Let others see your general location on maps.',
+                    value: _settings.shareLocation,
+                    onChanged: (v) => setState(
+                      () => _settings = _settings.copyWith(shareLocation: v),
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.space12),
+                  _buildSwitchCard(
+                    icon: Icons.circle_rounded,
+                    title: 'Show online status',
+                    subtitle: 'Let others see when you are active.',
+                    value: _settings.showOnlineStatus,
+                    onChanged: (v) => setState(
+                      () => _settings = _settings.copyWith(showOnlineStatus: v),
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.space20),
+                  _buildRadioCard(
+                    title: 'Profile visibility',
+                    subtitle: 'Who can view your profile?',
+                    icon: Icons.visibility_outlined,
+                    groupValue: _settings.profileVisibility,
+                    options: const [
+                      _RadioOption(
+                        value: 'all',
+                        title: 'Everyone',
+                        subtitle: 'All users on KisanVeer',
                       ),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
-                        Text(
-                          'Your Privacy Matters',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.primary,
-                          ),
-                        ),
-                        SizedBox(height: 8),
-                        Text(
-                          'Control how your information is shared with other users and the KisanVeer community.',
-                          style: TextStyle(fontSize: 14, color: Colors.black87),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  const SizedBox(height: 24),
-
-                  // Location Privacy
-                  _buildSectionTitle('Location Privacy'),
-                  CustomCard(
-                    child: SwitchListTile(
-                      title: const Text('Share Location'),
-                      subtitle: const Text(
-                        'Allow others to see your general location on maps',
+                      _RadioOption(
+                        value: 'connections',
+                        title: 'Connections only',
+                        subtitle: 'Only users you connect with',
                       ),
-                      value: _settings.shareLocation,
-                      activeColor: AppColors.primary,
-                      onChanged: (value) {
-                        setState(() {
-                          _settings = _settings.copyWith(shareLocation: value);
-                        });
-                      },
-                    ),
-                  ),
-
-                  const SizedBox(height: 16),
-
-                  // Online Status
-                  _buildSectionTitle('Online Status'),
-                  CustomCard(
-                    child: SwitchListTile(
-                      title: const Text('Show Online Status'),
-                      subtitle: const Text(
-                        'Let others know when you are active on KisanVeer',
+                      _RadioOption(
+                        value: 'none',
+                        title: 'Nobody',
+                        subtitle: 'Your profile is private',
                       ),
-                      value: _settings.showOnlineStatus,
-                      activeColor: AppColors.primary,
-                      onChanged: (value) {
-                        setState(() {
-                          _settings = _settings.copyWith(
-                            showOnlineStatus: value,
-                          );
-                        });
-                      },
+                    ],
+                    onChanged: (v) => setState(
+                      () =>
+                          _settings = _settings.copyWith(profileVisibility: v),
                     ),
                   ),
-
-                  const SizedBox(height: 16),
-
-                  // Profile Visibility
-                  _buildSectionTitle('Profile Visibility'),
-                  CustomCard(
-                    child: Column(
-                      children: [
-                        RadioListTile<String>(
-                          title: const Text('Everyone'),
-                          subtitle: const Text(
-                            'All KisanVeer users can view your profile',
-                          ),
-                          value: 'all',
-                          groupValue: _settings.profileVisibility,
-                          activeColor: AppColors.primary,
-                          onChanged: (value) {
-                            setState(() {
-                              _settings = _settings.copyWith(
-                                profileVisibility: value,
-                              );
-                            });
-                          },
-                        ),
-                        const Divider(height: 1),
-                        RadioListTile<String>(
-                          title: const Text('Connections Only'),
-                          subtitle: const Text(
-                            'Only users you connect with can view your profile',
-                          ),
-                          value: 'connections',
-                          groupValue: _settings.profileVisibility,
-                          activeColor: AppColors.primary,
-                          onChanged: (value) {
-                            setState(() {
-                              _settings = _settings.copyWith(
-                                profileVisibility: value,
-                              );
-                            });
-                          },
-                        ),
-                        const Divider(height: 1),
-                        RadioListTile<String>(
-                          title: const Text('Nobody'),
-                          subtitle: const Text(
-                            'Your profile will not be visible to other users',
-                          ),
-                          value: 'none',
-                          groupValue: _settings.profileVisibility,
-                          activeColor: AppColors.primary,
-                          onChanged: (value) {
-                            setState(() {
-                              _settings = _settings.copyWith(
-                                profileVisibility: value,
-                              );
-                            });
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  const SizedBox(height: 16),
-
-                  // Messaging Privacy
-                  _buildSectionTitle('Messaging Privacy'),
-                  CustomCard(
-                    child: Column(
-                      children: [
-                        RadioListTile<String>(
-                          title: const Text('Everyone'),
-                          subtitle: const Text(
-                            'All KisanVeer users can message you',
-                          ),
-                          value: 'all',
-                          groupValue: _settings.allowMessagesFrom,
-                          activeColor: AppColors.primary,
-                          onChanged: (value) {
-                            setState(() {
-                              _settings = _settings.copyWith(
-                                allowMessagesFrom: value,
-                              );
-                            });
-                          },
-                        ),
-                        const Divider(height: 1),
-                        RadioListTile<String>(
-                          title: const Text('Connections Only'),
-                          subtitle: const Text(
-                            'Only users you connect with can message you',
-                          ),
-                          value: 'connections',
-                          groupValue: _settings.allowMessagesFrom,
-                          activeColor: AppColors.primary,
-                          onChanged: (value) {
-                            setState(() {
-                              _settings = _settings.copyWith(
-                                allowMessagesFrom: value,
-                              );
-                            });
-                          },
-                        ),
-                        const Divider(height: 1),
-                        RadioListTile<String>(
-                          title: const Text('Nobody'),
-                          subtitle: const Text('Nobody can message you'),
-                          value: 'none',
-                          groupValue: _settings.allowMessagesFrom,
-                          activeColor: AppColors.primary,
-                          onChanged: (value) {
-                            setState(() {
-                              _settings = _settings.copyWith(
-                                allowMessagesFrom: value,
-                              );
-                            });
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  const SizedBox(height: 16),
-
-                  // Crop Data Sharing
-                  _buildSectionTitle('Crop Data Sharing'),
-                  CustomCard(
-                    child: SwitchListTile(
-                      title: const Text('Share Crop Data'),
-                      subtitle: const Text(
-                        'Share information about your crops with the community',
+                  const SizedBox(height: AppSpacing.space12),
+                  _buildRadioCard(
+                    title: 'Messaging',
+                    subtitle: 'Who can message you?',
+                    icon: Icons.chat_outlined,
+                    groupValue: _settings.allowMessagesFrom,
+                    options: const [
+                      _RadioOption(
+                        value: 'all',
+                        title: 'Everyone',
+                        subtitle: 'Any user can start a chat',
                       ),
-                      value: _settings.shareCropData,
-                      activeColor: AppColors.primary,
-                      onChanged: (value) {
-                        setState(() {
-                          _settings = _settings.copyWith(shareCropData: value);
-                        });
-                      },
+                      _RadioOption(
+                        value: 'connections',
+                        title: 'Connections only',
+                        subtitle: 'Only connections can message',
+                      ),
+                      _RadioOption(
+                        value: 'none',
+                        title: 'Nobody',
+                        subtitle: 'Block all new messages',
+                      ),
+                    ],
+                    onChanged: (v) => setState(
+                      () =>
+                          _settings = _settings.copyWith(allowMessagesFrom: v),
                     ),
                   ),
-
-                  const SizedBox(height: 32),
-
-                  // Save Button
-                  CustomButton(
-                    onPressed: _isSaving ? () {} : _handleSaveSettings,
-                    text: _isSaving ? 'Saving...' : 'Save Settings',
+                  const SizedBox(height: AppSpacing.space20),
+                  _buildSwitchCard(
+                    icon: Icons.eco_outlined,
+                    title: 'Share crop data',
+                    subtitle: 'Include your crop info in community insights.',
+                    value: _settings.shareCropData,
+                    onChanged: (v) => setState(
+                      () => _settings = _settings.copyWith(shareCropData: v),
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.space32),
+                  AppButton(
+                    label: 'Save settings',
+                    size: AppButtonSize.lg,
+                    isFullWidth: true,
                     isLoading: _isSaving,
-                    width: double.infinity,
+                    leadingIcon: Icons.check_rounded,
+                    onPressed: _saveSettings,
                   ),
-
-                  const SizedBox(height: 24),
+                  const SizedBox(height: AppSpacing.space16),
                 ],
               ),
             ),
     );
   }
 
-  Widget _buildSectionTitle(String title) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 4, bottom: 8),
-      child: Text(
-        title,
-        style: const TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-          color: AppColors.primary,
+  Widget _buildSwitchCard({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required bool value,
+    required ValueChanged<bool> onChanged,
+  }) {
+    return AppCard(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.space16,
+        vertical: AppSpacing.space12,
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: AppColors.primaryContainer.withValues(alpha: 0.6),
+              borderRadius: AppRadii.brMd,
+            ),
+            child: Icon(icon, color: AppColors.primary, size: 20),
+          ),
+          const SizedBox(width: AppSpacing.space12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: AppTextStyles.titleSmall.copyWith(
+                    color: AppColors.onSurface,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  subtitle,
+                  style: AppTextStyles.bodySmall.copyWith(
+                    color: AppColors.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: AppSpacing.space8),
+          Switch.adaptive(
+            value: value,
+            activeColor: AppColors.primary,
+            onChanged: onChanged,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRadioCard({
+    required String title,
+    required String subtitle,
+    required IconData icon,
+    required String groupValue,
+    required List<_RadioOption> options,
+    required ValueChanged<String?> onChanged,
+  }) {
+    return AppCard(
+      padding: EdgeInsets.zero,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.space16,
+              AppSpacing.space16,
+              AppSpacing.space16,
+              AppSpacing.space8,
+            ),
+            child: Row(
+              children: [
+                Icon(icon, color: AppColors.primary, size: 20),
+                const SizedBox(width: AppSpacing.space8),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: AppTextStyles.titleSmall.copyWith(
+                        color: AppColors.onSurface,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    Text(
+                      subtitle,
+                      style: AppTextStyles.bodySmall.copyWith(
+                        color: AppColors.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          for (int i = 0; i < options.length; i++) ...[
+            _RadioRow(
+              option: options[i],
+              selected: groupValue == options[i].value,
+              onTap: () => onChanged(options[i].value),
+            ),
+            if (i < options.length - 1)
+              const Divider(
+                height: 1,
+                thickness: 1,
+                indent: AppSpacing.space16,
+                endIndent: AppSpacing.space16,
+                color: AppColors.outlineVariant,
+              ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _RadioOption {
+  const _RadioOption({
+    required this.value,
+    required this.title,
+    required this.subtitle,
+  });
+  final String value;
+  final String title;
+  final String subtitle;
+}
+
+class _RadioRow extends StatelessWidget {
+  const _RadioRow({
+    required this.option,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final _RadioOption option;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.space16,
+          vertical: AppSpacing.space12,
         ),
+        child: Row(
+          children: [
+            Icon(
+              selected
+                  ? Icons.radio_button_checked_rounded
+                  : Icons.radio_button_unchecked_rounded,
+              color: selected ? AppColors.primary : AppColors.onSurfaceVariant,
+              size: 20,
+            ),
+            const SizedBox(width: AppSpacing.space12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    option.title,
+                    style: AppTextStyles.bodyLarge.copyWith(
+                      color: AppColors.onSurface,
+                      fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    option.subtitle,
+                    style: AppTextStyles.bodySmall.copyWith(
+                      color: AppColors.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _Hero extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.space20),
+      decoration: BoxDecoration(
+        color: AppColors.primaryContainer.withValues(alpha: 0.5),
+        borderRadius: AppRadii.brLg,
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Icon(Icons.shield_outlined, color: AppColors.primary, size: 28),
+          const SizedBox(width: AppSpacing.space12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Your privacy matters',
+                  style: AppTextStyles.titleMedium.copyWith(
+                    color: AppColors.onPrimaryContainer,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Control how your information is shared with the '
+                  'KisanVeer community. Changes save after you tap Save.',
+                  style: AppTextStyles.bodySmall.copyWith(
+                    color: AppColors.onPrimaryContainer,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

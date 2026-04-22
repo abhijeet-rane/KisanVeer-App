@@ -22,10 +22,13 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
   List<Product> get _filteredProducts {
     if (_searchQuery.isEmpty) return _products;
     return _products
-        .where((p) =>
-            p.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-            (p.seller?.displayName?.toLowerCase() ?? '')
-                .contains(_searchQuery.toLowerCase()))
+        .where(
+          (p) =>
+              p.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+              (p.seller?.displayName?.toLowerCase() ?? '').contains(
+                _searchQuery.toLowerCase(),
+              ),
+        )
         .toList();
   }
 
@@ -64,8 +67,9 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-            content: Text('Failed to delete product: $e'),
-            backgroundColor: Colors.red),
+          content: Text('Failed to delete product: $e'),
+          backgroundColor: Colors.red,
+        ),
       );
     }
   }
@@ -97,11 +101,14 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
                 DropdownButton<String>(
                   value: _selectedStatus,
                   items: _statusOptions
-                      .map((status) => DropdownMenuItem(
-                            value: status,
-                            child: Text(
-                                status[0].toUpperCase() + status.substring(1)),
-                          ))
+                      .map(
+                        (status) => DropdownMenuItem(
+                          value: status,
+                          child: Text(
+                            status[0].toUpperCase() + status.substring(1),
+                          ),
+                        ),
+                      )
                       .toList(),
                   onChanged: (val) => setState(() => _selectedStatus = val!),
                 ),
@@ -112,64 +119,76 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
             child: _isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : _error != null
-                    ? Center(child: Text(_error!))
-                    : ListView.builder(
-                        itemCount: _filteredProducts
-                            .where((p) =>
+                ? Center(child: Text(_error!))
+                : ListView.builder(
+                    itemCount: _filteredProducts
+                        .where(
+                          (p) =>
+                              _selectedStatus == 'All' ||
+                              (p.status ?? 'available') == _selectedStatus,
+                        )
+                        .length,
+                    itemBuilder: (context, index) {
+                      final productsToShow = _filteredProducts
+                          .where(
+                            (p) =>
                                 _selectedStatus == 'All' ||
-                                (p.status ?? 'available') == _selectedStatus)
-                            .length,
-                        itemBuilder: (context, index) {
-                          final productsToShow = _filteredProducts
-                              .where((p) =>
-                                  _selectedStatus == 'All' ||
-                                  (p.status ?? 'available') == _selectedStatus)
-                              .toList();
-                          final product = productsToShow[index];
-                          return Card(
-                            margin: const EdgeInsets.all(8),
-                            child: ListTile(
-                              leading: product.imageUrls.isNotEmpty
-                                  ? Image.network(product.imageUrls.first,
-                                      width: 48, height: 48, fit: BoxFit.cover)
-                                  : const Icon(Icons.image, size: 48),
-                              title: Text(product.name),
-                              subtitle: Text(
-                                  'Status: ${product.status ?? 'available'}\nPrice: ${product.price}'),
-                              trailing: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  IconButton(
-                                    icon: const Icon(Icons.edit,
-                                        color: Colors.blue),
-                                    onPressed: () async {
-                                      final updated = await Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              EditProductScreen(
-                                                  product: product),
-                                        ),
-                                      );
-                                      if (updated == true) _loadUserProducts();
-                                    },
-                                    tooltip: 'Edit',
-                                  ),
-                                  IconButton(
-                                    icon: const Icon(Icons.delete,
-                                        color: Colors.red),
-                                    onPressed: () => _deleteProduct(product.id),
-                                    tooltip: 'Delete',
-                                  ),
-                                ],
+                                (p.status ?? 'available') == _selectedStatus,
+                          )
+                          .toList();
+                      final product = productsToShow[index];
+                      return Card(
+                        margin: const EdgeInsets.all(8),
+                        child: ListTile(
+                          leading: product.imageUrls.isNotEmpty
+                              ? Image.network(
+                                  product.imageUrls.first,
+                                  width: 48,
+                                  height: 48,
+                                  fit: BoxFit.cover,
+                                )
+                              : const Icon(Icons.image, size: 48),
+                          title: Text(product.name),
+                          subtitle: Text(
+                            'Status: ${product.status ?? 'available'}\nPrice: ${product.price}',
+                          ),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: const Icon(
+                                  Icons.edit,
+                                  color: Colors.blue,
+                                ),
+                                onPressed: () async {
+                                  final updated = await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          EditProductScreen(product: product),
+                                    ),
+                                  );
+                                  if (updated == true) _loadUserProducts();
+                                },
+                                tooltip: 'Edit',
                               ),
-                              onTap: () {
-                                // Optionally view/edit product details
-                              },
-                            ),
-                          );
-                        },
-                      ),
+                              IconButton(
+                                icon: const Icon(
+                                  Icons.delete,
+                                  color: Colors.red,
+                                ),
+                                onPressed: () => _deleteProduct(product.id),
+                                tooltip: 'Delete',
+                              ),
+                            ],
+                          ),
+                          onTap: () {
+                            // Optionally view/edit product details
+                          },
+                        ),
+                      );
+                    },
+                  ),
           ),
         ],
       ),

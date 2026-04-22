@@ -5,6 +5,7 @@ import 'package:kisan_veer/constants/app_colors.dart';
 import 'package:kisan_veer/constants/app_text_styles.dart';
 import 'package:kisan_veer/models/marketplace_models.dart';
 import 'package:kisan_veer/models/user_model.dart';
+import 'package:kisan_veer/screens/auth/login_screen.dart';
 import 'package:kisan_veer/screens/marketplace/add_product_screen.dart';
 import 'package:kisan_veer/screens/marketplace/admin_panel_screen.dart';
 import 'package:kisan_veer/screens/marketplace/cart_screen.dart';
@@ -14,6 +15,7 @@ import 'package:kisan_veer/screens/marketplace/product_details_screen.dart';
 import 'package:kisan_veer/screens/marketplace/seller_pending_orders_screen.dart';
 import 'package:kisan_veer/services/auth_service.dart';
 import 'package:kisan_veer/services/marketplace_service.dart';
+import 'package:kisan_veer/utils/app_logger.dart';
 import 'package:kisan_veer/widgets/custom_button.dart';
 import 'package:kisan_veer/widgets/marketplace/product_card.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -21,7 +23,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class MarketplaceScreen extends StatefulWidget {
   final int initialTabIndex;
   const MarketplaceScreen({Key? key, this.initialTabIndex = 0})
-      : super(key: key);
+    : super(key: key);
 
   @override
   State<MarketplaceScreen> createState() => _MarketplaceScreenState();
@@ -64,7 +66,10 @@ class _MarketplaceScreenState extends State<MarketplaceScreen>
   void initState() {
     super.initState();
     _tabController = TabController(
-        length: 3, vsync: this, initialIndex: widget.initialTabIndex);
+      length: 3,
+      vsync: this,
+      initialIndex: widget.initialTabIndex,
+    );
     _subscribeToProductStream();
     _subscribeToOrdersStream();
     _loadUserData();
@@ -77,11 +82,12 @@ class _MarketplaceScreenState extends State<MarketplaceScreen>
     _productSubscription?.cancel();
     _productSubscription = Supabase.instance.client
         .from('products')
-        .stream(primaryKey: ['id']).listen((List<Map<String, dynamic>> data) {
-      setState(() {
-        _products = data.map((e) => Product.fromJson(e)).toList();
-      });
-    });
+        .stream(primaryKey: ['id'])
+        .listen((List<Map<String, dynamic>> data) {
+          setState(() {
+            _products = data.map((e) => Product.fromJson(e)).toList();
+          });
+        });
   }
 
   void _subscribeToOrdersStream() {
@@ -90,14 +96,16 @@ class _MarketplaceScreenState extends State<MarketplaceScreen>
     if (userId != null) {
       _ordersSubscription = Supabase.instance.client
           .from('orders')
-          .stream(primaryKey: ['id']).listen((_) {
-        _fetchSellTabStats();
-      });
+          .stream(primaryKey: ['id'])
+          .listen((_) {
+            _fetchSellTabStats();
+          });
       _orderItemsSubscription = Supabase.instance.client
           .from('order_items')
-          .stream(primaryKey: ['id']).listen((_) {
-        _fetchSellTabStats();
-      });
+          .stream(primaryKey: ['id'])
+          .listen((_) {
+            _fetchSellTabStats();
+          });
     }
   }
 
@@ -120,7 +128,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen>
         _isLoading = false;
       });
     } catch (e) {
-      print('Error loading user data: $e');
+      AppLogger.e('Error loading user data', tag: 'Marketplace', error: e);
       setState(() {
         _isLoading = false;
       });
@@ -138,8 +146,9 @@ class _MarketplaceScreenState extends State<MarketplaceScreen>
 
       if (_currentUser != null) {
         // Load user products if logged in
-        final userProducts =
-            await _marketplaceService.getProducts(showUserProducts: true);
+        final userProducts = await _marketplaceService.getProducts(
+          showUserProducts: true,
+        );
 
         setState(() {
           _userProducts = userProducts;
@@ -151,7 +160,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen>
         });
       }
     } catch (e) {
-      print('Error loading products: $e');
+      AppLogger.e('Error loading products', tag: 'Marketplace', error: e);
       setState(() {
         _isLoading = false;
       });
@@ -180,11 +189,9 @@ class _MarketplaceScreenState extends State<MarketplaceScreen>
         .select('order_id')
         .eq('seller_id', userId);
     final pendingOrderIds = <String>{};
-    if (pendingOrdersResp != null && pendingOrdersResp is List) {
-      for (final item in pendingOrdersResp) {
-        final orderId = item['order_id']?.toString();
-        if (orderId != null) pendingOrderIds.add(orderId);
-      }
+    for (final item in pendingOrdersResp) {
+      final orderId = item['order_id']?.toString();
+      if (orderId != null) pendingOrderIds.add(orderId);
     }
     int pendingOrders = 0;
     if (pendingOrderIds.isNotEmpty) {
@@ -193,9 +200,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen>
           .select('id, status')
           .inFilter('id', pendingOrderIds.toList())
           .not('status', 'in', ['completed', 'cancelled']);
-      if (ordersResp != null && ordersResp is List) {
-        pendingOrders = ordersResp.length;
-      }
+      pendingOrders = ordersResp.length;
     }
     // Total Sales: sum order_items.total_price where seller_id=userId and parent order is delivered
     final completedOrderItemsResp = await Supabase.instance.client
@@ -203,21 +208,16 @@ class _MarketplaceScreenState extends State<MarketplaceScreen>
         .select('total_price, order_id')
         .eq('seller_id', userId);
     double totalSales = 0.0;
-    if (completedOrderItemsResp != null && completedOrderItemsResp is List) {
-      final deliveredOrderIdsResp = await Supabase.instance.client
-          .from('orders')
-          .select('id')
-          .eq('status', 'delivered');
-      final deliveredOrderIds = <String>{};
-      if (deliveredOrderIdsResp != null && deliveredOrderIdsResp is List) {
-        for (final row in deliveredOrderIdsResp) {
-          deliveredOrderIds.add(row['id'].toString());
-        }
-      }
-      for (final item in completedOrderItemsResp) {
-        if (deliveredOrderIds.contains(item['order_id'].toString())) {
-          totalSales += (item['total_price'] as num?)?.toDouble() ?? 0.0;
-        }
+    final deliveredOrderIdsResp = await Supabase.instance.client
+        .from('orders')
+        .select('id')
+        .eq('status', 'delivered');
+    final deliveredOrderIds = <String>{
+      for (final row in deliveredOrderIdsResp) row['id'].toString(),
+    };
+    for (final item in completedOrderItemsResp) {
+      if (deliveredOrderIds.contains(item['order_id'].toString())) {
+        totalSales += (item['total_price'] as num?)?.toDouble() ?? 0.0;
       }
     }
     setState(() {
@@ -235,10 +235,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen>
         elevation: 0,
         title: const Text(
           'Marketplace',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         actions: [
           IconButton(
@@ -251,7 +248,8 @@ class _MarketplaceScreenState extends State<MarketplaceScreen>
                   content: TextField(
                     controller: _searchController,
                     decoration: const InputDecoration(
-                        hintText: 'Enter product name...'),
+                      hintText: 'Enter product name...',
+                    ),
                     autofocus: true,
                     onChanged: (val) {
                       setState(() {
@@ -288,7 +286,8 @@ class _MarketplaceScreenState extends State<MarketplaceScreen>
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => const AdminPanelScreen()),
+                  builder: (context) => const AdminPanelScreen(),
+                ),
               );
             },
           ),
@@ -301,9 +300,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen>
                 onPressed: () async {
                   await Navigator.push(
                     context,
-                    MaterialPageRoute(
-                      builder: (context) => CartScreen(),
-                    ),
+                    MaterialPageRoute(builder: (context) => CartScreen()),
                   );
                   _loadCartCount();
                 },
@@ -318,8 +315,10 @@ class _MarketplaceScreenState extends State<MarketplaceScreen>
                       color: Colors.red,
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    constraints:
-                        const BoxConstraints(minWidth: 16, minHeight: 16),
+                    constraints: const BoxConstraints(
+                      minWidth: 16,
+                      minHeight: 16,
+                    ),
                     child: Text(
                       '$_cartCount',
                       style: const TextStyle(
@@ -354,11 +353,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen>
             )
           : TabBarView(
               controller: _tabController,
-              children: [
-                _buildBuyTab(),
-                _buildSellTab(),
-                _buildOrdersTab(),
-              ],
+              children: [_buildBuyTab(), _buildSellTab(), _buildOrdersTab()],
             ),
       floatingActionButton: _tabController.index == 2
           ? FloatingActionButton(
@@ -381,7 +376,8 @@ class _MarketplaceScreenState extends State<MarketplaceScreen>
     final filteredProducts = _products.where((product) {
       final matchesCategory =
           _selectedCategory == 'All' || product.category == _selectedCategory;
-      final matchesSearch = _searchQuery.isEmpty ||
+      final matchesSearch =
+          _searchQuery.isEmpty ||
           product.name.toLowerCase().contains(_searchQuery.toLowerCase());
       return matchesCategory && matchesSearch;
     }).toList();
@@ -423,10 +419,12 @@ class _MarketplaceScreenState extends State<MarketplaceScreen>
                       child: Text(
                         category,
                         style: TextStyle(
-                          color:
-                              isSelected ? Colors.white : AppColors.textPrimary,
-                          fontWeight:
-                              isSelected ? FontWeight.bold : FontWeight.normal,
+                          color: isSelected
+                              ? Colors.white
+                              : AppColors.textPrimary,
+                          fontWeight: isSelected
+                              ? FontWeight.bold
+                              : FontWeight.normal,
                         ),
                       ),
                     ),
@@ -435,9 +433,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen>
               },
             ),
           ),
-        ).animate().fadeIn(
-              duration: const Duration(milliseconds: 500),
-            ),
+        ).animate().fadeIn(duration: const Duration(milliseconds: 500)),
         Expanded(
           child: filteredProducts.isEmpty
               ? Center(
@@ -484,9 +480,9 @@ class _MarketplaceScreenState extends State<MarketplaceScreen>
                           ),
                         ).then((_) => _loadProducts()),
                       ).animate().fadeIn(
-                            duration: const Duration(milliseconds: 500),
-                            delay: Duration(milliseconds: 100 * index),
-                          );
+                        duration: const Duration(milliseconds: 500),
+                        delay: Duration(milliseconds: 100 * index),
+                      );
                     },
                   ),
                 ),
@@ -510,10 +506,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'My Selling Dashboard',
-                    style: AppTextStyles.h3,
-                  ),
+                  Text('My Selling Dashboard', style: AppTextStyles.h3),
                   const SizedBox(height: 16),
                   Row(
                     children: [
@@ -555,18 +548,13 @@ class _MarketplaceScreenState extends State<MarketplaceScreen>
                 ],
               ),
             ),
-          ).animate().fadeIn(
-                duration: const Duration(milliseconds: 500),
-              ),
+          ).animate().fadeIn(duration: const Duration(milliseconds: 500)),
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: Row(
             children: [
-              Text(
-                'My Products',
-                style: AppTextStyles.h3,
-              ),
+              Text('My Products', style: AppTextStyles.h3),
               const Spacer(),
               TextButton(
                 onPressed: () {
@@ -583,9 +571,9 @@ class _MarketplaceScreenState extends State<MarketplaceScreen>
             ],
           ),
         ).animate().fadeIn(
-              duration: const Duration(milliseconds: 500),
-              delay: const Duration(milliseconds: 200),
-            ),
+          duration: const Duration(milliseconds: 500),
+          delay: const Duration(milliseconds: 200),
+        ),
         Expanded(
           child: _userProducts.isEmpty
               ? Center(
@@ -619,9 +607,9 @@ class _MarketplaceScreenState extends State<MarketplaceScreen>
                   itemCount: _userProducts.length,
                   itemBuilder: (context, index) {
                     return _buildMyProductCard(index).animate().fadeIn(
-                          duration: const Duration(milliseconds: 500),
-                          delay: Duration(milliseconds: 300 + (100 * index)),
-                        );
+                      duration: const Duration(milliseconds: 500),
+                      delay: Duration(milliseconds: 300 + (100 * index)),
+                    );
                   },
                 ),
         ),
@@ -630,7 +618,11 @@ class _MarketplaceScreenState extends State<MarketplaceScreen>
   }
 
   Widget _buildStatCard(
-      String title, String value, IconData icon, Color color) {
+    String title,
+    String value,
+    IconData icon,
+    Color color,
+  ) {
     return Expanded(
       child: GestureDetector(
         onTap: title == 'Pending Orders' && _currentUser != null
@@ -653,11 +645,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(
-                icon,
-                color: color,
-                size: 24,
-              ),
+              Icon(icon, color: color, size: 24),
               const SizedBox(height: 8),
               Text(
                 value,
@@ -699,23 +687,6 @@ class _MarketplaceScreenState extends State<MarketplaceScreen>
     );
   }
 
-  Widget _buildStatItem(IconData icon, String text) {
-    return Row(
-      children: [
-        Icon(icon, size: 16, color: Colors.grey[600]),
-        const SizedBox(width: 4),
-        Text(
-          text,
-          style: TextStyle(
-            fontSize: 12,
-            color: Colors.grey[600],
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-      ],
-    );
-  }
-
   Widget _buildOrdersTab() {
     if (_currentUser == null) {
       return Center(
@@ -730,10 +701,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen>
             const SizedBox(height: 16),
             const Text(
               'Login Required',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             const Text(
@@ -746,7 +714,12 @@ class _MarketplaceScreenState extends State<MarketplaceScreen>
               child: CustomButton(
                 text: 'Login',
                 onPressed: () {
-                  // Navigate to login screen
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const LoginScreen(),
+                    ),
+                  );
                 },
               ),
             ),

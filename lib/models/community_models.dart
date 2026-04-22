@@ -22,7 +22,10 @@ class UserProfile {
 
   static UserProfile defaultProfile() {
     return UserProfile(
-        id: "unknown", displayName: "Unknown Admin", createdAt: DateTime.now());
+      id: "unknown",
+      displayName: "Unknown Admin",
+      createdAt: DateTime.now(),
+    );
   }
 
   Map<String, dynamic> toJson() {
@@ -64,8 +67,10 @@ class Post {
     this.isPinned = false,
   });
 
-  factory Post.fromJson(Map<String, dynamic> json,
-      {required UserProfile author}) {
+  factory Post.fromJson(
+    Map<String, dynamic> json, {
+    required UserProfile author,
+  }) {
     return Post(
       id: json['id'] as String,
       title: json['title'] as String,
@@ -115,8 +120,10 @@ class Comment {
     this.isLikedByUser = false,
   });
 
-  factory Comment.fromJson(Map<String, dynamic> json,
-      {required UserProfile author}) {
+  factory Comment.fromJson(
+    Map<String, dynamic> json, {
+    required UserProfile author,
+  }) {
     return Comment(
       id: json['id'] as String,
       content: json['content'] as String,
@@ -199,10 +206,11 @@ class Community {
       id: json['id'] as String? ?? '',
       name: json['name'] as String? ?? 'Unknown',
       description: json['description'] as String? ?? '',
-      admin: admin ??
-          (adminJson != null && adminJson is Map<String, dynamic>
+      admin:
+          admin ??
+          (adminJson != null
               ? UserProfile.fromJson(adminJson)
-              : UserProfile.defaultProfile()), // Use default if null
+              : UserProfile.defaultProfile()),
       isPrivate: json['is_private'] as bool? ?? false,
       memberCount: json['member_count'] as int? ?? 0,
       postCount: json['post_count'] as int? ?? 0,
@@ -251,8 +259,10 @@ class CommunityThread {
     this.messageCount = 0,
   });
 
-  factory CommunityThread.fromJson(Map<String, dynamic> json,
-      {UserProfile? creator}) {
+  factory CommunityThread.fromJson(
+    Map<String, dynamic> json, {
+    UserProfile? creator,
+  }) {
     return CommunityThread(
       id: json['id'] as String,
       title: json['title'] as String,
@@ -288,8 +298,11 @@ class CommunityMessage {
     this.threadId,
   });
 
-  factory CommunityMessage.fromJson(Map<String, dynamic> json,
-      {UserProfile? sender, CommunityMessage? replyTo}) {
+  factory CommunityMessage.fromJson(
+    Map<String, dynamic> json, {
+    UserProfile? sender,
+    CommunityMessage? replyTo,
+  }) {
     return CommunityMessage(
       id: json['id'] as String,
       content: json['content'] as String?,

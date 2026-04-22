@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:kisan_veer/models/privacy_settings_model.dart';
 import 'package:kisan_veer/models/user_model.dart';
+import 'package:kisan_veer/utils/app_logger.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:path/path.dart' as path;
 import 'package:uuid/uuid.dart';
@@ -35,16 +36,18 @@ class ProfileService {
         'city': response['city']?.toString() ?? '',
         'pincode': response['pincode']?.toString() ?? '',
         'state': response['state']?.toString() ?? 'Maharashtra',
-        'createdAt': response['created_at']?.toString() ??
+        'createdAt':
+            response['created_at']?.toString() ??
             DateTime.now().toIso8601String(),
-        'lastActive': response['updated_at']?.toString() ??
+        'lastActive':
+            response['updated_at']?.toString() ??
             DateTime.now().toIso8601String(),
         'address': response['location']?.toString() ?? '',
       };
 
       return UserModel.fromJson(userData);
     } catch (e) {
-      print('Error getting user profile: $e');
+      AppLogger.e('Error getting user profile', tag: 'Profile', error: e);
       return null;
     }
   }
@@ -56,27 +59,33 @@ class ProfileService {
       if (userId == null) return false;
 
       // Update in the user_profiles table
-      await _client.from('user_profiles').update({
-        'display_name': user.name,
-        'phone': user.phoneNumber,
-        'profile_image_url': user.photoUrl,
-        'location': user.address,
-        'city': user.city,
-        'pincode': user.pincode,
-        'state': user.state,
-        'updated_at': DateTime.now().toIso8601String(),
-      }).eq('id', userId);
+      await _client
+          .from('user_profiles')
+          .update({
+            'display_name': user.name,
+            'phone': user.phoneNumber,
+            'profile_image_url': user.photoUrl,
+            'location': user.address,
+            'city': user.city,
+            'pincode': user.pincode,
+            'state': user.state,
+            'updated_at': DateTime.now().toIso8601String(),
+          })
+          .eq('id', userId);
 
       // Update crops in user_preferences
-      await _client.from('user_preferences').update({
-        // Store as Postgres array literal: '{crop1,crop2}'
-        'crops': '{${user.crops.join(',')}}',
-        'updated_at': DateTime.now().toIso8601String(),
-      }).eq('user_id', userId);
+      await _client
+          .from('user_preferences')
+          .update({
+            // Store as Postgres array literal: '{crop1,crop2}'
+            'crops': '{${user.crops.join(',')}}',
+            'updated_at': DateTime.now().toIso8601String(),
+          })
+          .eq('user_id', userId);
 
       return true;
     } catch (e) {
-      print('Error updating user profile: $e');
+      AppLogger.e('Error updating user profile', tag: 'Profile', error: e);
       return false;
     }
   }
@@ -94,27 +103,28 @@ class ProfileService {
       final bucketName = 'profile-images';
 
       // Upload the file to the bucket
-      await _client.storage.from(bucketName).upload(
+      await _client.storage
+          .from(bucketName)
+          .upload(
             'profiles/$fileName',
             imageFile,
-            fileOptions: const FileOptions(
-              cacheControl: '3600',
-              upsert: true,
-            ),
+            fileOptions: const FileOptions(cacheControl: '3600', upsert: true),
           );
 
       // Get the public URL of the uploaded image
-      final imageUrl =
-          _client.storage.from(bucketName).getPublicUrl('profiles/$fileName');
+      final imageUrl = _client.storage
+          .from(bucketName)
+          .getPublicUrl('profiles/$fileName');
 
       // Update the user profile with the new image URL
-      await _client.from('user_profiles').update({
-        'profile_image_url': imageUrl,
-      }).eq('id', userId);
+      await _client
+          .from('user_profiles')
+          .update({'profile_image_url': imageUrl})
+          .eq('id', userId);
 
       return imageUrl;
     } catch (e) {
-      print('Error uploading profile image: $e');
+      AppLogger.e('Error uploading profile image', tag: 'Profile', error: e);
       return null;
     }
   }
@@ -163,14 +173,16 @@ class ProfileService {
 
       return true;
     } catch (e) {
-      print('Error submitting report: $e');
+      AppLogger.e('Error submitting report', tag: 'Profile', error: e);
       return false;
     }
   }
 
   // Change password
   Future<bool> changePassword(
-      String currentPassword, String newPassword) async {
+    String currentPassword,
+    String newPassword,
+  ) async {
     try {
       final userId = _client.auth.currentUser?.id;
       if (userId == null) return false;
@@ -182,11 +194,7 @@ class ProfileService {
       );
 
       // Update to the new password
-      await _client.auth.updateUser(
-        UserAttributes(
-          password: newPassword,
-        ),
-      );
+      await _client.auth.updateUser(UserAttributes(password: newPassword));
 
       // Log the password change
       await _client.from('password_change_log').insert({
@@ -196,7 +204,7 @@ class ProfileService {
 
       return true;
     } catch (e) {
-      print('Error changing password: $e');
+      AppLogger.e('Error changing password', tag: 'Profile', error: e);
       return false;
     }
   }
@@ -215,7 +223,7 @@ class ProfileService {
 
       return PrivacySettingsModel.fromJson(response);
     } catch (e) {
-      print('Error getting privacy settings: $e');
+      AppLogger.e('Error getting privacy settings', tag: 'Profile', error: e);
       return PrivacySettingsModel();
     }
   }
@@ -238,7 +246,7 @@ class ProfileService {
 
       return true;
     } catch (e) {
-      print('Error updating privacy settings: $e');
+      AppLogger.e('Error updating privacy settings', tag: 'Profile', error: e);
       return false;
     }
   }
@@ -274,7 +282,7 @@ class ProfileService {
 
       return true;
     } catch (e) {
-      print('Error deleting account: $e');
+      AppLogger.e('Error deleting account', tag: 'Profile', error: e);
       return false;
     }
   }

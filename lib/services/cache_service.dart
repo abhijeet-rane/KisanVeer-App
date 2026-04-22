@@ -16,7 +16,9 @@ class CacheService {
 
     // Save the timestamp
     await prefs.setInt(
-        _weatherTimestampKey, DateTime.now().millisecondsSinceEpoch);
+      _weatherTimestampKey,
+      DateTime.now().millisecondsSinceEpoch,
+    );
   }
 
   // Get cached weather data if it's still valid
@@ -51,8 +53,10 @@ class CacheService {
           decodedData['forecast'] is List) {
         try {
           decodedData['forecast'] = List<Map<String, dynamic>>.from(
-              (decodedData['forecast'] as List).map((item) =>
-                  Map<String, dynamic>.from(item as Map<String, dynamic>)));
+            (decodedData['forecast'] as List).map(
+              (item) => Map<String, dynamic>.from(item as Map<String, dynamic>),
+            ),
+          );
         } catch (e) {
           AppLogger.w('Error converting forecast data', tag: 'Cache', error: e);
           // If conversion fails, provide an empty list
@@ -65,11 +69,16 @@ class CacheService {
           decodedData['hourlyForecast'] is List) {
         try {
           decodedData['hourlyForecast'] = List<Map<String, dynamic>>.from(
-              (decodedData['hourlyForecast'] as List).map((item) =>
-                  Map<String, dynamic>.from(item as Map<String, dynamic>)));
+            (decodedData['hourlyForecast'] as List).map(
+              (item) => Map<String, dynamic>.from(item as Map<String, dynamic>),
+            ),
+          );
         } catch (e) {
-          AppLogger.w('Error converting hourlyForecast data',
-              tag: 'Cache', error: e);
+          AppLogger.w(
+            'Error converting hourlyForecast data',
+            tag: 'Cache',
+            error: e,
+          );
           decodedData['hourlyForecast'] = <Map<String, dynamic>>[];
         }
       }
@@ -79,11 +88,16 @@ class CacheService {
           decodedData['farmingAdvice'] is List) {
         try {
           decodedData['farmingAdvice'] = List<Map<String, dynamic>>.from(
-              (decodedData['farmingAdvice'] as List).map((item) =>
-                  Map<String, dynamic>.from(item as Map<String, dynamic>)));
+            (decodedData['farmingAdvice'] as List).map(
+              (item) => Map<String, dynamic>.from(item as Map<String, dynamic>),
+            ),
+          );
         } catch (e) {
-          AppLogger.w('Error converting farmingAdvice data',
-              tag: 'Cache', error: e);
+          AppLogger.w(
+            'Error converting farmingAdvice data',
+            tag: 'Cache',
+            error: e,
+          );
           decodedData['farmingAdvice'] = <Map<String, dynamic>>[];
         }
       }
@@ -103,7 +117,9 @@ class CacheService {
 
   // Location-specific cache
   Future<void> cacheLocationWeatherData(
-      String location, Map<String, dynamic> weatherData) async {
+    String location,
+    Map<String, dynamic> weatherData,
+  ) async {
     final prefs = await SharedPreferences.getInstance();
 
     // Create a location-specific key
@@ -121,7 +137,8 @@ class CacheService {
   }
 
   Future<Map<String, dynamic>?> getCachedLocationWeatherData(
-      String location) async {
+    String location,
+  ) async {
     final prefs = await SharedPreferences.getInstance();
 
     // Create a location-specific key
@@ -155,8 +172,10 @@ class CacheService {
           decodedData['forecast'] is List) {
         try {
           decodedData['forecast'] = List<Map<String, dynamic>>.from(
-              (decodedData['forecast'] as List).map((item) =>
-                  Map<String, dynamic>.from(item as Map<String, dynamic>)));
+            (decodedData['forecast'] as List).map(
+              (item) => Map<String, dynamic>.from(item as Map<String, dynamic>),
+            ),
+          );
         } catch (e) {
           AppLogger.w('Error converting forecast data', tag: 'Cache', error: e);
           // If conversion fails, provide an empty list
@@ -169,11 +188,16 @@ class CacheService {
           decodedData['hourlyForecast'] is List) {
         try {
           decodedData['hourlyForecast'] = List<Map<String, dynamic>>.from(
-              (decodedData['hourlyForecast'] as List).map((item) =>
-                  Map<String, dynamic>.from(item as Map<String, dynamic>)));
+            (decodedData['hourlyForecast'] as List).map(
+              (item) => Map<String, dynamic>.from(item as Map<String, dynamic>),
+            ),
+          );
         } catch (e) {
-          AppLogger.w('Error converting hourlyForecast data',
-              tag: 'Cache', error: e);
+          AppLogger.w(
+            'Error converting hourlyForecast data',
+            tag: 'Cache',
+            error: e,
+          );
           decodedData['hourlyForecast'] = <Map<String, dynamic>>[];
         }
       }
@@ -183,11 +207,16 @@ class CacheService {
           decodedData['farmingAdvice'] is List) {
         try {
           decodedData['farmingAdvice'] = List<Map<String, dynamic>>.from(
-              (decodedData['farmingAdvice'] as List).map((item) =>
-                  Map<String, dynamic>.from(item as Map<String, dynamic>)));
+            (decodedData['farmingAdvice'] as List).map(
+              (item) => Map<String, dynamic>.from(item as Map<String, dynamic>),
+            ),
+          );
         } catch (e) {
-          AppLogger.w('Error converting farmingAdvice data',
-              tag: 'Cache', error: e);
+          AppLogger.w(
+            'Error converting farmingAdvice data',
+            tag: 'Cache',
+            error: e,
+          );
           decodedData['farmingAdvice'] = <Map<String, dynamic>>[];
         }
       }

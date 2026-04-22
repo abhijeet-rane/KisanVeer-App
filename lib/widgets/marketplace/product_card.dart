@@ -9,22 +9,19 @@ class ProductCard extends StatelessWidget {
   final Product product;
   final VoidCallback? onTap;
 
-  const ProductCard({
-    Key? key,
-    required this.product,
-    this.onTap,
-  }) : super(key: key);
+  const ProductCard({Key? key, required this.product, this.onTap})
+    : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final currencyFormat =
-        NumberFormat.currency(locale: 'en_IN', symbol: '\u20b9');
+    final currencyFormat = NumberFormat.currency(
+      locale: 'en_IN',
+      symbol: '\u20b9',
+    );
 
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       elevation: 2,
       child: InkWell(
         onTap: onTap,
@@ -96,10 +93,7 @@ class ProductCard extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     'per ${product.unit}',
-                    style: TextStyle(
-                      color: Colors.grey[600],
-                      fontSize: 14,
-                    ),
+                    style: TextStyle(color: Colors.grey[600], fontSize: 14),
                   ),
                   const SizedBox(height: 8),
                   Row(

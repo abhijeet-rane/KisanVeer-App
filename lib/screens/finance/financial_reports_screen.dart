@@ -28,10 +28,12 @@ class _FinancialReportsScreenState extends State<FinancialReportsScreen> {
     });
 
     try {
-      final monthlyData =
-          await _financialService.getMonthlyTotals(DateTime.now());
-      final trendsData =
-          await _financialService.getMonthlyTrends(_selectedMonths);
+      final monthlyData = await _financialService.getMonthlyTotals(
+        DateTime.now(),
+      );
+      final trendsData = await _financialService.getMonthlyTrends(
+        _selectedMonths,
+      );
 
       setState(() {
         _monthlyTotals = {
@@ -58,9 +60,7 @@ class _FinancialReportsScreenState extends State<FinancialReportsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Financial Reports'),
-      ),
+      appBar: AppBar(title: Text('Financial Reports')),
       body: _isLoading
           ? Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
@@ -121,7 +121,11 @@ class _FinancialReportsScreenState extends State<FinancialReportsScreen> {
   }
 
   Widget _buildOverviewItem(
-      String label, double amount, Color color, IconData icon) {
+    String label,
+    double amount,
+    Color color,
+    IconData icon,
+  ) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -131,10 +135,7 @@ class _FinancialReportsScreenState extends State<FinancialReportsScreen> {
             SizedBox(width: 8),
             Text(
               label,
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey[600],
-              ),
+              style: TextStyle(fontSize: 16, color: Colors.grey[600]),
             ),
           ],
         ),
@@ -197,8 +198,10 @@ class _FinancialReportsScreenState extends State<FinancialReportsScreen> {
                             if (intValue >= 0 && intValue < _selectedMonths) {
                               final date = DateTime.now().subtract(
                                 Duration(
-                                    days: 30 *
-                                        (_selectedMonths - value.toInt() - 1)),
+                                  days:
+                                      30 *
+                                      (_selectedMonths - value.toInt() - 1),
+                                ),
                               );
                               return Padding(
                                 padding: const EdgeInsets.all(4.0),
@@ -224,7 +227,8 @@ class _FinancialReportsScreenState extends State<FinancialReportsScreen> {
                   minX: 0,
                   maxX: (_selectedMonths - 1).toDouble(),
                   minY: 0,
-                  maxY: [
+                  maxY:
+                      [
                         ...incomeData,
                         ...expenseData,
                       ].reduce((max, value) => value > max ? value : max) *
@@ -273,28 +277,7 @@ class _FinancialReportsScreenState extends State<FinancialReportsScreen> {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Center(
-          child: Text('No trend data available'),
-        ),
-      ),
-    );
-  }
-
-  LineChartBarData _createLineBarsData(
-      List<double> data, Color color, String label) {
-    return LineChartBarData(
-      spots: List.generate(
-        data.length,
-        (index) => FlSpot(index.toDouble(), data[index]),
-      ),
-      isCurved: true,
-      color: color,
-      barWidth: 3,
-      isStrokeCapRound: true,
-      dotData: FlDotData(show: true),
-      belowBarData: BarAreaData(
-        show: true,
-        color: color.withOpacity(0.1),
+        child: Center(child: Text('No trend data available')),
       ),
     );
   }
@@ -305,10 +288,7 @@ class _FinancialReportsScreenState extends State<FinancialReportsScreen> {
         Container(
           width: 16,
           height: 16,
-          decoration: BoxDecoration(
-            color: color,
-            shape: BoxShape.circle,
-          ),
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
         ),
         SizedBox(width: 8),
         Text(label),
@@ -323,10 +303,7 @@ class _FinancialReportsScreenState extends State<FinancialReportsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Time Period',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
+            Text('Time Period', style: Theme.of(context).textTheme.titleMedium),
             SizedBox(height: 8),
             DropdownButton<int>(
               value: _selectedMonths,

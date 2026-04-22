@@ -41,8 +41,6 @@ class _MarketInsightsScreenState extends State<MarketInsightsScreen> {
         _errorMessage = null;
       });
 
-      // Get daily market summary for top commodities
-      final summary = await _marketService.getDailyMarketSummary();
       final pinned = await _marketService.getPinnedCommodities();
 
       setState(() {
@@ -64,8 +62,8 @@ class _MarketInsightsScreenState extends State<MarketInsightsScreen> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _errorMessage != null
-              ? _buildErrorView()
-              : _buildMainView(),
+          ? _buildErrorView()
+          : _buildMainView(),
     );
   }
 
@@ -137,20 +135,14 @@ class _MarketInsightsScreenState extends State<MarketInsightsScreen> {
             // Top commodities
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
-              child: Text(
-                'Popular Commodities',
-                style: AppTextStyles.h3,
-              ),
+              child: Text('Popular Commodities', style: AppTextStyles.h3),
             ),
             _buildTopCommodities(),
 
             // Feature cards
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
-              child: Text(
-                'Market Insights Features',
-                style: AppTextStyles.h3,
-              ),
+              child: Text('Market Insights Features', style: AppTextStyles.h3),
             ),
             _buildFeatureCards(),
 
@@ -168,7 +160,7 @@ class _MarketInsightsScreenState extends State<MarketInsightsScreen> {
         color: AppColors.primary,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -193,8 +185,9 @@ class _MarketInsightsScreenState extends State<MarketInsightsScreen> {
           const SizedBox(height: 16),
           Text(
             'Track real-time agricultural market prices, trends, and insights to make informed decisions for your farming business.',
-            style: AppTextStyles.bodyMedium
-                .copyWith(color: Colors.white.withOpacity(0.9)),
+            style: AppTextStyles.bodyMedium.copyWith(
+              color: Colors.white.withValues(alpha: 0.9),
+            ),
           ),
         ],
       ),
@@ -212,10 +205,7 @@ class _MarketInsightsScreenState extends State<MarketInsightsScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Quick Actions',
-                style: AppTextStyles.subtitle,
-              ),
+              Text('Quick Actions', style: AppTextStyles.subtitle),
               const SizedBox(height: 16),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -278,20 +268,13 @@ class _MarketInsightsScreenState extends State<MarketInsightsScreen> {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: iconColor.withOpacity(0.1),
+                color: iconColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(
-                icon,
-                color: iconColor,
-                size: 24,
-              ),
+              child: Icon(icon, color: iconColor, size: 24),
             ),
             const SizedBox(height: 8),
-            Text(
-              label,
-              style: AppTextStyles.bodySmall,
-            ),
+            Text(label, style: AppTextStyles.bodySmall),
           ],
         ),
       ),
@@ -302,9 +285,7 @@ class _MarketInsightsScreenState extends State<MarketInsightsScreen> {
     if (_pinnedCommodities.isEmpty) {
       return const Padding(
         padding: EdgeInsets.all(16.0),
-        child: Center(
-          child: Text('No pinned commodity data available'),
-        ),
+        child: Center(child: Text('No pinned commodity data available')),
       );
     }
 
@@ -329,61 +310,62 @@ class _MarketInsightsScreenState extends State<MarketInsightsScreen> {
     }
 
     return Container(
-      width: 160,
-      margin: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+          width: 160,
+          margin: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              commodity.commodity,
-              style: AppTextStyles.subtitle,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-            const SizedBox(height: 8),
-            Row(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(
-                  Icons.currency_rupee,
-                  size: 16,
-                  color: AppColors.primary,
-                ),
-                const SizedBox(width: 4),
                 Text(
-                  '${commodity.currentPrice.toStringAsFixed(2)}/Qtl',
-                  style: AppTextStyles.bodyMedium.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                  commodity.commodity,
+                  style: AppTextStyles.subtitle,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.currency_rupee,
+                      size: 16,
+                      color: AppColors.primary,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      '${commodity.currentPrice.toStringAsFixed(2)}/Qtl',
+                      style: AppTextStyles.bodyMedium.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  marketLocation,
+                  style: AppTextStyles.bodySmall.copyWith(color: Colors.grey),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),
-            const SizedBox(height: 4),
-            Text(
-              marketLocation,
-              style: AppTextStyles.bodySmall.copyWith(
-                color: Colors.grey,
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
-        ),
-      ),
-    ).animate().fadeIn(duration: 300.ms, delay: 100.ms * index).slideX(
+          ),
+        )
+        .animate()
+        .fadeIn(duration: 300.ms, delay: 100.ms * index)
+        .slideX(
           begin: 0.1,
           end: 0,
           curve: Curves.easeOutQuad,
@@ -423,9 +405,7 @@ class _MarketInsightsScreenState extends State<MarketInsightsScreen> {
           index: 1,
           onTap: () => Navigator.push(
             context,
-            MaterialPageRoute(
-              builder: (context) => const PriceFinderScreen(),
-            ),
+            MaterialPageRoute(builder: (context) => const PriceFinderScreen()),
           ),
         ),
         _featureCard(
@@ -436,9 +416,7 @@ class _MarketInsightsScreenState extends State<MarketInsightsScreen> {
           index: 2,
           onTap: () => Navigator.push(
             context,
-            MaterialPageRoute(
-              builder: (context) => const PriceTrendScreen(),
-            ),
+            MaterialPageRoute(builder: (context) => const PriceTrendScreen()),
           ),
         ),
         _featureCard(
@@ -449,9 +427,7 @@ class _MarketInsightsScreenState extends State<MarketInsightsScreen> {
           index: 3,
           onTap: () => Navigator.push(
             context,
-            MaterialPageRoute(
-              builder: (context) => const PriceAlertsScreen(),
-            ),
+            MaterialPageRoute(builder: (context) => const PriceAlertsScreen()),
           ),
         ),
         _featureCard(
@@ -475,9 +451,7 @@ class _MarketInsightsScreenState extends State<MarketInsightsScreen> {
           index: 5,
           onTap: () => Navigator.push(
             context,
-            MaterialPageRoute(
-              builder: (context) => const PriceHeatmapScreen(),
-            ),
+            MaterialPageRoute(builder: (context) => const PriceHeatmapScreen()),
           ),
         ),
         _featureCard(
@@ -521,9 +495,7 @@ class _MarketInsightsScreenState extends State<MarketInsightsScreen> {
       borderRadius: BorderRadius.circular(16),
       child: Card(
         elevation: 10,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -532,14 +504,10 @@ class _MarketInsightsScreenState extends State<MarketInsightsScreen> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: iconColor.withOpacity(0.1),
+                  color: iconColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(16),
                 ),
-                child: Icon(
-                  icon,
-                  color: iconColor,
-                  size: 32,
-                ),
+                child: Icon(icon, color: iconColor, size: 32),
               ),
               const SizedBox(height: 10.2),
               Text(
@@ -550,9 +518,7 @@ class _MarketInsightsScreenState extends State<MarketInsightsScreen> {
               const SizedBox(height: 8),
               Text(
                 description,
-                style: AppTextStyles.bodySmall.copyWith(
-                  color: Colors.grey,
-                ),
+                style: AppTextStyles.bodySmall.copyWith(color: Colors.grey),
                 textAlign: TextAlign.center,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,

@@ -18,18 +18,12 @@ class PrivacyPolicyScreen extends StatelessWidget {
           children: [
             const Text(
               'KisanVeer App Privacy Policy',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             Text(
               'Last Updated: ${DateTime.now().day} ${_getMonth(DateTime.now().month)} ${DateTime.now().year}',
-              style: const TextStyle(
-                fontSize: 14,
-                color: Colors.grey,
-              ),
+              style: const TextStyle(fontSize: 14, color: Colors.grey),
             ),
             const SizedBox(height: 24),
             _buildSection(
@@ -130,13 +124,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 8),
-          Text(
-            content,
-            style: const TextStyle(
-              fontSize: 15,
-              height: 1.5,
-            ),
-          ),
+          Text(content, style: const TextStyle(fontSize: 15, height: 1.5)),
         ],
       ),
     );
@@ -155,7 +143,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
       'September',
       'October',
       'November',
-      'December'
+      'December',
     ];
     return months[month - 1];
   }

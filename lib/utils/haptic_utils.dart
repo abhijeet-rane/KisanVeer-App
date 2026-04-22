@@ -76,19 +76,19 @@ class HapticUtils {
 extension HapticCallback on VoidCallback {
   /// Wrap callback with light haptic
   VoidCallback withLightHaptic() => () {
-        HapticUtils.light();
-        this();
-      };
+    HapticUtils.light();
+    this();
+  };
 
   /// Wrap callback with medium haptic
   VoidCallback withMediumHaptic() => () {
-        HapticUtils.medium();
-        this();
-      };
+    HapticUtils.medium();
+    this();
+  };
 
   /// Wrap callback with selection haptic
   VoidCallback withSelectionHaptic() => () {
-        HapticUtils.selection();
-        this();
-      };
+    HapticUtils.selection();
+    this();
+  };
 }

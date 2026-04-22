@@ -112,7 +112,8 @@ class _CustomTextFieldState extends State<CustomTextField> {
           enableSuggestions: widget.enableSuggestions,
           autovalidateMode: widget.autovalidateMode,
           cursorColor: AppColors.primary,
-          style: widget.style ??
+          style:
+              widget.style ??
               const TextStyle(
                 fontSize: 16,
                 color: AppColors.textPrimary,
@@ -150,7 +151,8 @@ class _CustomTextFieldState extends State<CustomTextField> {
             ),
             filled: true,
             fillColor: widget.fillColor ?? Colors.white,
-            contentPadding: widget.contentPadding ??
+            contentPadding:
+                widget.contentPadding ??
                 const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
             counter: widget.showCounter ? null : const SizedBox.shrink(),
             errorStyle: const TextStyle(
@@ -160,18 +162,24 @@ class _CustomTextFieldState extends State<CustomTextField> {
             ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide:
-                  const BorderSide(color: AppColors.textLight, width: 1),
+              borderSide: const BorderSide(
+                color: AppColors.textLight,
+                width: 1,
+              ),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide:
-                  const BorderSide(color: AppColors.textLight, width: 1),
+              borderSide: const BorderSide(
+                color: AppColors.textLight,
+                width: 1,
+              ),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide:
-                  const BorderSide(color: AppColors.primary, width: 1.5),
+              borderSide: const BorderSide(
+                color: AppColors.primary,
+                width: 1.5,
+              ),
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),

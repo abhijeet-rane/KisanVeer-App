@@ -19,23 +19,19 @@ class ShimmerLoading extends StatelessWidget {
   }) : super(key: key);
 
   /// Circle shimmer for avatars
-  const ShimmerLoading.circle({
-    Key? key,
-    required double size,
-  })  : width = size,
-        height = size,
-        borderRadius = 0,
-        shape = BoxShape.circle,
-        super(key: key);
+  const ShimmerLoading.circle({Key? key, required double size})
+    : width = size,
+      height = size,
+      borderRadius = 0,
+      shape = BoxShape.circle,
+      super(key: key);
 
   /// Card shimmer
-  const ShimmerLoading.card({
-    Key? key,
-    this.height = 120,
-  })  : width = double.infinity,
-        borderRadius = 16,
-        shape = BoxShape.rectangle,
-        super(key: key);
+  const ShimmerLoading.card({Key? key, this.height = 120})
+    : width = double.infinity,
+      borderRadius = 16,
+      shape = BoxShape.rectangle,
+      super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -192,24 +188,22 @@ class SkeletonPage extends StatelessWidget {
   final int itemCount;
   final Widget Function(BuildContext, int)? itemBuilder;
 
-  const SkeletonPage({
-    Key? key,
-    this.itemCount = 5,
-    this.itemBuilder,
-  }) : super(key: key);
+  const SkeletonPage({Key? key, this.itemCount = 5, this.itemBuilder})
+    : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: itemCount,
-      itemBuilder: itemBuilder ??
+      itemBuilder:
+          itemBuilder ??
           (context, index) => Padding(
-                padding: const EdgeInsets.only(bottom: 16),
-                child: index == 0
-                    ? const SkeletonDashboardCard()
-                    : const SkeletonProductCard(),
-              ),
+            padding: const EdgeInsets.only(bottom: 16),
+            child: index == 0
+                ? const SkeletonDashboardCard()
+                : const SkeletonProductCard(),
+          ),
     );
   }
 }

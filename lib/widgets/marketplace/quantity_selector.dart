@@ -36,10 +36,7 @@ class QuantitySelector extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 12),
             child: Text(
               initialValue.toString(),
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
           ),
           _buildButton(
@@ -53,10 +50,7 @@ class QuantitySelector extends StatelessWidget {
     );
   }
 
-  Widget _buildButton({
-    required IconData icon,
-    VoidCallback? onTap,
-  }) {
+  Widget _buildButton({required IconData icon, VoidCallback? onTap}) {
     final color = onTap != null ? Colors.black87 : Colors.grey[400];
 
     return InkWell(

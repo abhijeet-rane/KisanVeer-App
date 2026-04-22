@@ -8,10 +8,14 @@ import 'package:intl/intl.dart';
 
 class ProductReviewsList extends StatelessWidget {
   final Future<List<ProductReview>> reviewsFuture;
+  final int? maxCount;
+  final VoidCallback? onSeeAll;
 
   const ProductReviewsList({
     Key? key,
     required this.reviewsFuture,
+    this.maxCount = 3,
+    this.onSeeAll,
   }) : super(key: key);
 
   @override
@@ -32,24 +36,23 @@ class ProductReviewsList extends StatelessWidget {
           return _buildEmptyReviews();
         }
 
-        // Show first 3 reviews only in this list
-        final displayReviews =
-            reviews.length > 3 ? reviews.sublist(0, 3) : reviews;
+        final displayReviews = maxCount != null && reviews.length > maxCount!
+            ? reviews.sublist(0, maxCount!)
+            : reviews;
+        final hasMore = maxCount != null && reviews.length > maxCount!;
 
         return Column(
           children: [
             ...displayReviews.map((review) => _buildReviewItem(review)),
-            if (reviews.length > 3)
+            if (hasMore && onSeeAll != null)
               Padding(
                 padding: const EdgeInsets.only(top: 16.0),
                 child: OutlinedButton(
-                  onPressed: () {
-                    // Navigate to all reviews screen
-                  },
+                  onPressed: onSeeAll,
                   style: OutlinedButton.styleFrom(
                     minimumSize: const Size(double.infinity, 44),
                   ),
-                  child: const Text('View All Reviews'),
+                  child: Text('View All ${reviews.length} Reviews'),
                 ),
               ),
           ],
@@ -88,27 +91,15 @@ class ProductReviewsList extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    width: 120,
-                    height: 16,
-                    color: Colors.white,
-                  ),
+                  Container(width: 120, height: 16, color: Colors.white),
                   const SizedBox(height: 4),
-                  Container(
-                    width: 80,
-                    height: 12,
-                    color: Colors.white,
-                  ),
+                  Container(width: 80, height: 12, color: Colors.white),
                 ],
               ),
             ],
           ),
           const SizedBox(height: 8),
-          Container(
-            width: double.infinity,
-            height: 16,
-            color: Colors.white,
-          ),
+          Container(width: double.infinity, height: 16, color: Colors.white),
           const SizedBox(height: 4),
           Container(
             width: double.infinity * 0.7,
@@ -151,10 +142,7 @@ class ProductReviewsList extends StatelessWidget {
             const SizedBox(height: 16),
             const Text(
               'No reviews yet',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             Text(
@@ -199,17 +187,12 @@ class ProductReviewsList extends StatelessWidget {
                   children: [
                     Text(
                       review.user?.displayName ?? 'Anonymous',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       DateFormat('MMM dd, yyyy').format(review.createdAt),
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey[600],
-                      ),
+                      style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                     ),
                   ],
                 ),
@@ -230,10 +213,7 @@ class ProductReviewsList extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               review.reviewText!,
-              style: const TextStyle(
-                fontSize: 14,
-                height: 1.4,
-              ),
+              style: const TextStyle(fontSize: 14, height: 1.4),
             ),
           ],
         ],

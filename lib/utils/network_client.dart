@@ -11,11 +11,9 @@ class NetworkClient {
   final http.Client _client;
   final Duration _timeout;
 
-  NetworkClient({
-    http.Client? client,
-    Duration? timeout,
-  })  : _client = client ?? http.Client(),
-        _timeout = timeout ?? defaultTimeout;
+  NetworkClient({http.Client? client, Duration? timeout})
+    : _client = client ?? http.Client(),
+      _timeout = timeout ?? defaultTimeout;
 
   /// GET request with Result type
   Future<Result<http.Response>> get(
@@ -24,7 +22,8 @@ class NetworkClient {
     Duration? timeout,
   }) async {
     return _executeRequest(
-        () => _client.get(url, headers: headers).timeout(timeout ?? _timeout));
+      () => _client.get(url, headers: headers).timeout(timeout ?? _timeout),
+    );
   }
 
   /// POST request with Result type
@@ -34,9 +33,11 @@ class NetworkClient {
     Object? body,
     Duration? timeout,
   }) async {
-    return _executeRequest(() => _client
-        .post(url, headers: headers, body: body)
-        .timeout(timeout ?? _timeout));
+    return _executeRequest(
+      () => _client
+          .post(url, headers: headers, body: body)
+          .timeout(timeout ?? _timeout),
+    );
   }
 
   /// PUT request with Result type
@@ -46,9 +47,11 @@ class NetworkClient {
     Object? body,
     Duration? timeout,
   }) async {
-    return _executeRequest(() => _client
-        .put(url, headers: headers, body: body)
-        .timeout(timeout ?? _timeout));
+    return _executeRequest(
+      () => _client
+          .put(url, headers: headers, body: body)
+          .timeout(timeout ?? _timeout),
+    );
   }
 
   /// DELETE request with Result type
@@ -57,8 +60,9 @@ class NetworkClient {
     Map<String, String>? headers,
     Duration? timeout,
   }) async {
-    return _executeRequest(() =>
-        _client.delete(url, headers: headers).timeout(timeout ?? _timeout));
+    return _executeRequest(
+      () => _client.delete(url, headers: headers).timeout(timeout ?? _timeout),
+    );
   }
 
   /// Execute request with error handling
@@ -82,36 +86,45 @@ class NetworkClient {
       } else if (response.statusCode == 404) {
         return Result.failure(NetworkError.notFound());
       } else if (response.statusCode >= 500) {
-        return Result.failure(NetworkError.server(
-          statusCode: response.statusCode,
-          message: 'Server error: ${response.statusCode}',
-        ));
+        return Result.failure(
+          NetworkError.server(
+            statusCode: response.statusCode,
+            message: 'Server error: ${response.statusCode}',
+          ),
+        );
       } else {
-        return Result.failure(NetworkError(
-          message: 'Request failed with status: ${response.statusCode}',
-          statusCode: response.statusCode,
-        ));
+        return Result.failure(
+          NetworkError(
+            message: 'Request failed with status: ${response.statusCode}',
+            statusCode: response.statusCode,
+          ),
+        );
       }
     } on SocketException {
       AppLogger.e('No internet connection', tag: 'Network');
       return Result.failure(NetworkError.noConnection());
     } on http.ClientException catch (e) {
       AppLogger.e('Client exception', tag: 'Network', error: e);
-      return Result.failure(NetworkError(
-        message: 'Network request failed',
-        originalError: e,
-      ));
+      return Result.failure(
+        NetworkError(message: 'Network request failed', originalError: e),
+      );
     } on TimeoutException {
       AppLogger.e('Request timeout', tag: 'Network');
       return Result.failure(NetworkError.timeout());
     } catch (e, stack) {
-      AppLogger.e('Unexpected network error',
-          tag: 'Network', error: e, stackTrace: stack);
-      return Result.failure(NetworkError(
-        message: 'An unexpected error occurred',
-        originalError: e,
+      AppLogger.e(
+        'Unexpected network error',
+        tag: 'Network',
+        error: e,
         stackTrace: stack,
-      ));
+      );
+      return Result.failure(
+        NetworkError(
+          message: 'An unexpected error occurred',
+          originalError: e,
+          stackTrace: stack,
+        ),
+      );
     }
   }
 

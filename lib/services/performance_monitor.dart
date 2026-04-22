@@ -44,18 +44,21 @@ class PerformanceMonitor {
 
     final duration = DateTime.now().difference(trace.startTime);
 
-    _recordMetric(PerformanceMetric(
-      type: TraceType.screenLoad,
-      name: screenName,
-      durationMs: duration.inMilliseconds,
-      timestamp: DateTime.now(),
-    ));
+    _recordMetric(
+      PerformanceMetric(
+        type: TraceType.screenLoad,
+        name: screenName,
+        durationMs: duration.inMilliseconds,
+        timestamp: DateTime.now(),
+      ),
+    );
 
     // Warn if slow
     if (duration.inMilliseconds > _slowScreenLoadMs) {
       AppLogger.w(
-          'Slow screen load: $screenName (${duration.inMilliseconds}ms)',
-          tag: 'Performance');
+        'Slow screen load: $screenName (${duration.inMilliseconds}ms)',
+        tag: 'Performance',
+      );
     } else if (kDebugMode) {
       AppLogger.performance('Screen load: $screenName', duration: duration);
     }
@@ -84,21 +87,25 @@ class PerformanceMonitor {
 
     final duration = DateTime.now().difference(trace.startTime);
 
-    _recordMetric(PerformanceMetric(
-      type: TraceType.apiCall,
-      name: trace.name,
-      durationMs: duration.inMilliseconds,
-      timestamp: DateTime.now(),
-      metadata: {
-        if (statusCode != null) 'status_code': statusCode,
-        if (success != null) 'success': success,
-      },
-    ));
+    _recordMetric(
+      PerformanceMetric(
+        type: TraceType.apiCall,
+        name: trace.name,
+        durationMs: duration.inMilliseconds,
+        timestamp: DateTime.now(),
+        metadata: {
+          if (statusCode != null) 'status_code': statusCode,
+          if (success != null) 'success': success,
+        },
+      ),
+    );
 
     // Warn if slow
     if (duration.inMilliseconds > _slowApiCallMs) {
-      AppLogger.w('Slow API call: ${trace.name} (${duration.inMilliseconds}ms)',
-          tag: 'Performance');
+      AppLogger.w(
+        'Slow API call: ${trace.name} (${duration.inMilliseconds}ms)',
+        tag: 'Performance',
+      );
     } else if (kDebugMode) {
       AppLogger.performance('API call: ${trace.name}', duration: duration);
     }
@@ -127,13 +134,15 @@ class PerformanceMonitor {
 
     final duration = DateTime.now().difference(trace.startTime);
 
-    _recordMetric(PerformanceMetric(
-      type: TraceType.custom,
-      name: trace.name,
-      durationMs: duration.inMilliseconds,
-      timestamp: DateTime.now(),
-      metadata: metadata,
-    ));
+    _recordMetric(
+      PerformanceMetric(
+        type: TraceType.custom,
+        name: trace.name,
+        durationMs: duration.inMilliseconds,
+        timestamp: DateTime.now(),
+        metadata: metadata,
+      ),
+    );
 
     if (kDebugMode) {
       AppLogger.performance('Trace: ${trace.name}', duration: duration);
@@ -178,18 +187,20 @@ class PerformanceMonitor {
         'avg_ms': screenLoads.isEmpty
             ? 0
             : screenLoads.fold<int>(0, (s, m) => s + m.durationMs) ~/
-                screenLoads.length,
-        'slow_count':
-            screenLoads.where((m) => m.durationMs > _slowScreenLoadMs).length,
+                  screenLoads.length,
+        'slow_count': screenLoads
+            .where((m) => m.durationMs > _slowScreenLoadMs)
+            .length,
       },
       'api_calls': {
         'count': apiCalls.length,
         'avg_ms': apiCalls.isEmpty
             ? 0
             : apiCalls.fold<int>(0, (s, m) => s + m.durationMs) ~/
-                apiCalls.length,
-        'slow_count':
-            apiCalls.where((m) => m.durationMs > _slowApiCallMs).length,
+                  apiCalls.length,
+        'slow_count': apiCalls
+            .where((m) => m.durationMs > _slowApiCallMs)
+            .length,
       },
     };
   }
@@ -202,11 +213,7 @@ class PerformanceMonitor {
 }
 
 /// Trace types
-enum TraceType {
-  screenLoad,
-  apiCall,
-  custom,
-}
+enum TraceType { screenLoad, apiCall, custom }
 
 /// Internal trace model
 class _PerformanceTrace {
@@ -238,12 +245,12 @@ class PerformanceMetric {
   });
 
   Map<String, dynamic> toMap() => {
-        'type': type.name,
-        'name': name,
-        'duration_ms': durationMs,
-        'timestamp': timestamp.toIso8601String(),
-        if (metadata != null) 'metadata': metadata,
-      };
+    'type': type.name,
+    'name': name,
+    'duration_ms': durationMs,
+    'timestamp': timestamp.toIso8601String(),
+    if (metadata != null) 'metadata': metadata,
+  };
 }
 
 /// Mixin for easy screen performance tracking

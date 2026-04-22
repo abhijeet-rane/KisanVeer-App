@@ -10,9 +10,7 @@ class MyProductsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('My Products'),
-      ),
+      appBar: AppBar(title: const Text('My Products')),
       body: products.isEmpty
           ? const Center(child: Text('No products added yet.'))
           : ListView.builder(

@@ -41,8 +41,11 @@ class BiometricService {
     try {
       return await _localAuth.getAvailableBiometrics();
     } catch (e) {
-      AppLogger.e('Error getting available biometrics',
-          tag: 'Biometric', error: e);
+      AppLogger.e(
+        'Error getting available biometrics',
+        tag: 'Biometric',
+        error: e,
+      );
       return [];
     }
   }
@@ -80,8 +83,10 @@ class BiometricService {
       );
 
       if (authenticated) {
-        AppLogger.success('Biometric authentication successful',
-            tag: 'Biometric');
+        AppLogger.success(
+          'Biometric authentication successful',
+          tag: 'Biometric',
+        );
         return BiometricResult.success;
       } else {
         AppLogger.w('Biometric authentication failed', tag: 'Biometric');
@@ -146,24 +151,32 @@ class BiometricService {
       final userId = supabase.auth.currentUser?.id;
 
       if (userId == null) {
-        AppLogger.w('Cannot sync biometric - user not logged in',
-            tag: 'Biometric');
+        AppLogger.w(
+          'Cannot sync biometric - user not logged in',
+          tag: 'Biometric',
+        );
         return;
       }
 
       await supabase.from('user_security_settings').upsert({
         'user_id': userId,
         'biometric_enabled': enabled,
-        'biometric_last_used':
-            enabled ? DateTime.now().toIso8601String() : null,
+        'biometric_last_used': enabled
+            ? DateTime.now().toIso8601String()
+            : null,
         'updated_at': DateTime.now().toIso8601String(),
       }, onConflict: 'user_id');
 
-      AppLogger.d('Biometric setting synced to Supabase: $enabled',
-          tag: 'Biometric');
+      AppLogger.d(
+        'Biometric setting synced to Supabase: $enabled',
+        tag: 'Biometric',
+      );
     } catch (e) {
-      AppLogger.e('Failed to sync biometric to Supabase',
-          tag: 'Biometric', error: e);
+      AppLogger.e(
+        'Failed to sync biometric to Supabase',
+        tag: 'Biometric',
+        error: e,
+      );
     }
   }
 
@@ -211,16 +224,16 @@ enum BiometricResult {
 /// Extension for user-friendly messages
 extension BiometricResultMessage on BiometricResult {
   String get message => switch (this) {
-        BiometricResult.success => 'Authentication successful',
-        BiometricResult.failed => 'Authentication failed. Please try again.',
-        BiometricResult.notAvailable =>
-          'Biometric authentication is not available on this device.',
-        BiometricResult.notEnrolled =>
-          'No biometrics enrolled. Please set up fingerprint or face recognition in your device settings.',
-        BiometricResult.lockedOut =>
-          'Too many failed attempts. Please try again later or use your password.',
-        BiometricResult.error => 'An error occurred. Please try again.',
-      };
+    BiometricResult.success => 'Authentication successful',
+    BiometricResult.failed => 'Authentication failed. Please try again.',
+    BiometricResult.notAvailable =>
+      'Biometric authentication is not available on this device.',
+    BiometricResult.notEnrolled =>
+      'No biometrics enrolled. Please set up fingerprint or face recognition in your device settings.',
+    BiometricResult.lockedOut =>
+      'Too many failed attempts. Please try again later or use your password.',
+    BiometricResult.error => 'An error occurred. Please try again.',
+  };
 
   bool get isSuccess => this == BiometricResult.success;
 }

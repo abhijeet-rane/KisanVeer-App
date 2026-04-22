@@ -5,7 +5,6 @@ import 'package:kisan_veer/models/market_models.dart';
 import 'package:kisan_veer/services/market_service.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:intl/intl.dart';
 
 class SmartRecommendationsScreen extends StatefulWidget {
   const SmartRecommendationsScreen({Key? key}) : super(key: key);
@@ -147,6 +146,7 @@ class _SmartRecommendationsScreenState
         priceSensitivity: 'medium',
       );
 
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Preferences saved successfully'),
@@ -154,9 +154,49 @@ class _SmartRecommendationsScreenState
         ),
       );
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Failed to save preferences: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  Future<void> _pinRecommendation(CropRecommendation recommendation) async {
+    if (_selectedState == null || _selectedState!.isEmpty) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Select a state before pinning a commodity'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    try {
+      await _marketService.pinCommodity(
+        commodity: recommendation.commodity,
+        state: _selectedState!,
+        currentPrice: recommendation.currentPrice ?? recommendation.endPrice,
+      );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Pinned ${recommendation.commodityName ?? recommendation.commodity}',
+          ),
+          backgroundColor: Colors.green,
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to pin commodity: $e'),
           backgroundColor: Colors.red,
         ),
       );
@@ -248,124 +288,129 @@ class _SmartRecommendationsScreenState
 
   Widget _buildPreferencesCard() {
     return Card(
-      margin: const EdgeInsets.all(16.0),
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Your Preferences', style: AppTextStyles.subtitle),
-            const SizedBox(height: 8),
-            Text(
-              'Select your state and crops of interest to get personalized recommendations',
-              style: AppTextStyles.bodySmall.copyWith(color: Colors.grey),
-            ),
-            const SizedBox(height: 16),
-
-            // State dropdown
-            DropdownButtonFormField<String>(
-              decoration: InputDecoration(
-                labelText: 'Your State',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
-                ),
-              ),
-              value: _selectedState,
-              items: _states.map((state) {
-                return DropdownMenuItem<String>(
-                  value: state,
-                  child: Text(state),
-                );
-              }).toList(),
-              onChanged: (value) {
-                setState(() {
-                  _selectedState = value;
-                });
-                _loadAvailableCrops();
-              },
-              hint: const Text('Select your state'),
-            ),
-            const SizedBox(height: 16),
-
-            // Crops selection
-            Text('Your Crops of Interest', style: AppTextStyles.bodyMedium),
-            const SizedBox(height: 8),
-            if (_availableCrops.isEmpty)
-              Text(
-                'Select a state first to see available crops',
-                style: AppTextStyles.bodySmall.copyWith(color: Colors.grey),
-              )
-            else
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: _availableCrops.map((crop) {
-                  final isSelected = _selectedCrops.contains(crop);
-                  return FilterChip(
-                    selected: isSelected,
-                    label: Text(crop),
-                    onSelected: (selected) {
-                      setState(() {
-                        if (selected) {
-                          if (!_selectedCrops.contains(crop)) {
-                            _selectedCrops.add(crop);
-                          }
-                        } else {
-                          _selectedCrops.remove(crop);
-                        }
-                      });
-                    },
-                    selectedColor: AppColors.primary.withOpacity(0.2),
-                    checkmarkColor: AppColors.primary,
-                    backgroundColor: Colors.grey.shade100,
-                  );
-                }).toList(),
-              ),
-            const SizedBox(height: 16),
-
-            // Save button
-            Row(
+          margin: const EdgeInsets.all(16.0),
+          elevation: 2,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: _savePreferences,
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: AppColors.primary,
-                      side: BorderSide(color: AppColors.primary),
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    child: const Text('Save Preferences'),
-                  ),
+                Text('Your Preferences', style: AppTextStyles.subtitle),
+                const SizedBox(height: 8),
+                Text(
+                  'Select your state and crops of interest to get personalized recommendations',
+                  style: AppTextStyles.bodySmall.copyWith(color: Colors.grey),
                 ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: _generateRecommendations,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                const SizedBox(height: 16),
+
+                // State dropdown
+                DropdownButtonFormField<String>(
+                  decoration: InputDecoration(
+                    labelText: 'Your State',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
+                  ),
+                  value: _selectedState,
+                  items: _states.map((state) {
+                    return DropdownMenuItem<String>(
+                      value: state,
+                      child: Text(state),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedState = value;
+                    });
+                    _loadAvailableCrops();
+                  },
+                  hint: const Text('Select your state'),
+                ),
+                const SizedBox(height: 16),
+
+                // Crops selection
+                Text('Your Crops of Interest', style: AppTextStyles.bodyMedium),
+                const SizedBox(height: 8),
+                if (_availableCrops.isEmpty)
+                  Text(
+                    'Select a state first to see available crops',
+                    style: AppTextStyles.bodySmall.copyWith(color: Colors.grey),
+                  )
+                else
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: _availableCrops.map((crop) {
+                      final isSelected = _selectedCrops.contains(crop);
+                      return FilterChip(
+                        selected: isSelected,
+                        label: Text(crop),
+                        onSelected: (selected) {
+                          setState(() {
+                            if (selected) {
+                              if (!_selectedCrops.contains(crop)) {
+                                _selectedCrops.add(crop);
+                              }
+                            } else {
+                              _selectedCrops.remove(crop);
+                            }
+                          });
+                        },
+                        selectedColor: AppColors.primary.withValues(alpha: 0.2),
+                        checkmarkColor: AppColors.primary,
+                        backgroundColor: Colors.grey.shade100,
+                      );
+                    }).toList(),
+                  ),
+                const SizedBox(height: 16),
+
+                // Save button
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: _savePreferences,
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: AppColors.primary,
+                          side: BorderSide(color: AppColors.primary),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: const Text('Save Preferences'),
                       ),
                     ),
-                    child: const Text('Generate Recommendations'),
-                  ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: _generateRecommendations,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primary,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: const Text('Generate Recommendations'),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
-          ],
-        ),
-      ),
-    ).animate().fadeIn(duration: 300.ms).slideY(
+          ),
+        )
+        .animate()
+        .fadeIn(duration: 300.ms)
+        .slideY(
           begin: 0.1,
           end: 0,
           duration: 300.ms,
@@ -380,11 +425,7 @@ class _SmartRecommendationsScreenState
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.eco_outlined,
-              size: 80,
-              color: Colors.grey.shade300,
-            ),
+            Icon(Icons.eco_outlined, size: 80, color: Colors.grey.shade300),
             const SizedBox(height: 24),
             Text(
               'No Recommendations Yet',
@@ -416,189 +457,194 @@ class _SmartRecommendationsScreenState
   }
 
   Widget _buildRecommendationCard(
-      CropRecommendation recommendation, int index) {
+    CropRecommendation recommendation,
+    int index,
+  ) {
     final isPositiveTrend = _isPositivePriceTrend(recommendation.priceTrend);
 
     return Card(
-      margin: const EdgeInsets.only(bottom: 16),
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header with crop name and action
-            Row(
+          margin: const EdgeInsets.only(bottom: 16),
+          elevation: 2,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  recommendation.commodityName ?? recommendation.commodity,
-                  style: AppTextStyles.h3,
-                ),
-                const Spacer(),
-                // Pin button
-                SizedBox(
-                  width: 91,
-                  height: 35, // Fixed width to prevent layout issues
-                  child: OutlinedButton.icon(
-                    onPressed: () {
-                      // Implement pinning functionality
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Commodity pinned successfully'),
-                          duration: Duration(seconds: 2),
+                // Header with crop name and action
+                Row(
+                  children: [
+                    Text(
+                      recommendation.commodityName ?? recommendation.commodity,
+                      style: AppTextStyles.h3,
+                    ),
+                    const Spacer(),
+                    // Pin button
+                    SizedBox(
+                      width: 91,
+                      height: 35, // Fixed width to prevent layout issues
+                      child: OutlinedButton.icon(
+                        onPressed: () => _pinRecommendation(recommendation),
+                        icon: const Icon(Icons.push_pin_outlined, size: 17),
+                        label: const Text('Pin'),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: AppColors.primary,
+                          side: BorderSide(color: AppColors.primary),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
                         ),
-                      );
-                    },
-                    icon: const Icon(Icons.push_pin_outlined, size: 17),
-                    label: const Text('Pin'),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: AppColors.primary,
-                      side: BorderSide(color: AppColors.primary),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+
+                // Confidence tag
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: _getConfidenceColor(
+                      recommendation.confidenceScore ?? 0.0,
+                    ).withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(4),
+                    border: Border.all(
+                      color: _getConfidenceColor(
+                        recommendation.confidenceScore ?? 0.0,
                       ),
                     ),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-
-            // Confidence tag
-            Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 8,
-                vertical: 4,
-              ),
-              decoration: BoxDecoration(
-                color:
-                    _getConfidenceColor(recommendation.confidenceScore ?? 0.0)
-                        .withOpacity(0.1),
-                borderRadius: BorderRadius.circular(4),
-                border: Border.all(
-                  color: _getConfidenceColor(
-                      recommendation.confidenceScore ?? 0.0),
-                ),
-              ),
-              child: Text(
-                'Confidence: ${_getConfidenceLabel(recommendation.confidenceScore ?? 0.0)}',
-                style: AppTextStyles.bodySmall.copyWith(
-                  color: _getConfidenceColor(
-                      recommendation.confidenceScore ?? 0.0),
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            // Price trend
-            Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Current Price',
-                        style: AppTextStyles.bodySmall.copyWith(
-                          color: Colors.grey,
-                        ),
+                  child: Text(
+                    'Confidence: ${_getConfidenceLabel(recommendation.confidenceScore ?? 0.0)}',
+                    style: AppTextStyles.bodySmall.copyWith(
+                      color: _getConfidenceColor(
+                        recommendation.confidenceScore ?? 0.0,
                       ),
-                      Text(
-                        '₹${recommendation.currentPrice?.toStringAsFixed(2) ?? '0.00'}/Qtl',
-                        style: AppTextStyles.h3.copyWith(
-                          color: AppColors.primary,
-                        ),
-                      ),
-                    ],
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        '30-Day Trend',
-                        style: AppTextStyles.bodySmall.copyWith(
-                          color: Colors.grey,
-                        ),
-                      ),
-                      Row(
+                const SizedBox(height: 16),
+
+                // Price trend
+                Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Icon(
-                            isPositiveTrend
-                                ? Icons.trending_up
-                                : Icons.trending_down,
-                            color: isPositiveTrend ? Colors.green : Colors.red,
-                          ),
-                          const SizedBox(width: 4),
                           Text(
-                            '${isPositiveTrend ? '+' : ''}${_formatPriceTrend(recommendation.priceTrend)}%',
-                            style: AppTextStyles.bodyLarge.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color:
-                                  isPositiveTrend ? Colors.green : Colors.red,
+                            'Current Price',
+                            style: AppTextStyles.bodySmall.copyWith(
+                              color: Colors.grey,
+                            ),
+                          ),
+                          Text(
+                            '₹${recommendation.currentPrice?.toStringAsFixed(2) ?? '0.00'}/Qtl',
+                            style: AppTextStyles.h3.copyWith(
+                              color: AppColors.primary,
                             ),
                           ),
                         ],
                       ),
+                    ),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '30-Day Trend',
+                            style: AppTextStyles.bodySmall.copyWith(
+                              color: Colors.grey,
+                            ),
+                          ),
+                          Row(
+                            children: [
+                              Icon(
+                                isPositiveTrend
+                                    ? Icons.trending_up
+                                    : Icons.trending_down,
+                                color: isPositiveTrend
+                                    ? Colors.green
+                                    : Colors.red,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                '${isPositiveTrend ? '+' : ''}${_formatPriceTrend(recommendation.priceTrend)}%',
+                                style: AppTextStyles.bodyLarge.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: isPositiveTrend
+                                      ? Colors.green
+                                      : Colors.red,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+
+                // Mini chart
+                SizedBox(
+                  height: 100,
+                  child: _buildMiniTrendChart(recommendation),
+                ),
+                const SizedBox(height: 16),
+
+                // Recommendation
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: _getBackgroundColor(
+                      recommendation.recommendation ?? '',
+                    ),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        _getRecommendationIcon(
+                          recommendation.recommendation ?? '',
+                        ),
+                        color: _getIconColor(
+                          recommendation.recommendation ?? '',
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          recommendation.recommendationText ??
+                              'No recommendation available',
+                          style: AppTextStyles.bodyMedium.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),
+                const SizedBox(height: 16),
+
+                // Reasoning
+                Text('Market Analysis', style: AppTextStyles.subtitle),
+                const SizedBox(height: 8),
+                Text(
+                  recommendation.reasoningText ??
+                      'No detailed analysis available.',
+                  style: AppTextStyles.bodyMedium,
+                ),
               ],
             ),
-            const SizedBox(height: 16),
-
-            // Mini chart
-            SizedBox(
-              height: 100,
-              child: _buildMiniTrendChart(recommendation),
-            ),
-            const SizedBox(height: 16),
-
-            // Recommendation
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: _getBackgroundColor(recommendation.recommendation ?? ''),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    _getRecommendationIcon(recommendation.recommendation ?? ''),
-                    color: _getIconColor(recommendation.recommendation ?? ''),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      recommendation.recommendationText ??
-                          'No recommendation available',
-                      style: AppTextStyles.bodyMedium.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            // Reasoning
-            Text(
-              'Market Analysis',
-              style: AppTextStyles.subtitle,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              recommendation.reasoningText ?? 'No detailed analysis available.',
-              style: AppTextStyles.bodyMedium,
-            ),
-          ],
-        ),
-      ),
-    )
+          ),
+        )
         .animate()
         .fadeIn(
           duration: 300.ms,
@@ -668,25 +714,14 @@ class _SmartRecommendationsScreenState
           drawHorizontalLine: true,
           horizontalInterval: 1,
           getDrawingHorizontalLine: (value) {
-            return FlLine(
-              color: Colors.grey.shade200,
-              strokeWidth: 1,
-            );
+            return FlLine(color: Colors.grey.shade200, strokeWidth: 1);
           },
         ),
         titlesData: FlTitlesData(
-          bottomTitles: AxisTitles(
-            sideTitles: SideTitles(showTitles: false),
-          ),
-          leftTitles: AxisTitles(
-            sideTitles: SideTitles(showTitles: false),
-          ),
-          rightTitles: AxisTitles(
-            sideTitles: SideTitles(showTitles: false),
-          ),
-          topTitles: AxisTitles(
-            sideTitles: SideTitles(showTitles: false),
-          ),
+          bottomTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
         ),
         borderData: FlBorderData(show: false),
         minX: 0,
@@ -695,11 +730,11 @@ class _SmartRecommendationsScreenState
             : 0,
         minY: recommendation.priceHistory?.isNotEmpty == true
             ? (recommendation.priceHistory!.reduce((a, b) => a < b ? a : b) *
-                0.9)
+                  0.9)
             : 0,
         maxY: recommendation.priceHistory?.isNotEmpty == true
             ? (recommendation.priceHistory!.reduce((a, b) => a > b ? a : b) *
-                1.1)
+                  1.1)
             : 100,
         lineBarsData: [
           LineChartBarData(
@@ -718,7 +753,7 @@ class _SmartRecommendationsScreenState
             dotData: FlDotData(show: false),
             belowBarData: BarAreaData(
               show: true,
-              color: AppColors.primary.withOpacity(0.2),
+              color: AppColors.primary.withValues(alpha: 0.2),
             ),
           ),
         ],

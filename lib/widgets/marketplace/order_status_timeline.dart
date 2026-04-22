@@ -30,10 +30,7 @@ class OrderStatusTimeline extends StatelessWidget {
             padding: EdgeInsets.only(left: 8.0, bottom: 16.0),
             child: Text(
               'Order Status History',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
           ),
           if (sortedHistory.isEmpty)
@@ -79,8 +76,9 @@ class OrderStatusTimeline extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              DateFormat('MMM d, h:mm a')
-                                  .format(status.createdAt),
+                              DateFormat(
+                                'MMM d, h:mm a',
+                              ).format(status.createdAt),
                               style: TextStyle(
                                 fontSize: 13,
                                 color: Colors.grey[600],
@@ -102,12 +100,8 @@ class OrderStatusTimeline extends StatelessWidget {
                       ],
                     ),
                   ),
-                  beforeLineStyle: LineStyle(
-                    color: Colors.grey[300]!,
-                  ),
-                  afterLineStyle: LineStyle(
-                    color: Colors.grey[300]!,
-                  ),
+                  beforeLineStyle: LineStyle(color: Colors.grey[300]!),
+                  afterLineStyle: LineStyle(color: Colors.grey[300]!),
                 );
               },
             ),
@@ -121,17 +115,10 @@ class OrderStatusTimeline extends StatelessWidget {
       decoration: BoxDecoration(
         color: _getStatusColor(status),
         shape: BoxShape.circle,
-        border: Border.all(
-          color: Colors.white,
-          width: 2,
-        ),
+        border: Border.all(color: Colors.white, width: 2),
       ),
       child: Center(
-        child: Icon(
-          _getStatusIcon(status),
-          size: 12,
-          color: Colors.white,
-        ),
+        child: Icon(_getStatusIcon(status), size: 12, color: Colors.white),
       ),
     );
   }

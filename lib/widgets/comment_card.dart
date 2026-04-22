@@ -6,11 +6,8 @@ class CommentCard extends StatelessWidget {
   final Comment comment;
   final VoidCallback? onLike;
 
-  const CommentCard({
-    Key? key,
-    required this.comment,
-    this.onLike,
-  }) : super(key: key);
+  const CommentCard({Key? key, required this.comment, this.onLike})
+    : super(key: key);
 
   @override
   Widget build(BuildContext context) {

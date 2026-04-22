@@ -35,7 +35,9 @@ class LocalizationService {
 
   // Locale resolution
   static Locale? localeResolutionCallback(
-      Locale? locale, Iterable<Locale> supportedLocales) {
+    Locale? locale,
+    Iterable<Locale> supportedLocales,
+  ) {
     for (final supportedLocale in supportedLocales) {
       if (supportedLocale.languageCode == locale?.languageCode &&
           supportedLocale.countryCode == locale?.countryCode) {
@@ -70,7 +72,9 @@ class LocalizationService {
       _currentLocale = locale;
       await _storageService.saveString('language_code', locale.languageCode);
       await _storageService.saveString(
-          'country_code', locale.countryCode ?? '');
+        'country_code',
+        locale.countryCode ?? '',
+      );
     }
   }
 
@@ -371,8 +375,17 @@ class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
 
   @override
   bool isSupported(Locale locale) {
-    return ['en', 'hi', 'mr', 'pa', 'gu', 'ta', 'te', 'kn', 'bn']
-        .contains(locale.languageCode);
+    return [
+      'en',
+      'hi',
+      'mr',
+      'pa',
+      'gu',
+      'ta',
+      'te',
+      'kn',
+      'bn',
+    ].contains(locale.languageCode);
   }
 
   @override

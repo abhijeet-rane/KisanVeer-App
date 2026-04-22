@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kisan_veer/utils/app_logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class WeatherAlertService {
@@ -19,10 +20,16 @@ class WeatherAlertService {
     if (weatherData['forecast'] != null) {
       try {
         forecast = List<Map<String, dynamic>>.from(
-            (weatherData['forecast'] as List).map((item) =>
-                Map<String, dynamic>.from(item as Map<String, dynamic>)));
+          (weatherData['forecast'] as List).map(
+            (item) => Map<String, dynamic>.from(item as Map<String, dynamic>),
+          ),
+        );
       } catch (e) {
-        print('Error casting forecast data: $e');
+        AppLogger.w(
+          'Error casting forecast data',
+          tag: 'WeatherAlert',
+          error: e,
+        );
         forecast = null;
       }
     }
@@ -34,13 +41,16 @@ class WeatherAlertService {
     int temperature = currentWeather['temperature'] ?? 0;
     if (temperature > 40) {
       alerts.add(
-          'Extreme heat alert (${temperature}°C)! Take precautions to protect crops and livestock.');
+        'Extreme heat alert (${temperature}°C)! Take precautions to protect crops and livestock.',
+      );
     } else if (temperature > 35) {
       alerts.add(
-          'Heat alert (${temperature}°C)! Consider additional irrigation for crops.');
+        'Heat alert (${temperature}°C)! Consider additional irrigation for crops.',
+      );
     } else if (temperature < 5) {
       alerts.add(
-          'Frost alert (${temperature}°C)! Protect sensitive crops from freezing.');
+        'Frost alert (${temperature}°C)! Protect sensitive crops from freezing.',
+      );
     }
 
     // Condition-based alerts
@@ -49,17 +59,20 @@ class WeatherAlertService {
       alerts.add('Thunderstorm alert! Secure outdoor equipment and livestock.');
     } else if (condition == 'Rain' && currentWeather['precipitation'] > 70) {
       alerts.add(
-          'Heavy rain alert! Potential flooding risk for low-lying fields.');
+        'Heavy rain alert! Potential flooding risk for low-lying fields.',
+      );
     } else if (condition == 'Snow') {
-      alerts
-          .add('Snow alert! Protect crops and ensure livestock have shelter.');
+      alerts.add(
+        'Snow alert! Protect crops and ensure livestock have shelter.',
+      );
     }
 
     // Wind alerts
     int windSpeed = currentWeather['windSpeed'] ?? 0;
     if (windSpeed > 30) {
       alerts.add(
-          'Strong wind alert (${windSpeed} km/h)! Potential damage to crops and structures.');
+        'Strong wind alert (${windSpeed} km/h)! Potential damage to crops and structures.',
+      );
     }
 
     // Check for incoming severe weather in forecast
@@ -67,25 +80,34 @@ class WeatherAlertService {
       // Define a default empty forecast day
       final Map<String, dynamic> defaultDay = {
         'condition': '',
-        'day': 'Unknown'
+        'day': 'Unknown',
       };
 
       // Check the next day's weather
       Map<String, dynamic> tomorrowWeather;
       try {
-        tomorrowWeather =
-            forecast.firstWhere((day) => day['day'] == 'Tomorrow');
+        tomorrowWeather = forecast.firstWhere(
+          (day) => day['day'] == 'Tomorrow',
+        );
       } catch (e) {
         // Fallback in case of any errors
-        print('Error accessing forecast data: $e');
+        AppLogger.w(
+          'Error accessing forecast data',
+          tag: 'WeatherAlert',
+          error: e,
+        );
         tomorrowWeather = defaultDay;
       }
 
       String tomorrowCondition = tomorrowWeather['condition'] ?? '';
-      if (['Thunderstorm', 'Tornado', 'Hurricane']
-          .contains(tomorrowCondition)) {
+      if ([
+        'Thunderstorm',
+        'Tornado',
+        'Hurricane',
+      ].contains(tomorrowCondition)) {
         alerts.add(
-            'Severe weather warning for tomorrow: $tomorrowCondition expected!');
+          'Severe weather warning for tomorrow: $tomorrowCondition expected!',
+        );
       }
     }
 
@@ -132,8 +154,10 @@ class WeatherAlertService {
     return alertsJson.map((alertStr) {
       // Parse the string representation back to a map
       // This is a simple parsing approach - in production you'd want to use json.encode/decode
-      final parts =
-          alertStr.replaceAll('{', '').replaceAll('}', '').split(', ');
+      final parts = alertStr
+          .replaceAll('{', '')
+          .replaceAll('}', '')
+          .split(', ');
       final map = <String, dynamic>{};
 
       for (var part in parts) {
@@ -221,18 +245,12 @@ class WeatherAlertService {
           const SizedBox(height: 4),
           Text(
             alerts.first, // Show first alert in the banner
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 14,
-            ),
+            style: const TextStyle(color: Colors.white, fontSize: 14),
           ),
           if (alerts.length > 1)
             Text(
               '+${alerts.length - 1} more alerts',
-              style: const TextStyle(
-                color: Colors.white70,
-                fontSize: 12,
-              ),
+              style: const TextStyle(color: Colors.white70, fontSize: 12),
             ),
         ],
       ),

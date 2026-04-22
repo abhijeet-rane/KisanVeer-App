@@ -69,8 +69,8 @@ class _DailyDashboardScreenState extends State<DailyDashboardScreen> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _errorMessage != null
-              ? _buildErrorView()
-              : _buildDashboard(),
+          ? _buildErrorView()
+          : _buildDashboard(),
     );
   }
 
@@ -126,8 +126,9 @@ class _DailyDashboardScreenState extends State<DailyDashboardScreen> {
   }
 
   Widget _buildDashboard() {
-    final today = DateFormat('dd MMM yyyy')
-        .format(DateFormat('dd/MM/yyyy').parse(_summary.date));
+    final today = DateFormat(
+      'dd MMM yyyy',
+    ).format(DateFormat('dd/MM/yyyy').parse(_summary.date));
 
     return RefreshIndicator(
       onRefresh: _loadDashboardData,
@@ -161,10 +162,7 @@ class _DailyDashboardScreenState extends State<DailyDashboardScreen> {
                             'Market Data for',
                             style: AppTextStyles.bodySmall,
                           ),
-                          Text(
-                            today,
-                            style: AppTextStyles.h3,
-                          ),
+                          Text(today, style: AppTextStyles.h3),
                         ],
                       ),
                     ],
@@ -176,10 +174,7 @@ class _DailyDashboardScreenState extends State<DailyDashboardScreen> {
             // Top commodities
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-              child: Text(
-                'Top Commodities by Price',
-                style: AppTextStyles.h3,
-              ),
+              child: Text('Top Commodities by Price', style: AppTextStyles.h3),
             ),
             _buildTopCommoditiesChart(),
 
@@ -193,6 +188,15 @@ class _DailyDashboardScreenState extends State<DailyDashboardScreen> {
             ),
             _buildVolatilityList(),
 
+            // State arrivals
+            if (_summary.stateArrivals.isNotEmpty) ...[
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
+                child: Text('Top States by Arrivals', style: AppTextStyles.h3),
+              ),
+              _buildStateArrivalsChart(),
+            ],
+
             const SizedBox(height: 32),
           ],
         ),
@@ -202,122 +206,127 @@ class _DailyDashboardScreenState extends State<DailyDashboardScreen> {
 
   Widget _buildTopCommoditiesChart() {
     return Container(
-      height: 300,
-      padding: const EdgeInsets.all(16),
-      child: Card(
-        elevation: 2,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Expanded(
-                child: BarChart(
-                  BarChartData(
-                    alignment: BarChartAlignment.spaceAround,
-                    maxY: _summary.topCommodities.isEmpty
-                        ? 100
-                        : _summary.topCommodities.first.averagePrice * 1.2,
-                    gridData: FlGridData(
-                      horizontalInterval: 1000,
-                      show: true,
-                      drawVerticalLine: false,
-                      getDrawingHorizontalLine: (value) => FlLine(
-                        color: Colors.grey.shade200,
-                        strokeWidth: 1,
-                      ),
-                    ),
-                    borderData: FlBorderData(show: false),
-                    titlesData: FlTitlesData(
-                      leftTitles: AxisTitles(
-                        sideTitles: SideTitles(
-                          showTitles: true,
-                          getTitlesWidget: (value, meta) {
-                            return Padding(
-                              padding: const EdgeInsets.only(right: 8.0),
-                              child: Text(
-                                value.toInt().toString(),
-                                style: AppTextStyles.bodySmall.copyWith(
-                                  color: Colors.grey,
-                                  fontSize: 10,
-                                ),
-                              ),
-                            );
-                          },
-                          reservedSize: 40,
+          height: 300,
+          padding: const EdgeInsets.all(16),
+          child: Card(
+            elevation: 2,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Expanded(
+                    child: BarChart(
+                      BarChartData(
+                        alignment: BarChartAlignment.spaceAround,
+                        maxY: _summary.topCommodities.isEmpty
+                            ? 100
+                            : _summary.topCommodities.first.averagePrice * 1.2,
+                        gridData: FlGridData(
+                          horizontalInterval: 1000,
+                          show: true,
+                          drawVerticalLine: false,
+                          getDrawingHorizontalLine: (value) => FlLine(
+                            color: Colors.grey.shade200,
+                            strokeWidth: 1,
+                          ),
                         ),
-                      ),
-                      rightTitles: AxisTitles(
-                        sideTitles: SideTitles(showTitles: false),
-                      ),
-                      topTitles: AxisTitles(
-                        sideTitles: SideTitles(showTitles: false),
-                      ),
-                      bottomTitles: AxisTitles(
-                        sideTitles: SideTitles(
-                          showTitles: true,
-                          getTitlesWidget: (value, meta) {
-                            if (value >= _summary.topCommodities.length ||
-                                value < 0) {
-                              return const SizedBox.shrink();
-                            }
-                            final commodity =
-                                _summary.topCommodities[value.toInt()];
-                            return Padding(
-                              padding: const EdgeInsets.only(top: 8.0),
-                              child: RotatedBox(
-                                quarterTurns: 1,
-                                child: Text(
-                                  commodity.commodity,
-                                  style: AppTextStyles.bodySmall.copyWith(
-                                    color: Colors.grey,
-                                    fontSize: 10,
+                        borderData: FlBorderData(show: false),
+                        titlesData: FlTitlesData(
+                          leftTitles: AxisTitles(
+                            sideTitles: SideTitles(
+                              showTitles: true,
+                              getTitlesWidget: (value, meta) {
+                                return Padding(
+                                  padding: const EdgeInsets.only(right: 8.0),
+                                  child: Text(
+                                    value.toInt().toString(),
+                                    style: AppTextStyles.bodySmall.copyWith(
+                                      color: Colors.grey,
+                                      fontSize: 10,
+                                    ),
                                   ),
-                                  overflow: TextOverflow.ellipsis,
+                                );
+                              },
+                              reservedSize: 40,
+                            ),
+                          ),
+                          rightTitles: AxisTitles(
+                            sideTitles: SideTitles(showTitles: false),
+                          ),
+                          topTitles: AxisTitles(
+                            sideTitles: SideTitles(showTitles: false),
+                          ),
+                          bottomTitles: AxisTitles(
+                            sideTitles: SideTitles(
+                              showTitles: true,
+                              getTitlesWidget: (value, meta) {
+                                if (value >= _summary.topCommodities.length ||
+                                    value < 0) {
+                                  return const SizedBox.shrink();
+                                }
+                                final commodity =
+                                    _summary.topCommodities[value.toInt()];
+                                return Padding(
+                                  padding: const EdgeInsets.only(top: 8.0),
+                                  child: RotatedBox(
+                                    quarterTurns: 1,
+                                    child: Text(
+                                      commodity.commodity,
+                                      style: AppTextStyles.bodySmall.copyWith(
+                                        color: Colors.grey,
+                                        fontSize: 10,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                );
+                              },
+                              reservedSize: 40,
+                            ),
+                          ),
+                        ),
+                        barGroups: List.generate(
+                          _summary.topCommodities.length,
+                          (index) {
+                            final commodity = _summary.topCommodities[index];
+                            return BarChartGroupData(
+                              x: index,
+                              barRods: [
+                                BarChartRodData(
+                                  toY: commodity.averagePrice,
+                                  color: Colors.green,
+                                  width: 20,
+                                  borderRadius: const BorderRadius.only(
+                                    topLeft: Radius.circular(4),
+                                    topRight: Radius.circular(4),
+                                  ),
                                 ),
-                              ),
+                              ],
                             );
                           },
-                          reservedSize: 40,
                         ),
                       ),
-                    ),
-                    barGroups: List.generate(
-                      _summary.topCommodities.length,
-                      (index) {
-                        final commodity = _summary.topCommodities[index];
-                        return BarChartGroupData(
-                          x: index,
-                          barRods: [
-                            BarChartRodData(
-                              toY: commodity.averagePrice,
-                              color: Colors.green,
-                              width: 20,
-                              borderRadius: const BorderRadius.only(
-                                topLeft: Radius.circular(4),
-                                topRight: Radius.circular(4),
-                              ),
-                            ),
-                          ],
-                        );
-                      },
+                      duration: const Duration(milliseconds: 500),
                     ),
                   ),
-                  swapAnimationDuration: const Duration(milliseconds: 500),
-                ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Price in ₹ per Quintal',
+                    style: AppTextStyles.bodySmall.copyWith(color: Colors.grey),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
               ),
-              const SizedBox(height: 16),
-              Text(
-                'Price in ₹ per Quintal',
-                style: AppTextStyles.bodySmall.copyWith(color: Colors.grey),
-                textAlign: TextAlign.center,
-              ),
-            ],
+            ),
           ),
-        ),
-      ),
-    ).animate().fadeIn(duration: 500.ms).slideY(
+        )
+        .animate()
+        .fadeIn(duration: 500.ms)
+        .slideY(
           begin: 0.1,
           end: 0,
           duration: 500.ms,
@@ -327,26 +336,28 @@ class _DailyDashboardScreenState extends State<DailyDashboardScreen> {
 
   Widget _buildVolatilityList() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Card(
-        elevation: 2,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              ...List.generate(
-                _summary.topVolatileMarkets.length,
-                (index) {
-                  final market = _summary.topVolatileMarkets[index];
-                  return _volatilityItem(market, index);
-                },
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Card(
+            elevation: 2,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  ...List.generate(_summary.topVolatileMarkets.length, (index) {
+                    final market = _summary.topVolatileMarkets[index];
+                    return _volatilityItem(market, index);
+                  }),
+                ],
               ),
-            ],
+            ),
           ),
-        ),
-      ),
-    ).animate().fadeIn(duration: 500.ms, delay: 200.ms).slideY(
+        )
+        .animate()
+        .fadeIn(duration: 500.ms, delay: 200.ms)
+        .slideY(
           begin: 0.1,
           end: 0,
           duration: 500.ms,
@@ -430,117 +441,119 @@ class _DailyDashboardScreenState extends State<DailyDashboardScreen> {
     final topStates = _summary.stateArrivals.take(5).toList();
 
     return Container(
-      height: 300,
-      padding: const EdgeInsets.all(16),
-      child: Card(
-        elevation: 2,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Expanded(
-                child: BarChart(
-                  BarChartData(
-                    alignment: BarChartAlignment.spaceAround,
-                    maxY: topStates.isEmpty
-                        ? 100
-                        : topStates.first.totalQuantity * 1.2,
-                    gridData: FlGridData(
-                      horizontalInterval: 1000,
-                      show: true,
-                      drawVerticalLine: false,
-                      getDrawingHorizontalLine: (value) => FlLine(
-                        color: Colors.grey.shade200,
-                        strokeWidth: 1,
-                      ),
-                    ),
-                    borderData: FlBorderData(show: false),
-                    titlesData: FlTitlesData(
-                      leftTitles: AxisTitles(
-                        sideTitles: SideTitles(
-                          showTitles: true,
-                          getTitlesWidget: (value, meta) {
-                            return Padding(
-                              padding: const EdgeInsets.only(right: 8.0),
-                              child: Text(
-                                (value / 1000).toStringAsFixed(1) + 'K',
-                                style: AppTextStyles.bodySmall.copyWith(
-                                  color: Colors.grey,
-                                  fontSize: 10,
-                                ),
-                              ),
-                            );
-                          },
-                          reservedSize: 40,
+          height: 300,
+          padding: const EdgeInsets.all(16),
+          child: Card(
+            elevation: 2,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Expanded(
+                    child: BarChart(
+                      BarChartData(
+                        alignment: BarChartAlignment.spaceAround,
+                        maxY: topStates.isEmpty
+                            ? 100
+                            : topStates.first.totalQuantity * 1.2,
+                        gridData: FlGridData(
+                          horizontalInterval: 1000,
+                          show: true,
+                          drawVerticalLine: false,
+                          getDrawingHorizontalLine: (value) => FlLine(
+                            color: Colors.grey.shade200,
+                            strokeWidth: 1,
+                          ),
                         ),
-                      ),
-                      rightTitles: AxisTitles(
-                        sideTitles: SideTitles(showTitles: false),
-                      ),
-                      topTitles: AxisTitles(
-                        sideTitles: SideTitles(showTitles: false),
-                      ),
-                      bottomTitles: AxisTitles(
-                        sideTitles: SideTitles(
-                          showTitles: true,
-                          getTitlesWidget: (value, meta) {
-                            if (value >= topStates.length || value < 0) {
-                              return const SizedBox.shrink();
-                            }
-                            final state = topStates[value.toInt()];
-                            return Padding(
-                              padding: const EdgeInsets.only(top: 8.0),
-                              child: Text(
-                                state.state,
-                                style: AppTextStyles.bodySmall.copyWith(
-                                  color: Colors.grey,
-                                  fontSize: 10,
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            );
-                          },
-                          reservedSize: 40,
-                        ),
-                      ),
-                    ),
-                    barGroups: List.generate(
-                      topStates.length,
-                      (index) {
-                        final state = topStates[index];
-                        return BarChartGroupData(
-                          x: index,
-                          barRods: [
-                            BarChartRodData(
-                              toY: state.totalQuantity,
-                              color: Colors.green.shade600,
-                              width: 20,
-                              borderRadius: const BorderRadius.only(
-                                topLeft: Radius.circular(4),
-                                topRight: Radius.circular(4),
-                              ),
+                        borderData: FlBorderData(show: false),
+                        titlesData: FlTitlesData(
+                          leftTitles: AxisTitles(
+                            sideTitles: SideTitles(
+                              showTitles: true,
+                              getTitlesWidget: (value, meta) {
+                                return Padding(
+                                  padding: const EdgeInsets.only(right: 8.0),
+                                  child: Text(
+                                    (value / 1000).toStringAsFixed(1) + 'K',
+                                    style: AppTextStyles.bodySmall.copyWith(
+                                      color: Colors.grey,
+                                      fontSize: 10,
+                                    ),
+                                  ),
+                                );
+                              },
+                              reservedSize: 40,
                             ),
-                          ],
-                        );
-                      },
+                          ),
+                          rightTitles: AxisTitles(
+                            sideTitles: SideTitles(showTitles: false),
+                          ),
+                          topTitles: AxisTitles(
+                            sideTitles: SideTitles(showTitles: false),
+                          ),
+                          bottomTitles: AxisTitles(
+                            sideTitles: SideTitles(
+                              showTitles: true,
+                              getTitlesWidget: (value, meta) {
+                                if (value >= topStates.length || value < 0) {
+                                  return const SizedBox.shrink();
+                                }
+                                final state = topStates[value.toInt()];
+                                return Padding(
+                                  padding: const EdgeInsets.only(top: 8.0),
+                                  child: Text(
+                                    state.state,
+                                    style: AppTextStyles.bodySmall.copyWith(
+                                      color: Colors.grey,
+                                      fontSize: 10,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                );
+                              },
+                              reservedSize: 40,
+                            ),
+                          ),
+                        ),
+                        barGroups: List.generate(topStates.length, (index) {
+                          final state = topStates[index];
+                          return BarChartGroupData(
+                            x: index,
+                            barRods: [
+                              BarChartRodData(
+                                toY: state.totalQuantity,
+                                color: Colors.green.shade600,
+                                width: 20,
+                                borderRadius: const BorderRadius.only(
+                                  topLeft: Radius.circular(4),
+                                  topRight: Radius.circular(4),
+                                ),
+                              ),
+                            ],
+                          );
+                        }),
+                      ),
+                      duration: const Duration(milliseconds: 500),
                     ),
                   ),
-                  swapAnimationDuration: const Duration(milliseconds: 500),
-                ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Quantity in Quintals',
+                    style: AppTextStyles.bodySmall.copyWith(color: Colors.grey),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
               ),
-              const SizedBox(height: 16),
-              Text(
-                'Quantity in Quintals',
-                style: AppTextStyles.bodySmall.copyWith(color: Colors.grey),
-                textAlign: TextAlign.center,
-              ),
-            ],
+            ),
           ),
-        ),
-      ),
-    ).animate().fadeIn(duration: 500.ms, delay: 400.ms).slideY(
+        )
+        .animate()
+        .fadeIn(duration: 500.ms, delay: 400.ms)
+        .slideY(
           begin: 0.1,
           end: 0,
           duration: 500.ms,

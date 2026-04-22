@@ -3,6 +3,7 @@ import 'package:geocoding/geocoding.dart';
 import 'package:kisan_veer/constants/app_colors.dart';
 import 'package:kisan_veer/constants/app_text_styles.dart';
 import 'package:kisan_veer/services/weather_service.dart';
+import 'package:kisan_veer/utils/app_logger.dart';
 
 class LocationSearchScreen extends StatefulWidget {
   const LocationSearchScreen({Key? key}) : super(key: key);
@@ -37,7 +38,11 @@ class _LocationSearchScreenState extends State<LocationSearchScreen> {
         _isLoading = false;
       });
     } catch (e) {
-      print('Error loading recent searches: $e');
+      AppLogger.w(
+        'Error loading recent searches',
+        tag: 'LocationSearch',
+        error: e,
+      );
       setState(() {
         _isLoading = false;
       });
@@ -64,7 +69,7 @@ class _LocationSearchScreenState extends State<LocationSearchScreen> {
         _isSearching = false;
       });
     } catch (e) {
-      print('Error performing search: $e');
+      AppLogger.e('Error performing search', tag: 'LocationSearch', error: e);
       setState(() {
         _searchResults = [];
         _isSearching = false;
@@ -84,7 +89,9 @@ class _LocationSearchScreenState extends State<LocationSearchScreen> {
       List<String> suggestions = [];
       for (var location in locations.take(5)) {
         List<Placemark> placemarks = await placemarkFromCoordinates(
-            location.latitude, location.longitude);
+          location.latitude,
+          location.longitude,
+        );
 
         if (placemarks.isNotEmpty) {
           final place = placemarks.first;
@@ -113,7 +120,7 @@ class _LocationSearchScreenState extends State<LocationSearchScreen> {
 
       return suggestions;
     } catch (e) {
-      print('Error getting suggestions: $e');
+      AppLogger.w('Error getting suggestions', tag: 'LocationSearch', error: e);
       return [];
     }
   }
@@ -124,9 +131,7 @@ class _LocationSearchScreenState extends State<LocationSearchScreen> {
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
-        return const Center(
-          child: CircularProgressIndicator(),
-        );
+        return const Center(child: CircularProgressIndicator());
       },
     );
 
@@ -175,8 +180,10 @@ class _LocationSearchScreenState extends State<LocationSearchScreen> {
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
-                contentPadding:
-                    const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+                contentPadding: const EdgeInsets.symmetric(
+                  vertical: 16,
+                  horizontal: 16,
+                ),
                 suffixIcon: _searchController.text.isNotEmpty
                     ? IconButton(
                         icon: const Icon(Icons.clear),
@@ -231,10 +238,7 @@ class _LocationSearchScreenState extends State<LocationSearchScreen> {
                 children: [
                   Padding(
                     padding: const EdgeInsets.all(16.0),
-                    child: Text(
-                      'Recent Searches',
-                      style: AppTextStyles.h3,
-                    ),
+                    child: Text('Recent Searches', style: AppTextStyles.h3),
                   ),
                   Expanded(
                     child: ListView.builder(
@@ -253,9 +257,7 @@ class _LocationSearchScreenState extends State<LocationSearchScreen> {
               ),
             )
           else if (_isLoading)
-            const Expanded(
-              child: Center(child: CircularProgressIndicator()),
-            )
+            const Expanded(child: Center(child: CircularProgressIndicator()))
           else
             Expanded(
               child: Center(

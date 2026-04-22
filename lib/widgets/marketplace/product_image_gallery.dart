@@ -8,10 +8,8 @@ import 'package:photo_view/photo_view_gallery.dart';
 class ProductImageGallery extends StatefulWidget {
   final List<String> imageUrls;
 
-  const ProductImageGallery({
-    Key? key,
-    required this.imageUrls,
-  }) : super(key: key);
+  const ProductImageGallery({Key? key, required this.imageUrls})
+    : super(key: key);
 
   @override
   State<ProductImageGallery> createState() => _ProductImageGalleryState();
@@ -52,8 +50,9 @@ class _ProductImageGalleryState extends State<ProductImageGallery> {
                 scrollPhysics: const BouncingScrollPhysics(),
                 builder: (BuildContext context, int index) {
                   return PhotoViewGalleryPageOptions(
-                    imageProvider:
-                        CachedNetworkImageProvider(widget.imageUrls[index]),
+                    imageProvider: CachedNetworkImageProvider(
+                      widget.imageUrls[index],
+                    ),
                     initialScale: PhotoViewComputedScale.contained,
                     minScale: PhotoViewComputedScale.contained,
                     maxScale: PhotoViewComputedScale.covered * 2,
@@ -65,7 +64,7 @@ class _ProductImageGalleryState extends State<ProductImageGallery> {
                     value: event == null
                         ? 0
                         : event.cumulativeBytesLoaded /
-                            (event.expectedTotalBytes ?? 1),
+                              (event.expectedTotalBytes ?? 1),
                   ),
                 ),
                 pageController: PageController(initialPage: initialIndex),
@@ -88,18 +87,17 @@ class _ProductImageGalleryState extends State<ProductImageGallery> {
                 right: 0,
                 child: Center(
                   child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.black45,
                       borderRadius: BorderRadius.circular(16),
                     ),
                     child: Text(
                       '${_currentIndex + 1}/${widget.imageUrls.length}',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                      ),
+                      style: const TextStyle(color: Colors.white, fontSize: 14),
                     ),
                   ),
                 ),
@@ -118,11 +116,7 @@ class _ProductImageGalleryState extends State<ProductImageGallery> {
         height: 300,
         color: Colors.grey[200],
         child: const Center(
-          child: Icon(
-            Icons.image_not_supported,
-            size: 80,
-            color: Colors.grey,
-          ),
+          child: Icon(Icons.image_not_supported, size: 80, color: Colors.grey),
         ),
       );
     }
@@ -141,9 +135,8 @@ class _ProductImageGalleryState extends State<ProductImageGallery> {
                 return CachedNetworkImage(
                   imageUrl: widget.imageUrls[index],
                   fit: BoxFit.cover,
-                  placeholder: (context, url) => const Center(
-                    child: CircularProgressIndicator(),
-                  ),
+                  placeholder: (context, url) =>
+                      const Center(child: CircularProgressIndicator()),
                   errorWidget: (context, url, error) => Container(
                     color: Colors.grey[200],
                     child: const Center(
@@ -175,7 +168,7 @@ class _ProductImageGalleryState extends State<ProductImageGallery> {
                   shape: BoxShape.circle,
                   color: _currentIndex == index
                       ? Theme.of(context).primaryColor
-                      : Colors.grey.withOpacity(0.5),
+                      : Colors.grey.withValues(alpha: 0.5),
                 ),
               ),
             ),

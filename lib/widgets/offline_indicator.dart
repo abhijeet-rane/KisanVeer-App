@@ -7,10 +7,7 @@ import 'package:kisan_veer/services/sync_manager.dart';
 class OfflineIndicator extends StatefulWidget {
   final Widget child;
 
-  const OfflineIndicator({
-    Key? key,
-    required this.child,
-  }) : super(key: key);
+  const OfflineIndicator({Key? key, required this.child}) : super(key: key);
 
   @override
   State<OfflineIndicator> createState() => _OfflineIndicatorState();
@@ -107,14 +104,11 @@ class _OfflineIndicatorState extends State<OfflineIndicator>
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [
-            Colors.orange.shade700,
-            Colors.orange.shade800,
-          ],
+          colors: [Colors.orange.shade700, Colors.orange.shade800],
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black.withValues(alpha: 0.2),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -124,11 +118,7 @@ class _OfflineIndicatorState extends State<OfflineIndicator>
         bottom: false,
         child: Row(
           children: [
-            const Icon(
-              Icons.cloud_off,
-              color: Colors.white,
-              size: 20,
-            ),
+            const Icon(Icons.cloud_off, color: Colors.white, size: 20),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
@@ -147,7 +137,7 @@ class _OfflineIndicatorState extends State<OfflineIndicator>
                     Text(
                       '$_pendingCount changes will sync when you\'re back online',
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.9),
+                        color: Colors.white.withValues(alpha: 0.9),
                         fontSize: 12,
                       ),
                     ),
@@ -158,7 +148,7 @@ class _OfflineIndicatorState extends State<OfflineIndicator>
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
+                  color: Colors.white.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
@@ -207,17 +197,13 @@ class _ConnectivityIndicatorState extends State<ConnectivityIndicator> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: Colors.orange.withOpacity(0.2),
+        color: Colors.orange.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            Icons.cloud_off,
-            size: 14,
-            color: Colors.orange.shade700,
-          ),
+          Icon(Icons.cloud_off, size: 14, color: Colors.orange.shade700),
           const SizedBox(width: 4),
           Text(
             'Offline',

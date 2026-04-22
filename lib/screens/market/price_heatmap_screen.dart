@@ -112,8 +112,9 @@ class _PriceHeatmapScreenState extends State<PriceHeatmapScreen> {
         _errorMessage = null;
       });
 
-      final data =
-          await _marketService.getCommodityPriceMap(_selectedCommodity!);
+      final data = await _marketService.getCommodityPriceMap(
+        _selectedCommodity!,
+      );
 
       setState(() {
         _heatmapData = data;
@@ -184,8 +185,8 @@ class _PriceHeatmapScreenState extends State<PriceHeatmapScreen> {
           child: _isGeneratingHeatmap
               ? const Center(child: CircularProgressIndicator())
               : _heatmapData.isEmpty
-                  ? _buildInitialView()
-                  : _buildHeatmapView(),
+              ? _buildInitialView()
+              : _buildHeatmapView(),
         ),
       ],
     );
@@ -193,75 +194,82 @@ class _PriceHeatmapScreenState extends State<PriceHeatmapScreen> {
 
   Widget _buildSelectionCard() {
     return Card(
-      margin: const EdgeInsets.all(16.0),
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('View Price Distribution', style: AppTextStyles.subtitle),
-            const SizedBox(height: 8),
-            Text(
-              'Select a commodity to see its price distribution across states',
-              style: AppTextStyles.bodySmall.copyWith(color: Colors.grey),
-            ),
-            const SizedBox(height: 16),
+          margin: const EdgeInsets.all(16.0),
+          elevation: 2,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('View Price Distribution', style: AppTextStyles.subtitle),
+                const SizedBox(height: 8),
+                Text(
+                  'Select a commodity to see its price distribution across states',
+                  style: AppTextStyles.bodySmall.copyWith(color: Colors.grey),
+                ),
+                const SizedBox(height: 16),
 
-            // Commodity dropdown
-            DropdownButtonFormField<String>(
-              decoration: InputDecoration(
-                labelText: 'Select Commodity',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
+                // Commodity dropdown
+                DropdownButtonFormField<String>(
+                  decoration: InputDecoration(
+                    labelText: 'Select Commodity',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 0,
+                      vertical: 12,
+                    ),
+                  ),
+                  value: _selectedCommodity,
+                  items: _commodities.map((commodity) {
+                    return DropdownMenuItem<String>(
+                      value: commodity,
+                      child: Text(commodity),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedCommodity = value;
+                    });
+                  },
+                  hint: const Text('Select a commodity'),
                 ),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 0,
-                  vertical: 12,
-                ),
-              ),
-              value: _selectedCommodity,
-              items: _commodities.map((commodity) {
-                return DropdownMenuItem<String>(
-                  value: commodity,
-                  child: Text(commodity),
-                );
-              }).toList(),
-              onChanged: (value) {
-                setState(() {
-                  _selectedCommodity = value;
-                });
-              },
-              hint: const Text('Select a commodity'),
-            ),
-            const SizedBox(height: 16),
+                const SizedBox(height: 16),
 
-            // Generate button
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: _selectedCommodity != null ? _generateHeatmap : null,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                // Generate button
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: _selectedCommodity != null
+                        ? _generateHeatmap
+                        : null,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      disabledBackgroundColor: Colors.grey.shade300,
+                    ),
+                    child: Text(
+                      'Generate Heatmap',
+                      style: AppTextStyles.buttonText.copyWith(
+                        color: Colors.white,
+                      ),
+                    ),
                   ),
-                  disabledBackgroundColor: Colors.grey.shade300,
                 ),
-                child: Text(
-                  'Generate Heatmap',
-                  style: AppTextStyles.buttonText.copyWith(
-                    color: Colors.white,
-                  ),
-                ),
-              ),
+              ],
             ),
-          ],
-        ),
-      ),
-    ).animate().fadeIn(duration: 300.ms).slideY(
+          ),
+        )
+        .animate()
+        .fadeIn(duration: 300.ms)
+        .slideY(
           begin: 0.1,
           end: 0,
           duration: 300.ms,
@@ -276,11 +284,7 @@ class _PriceHeatmapScreenState extends State<PriceHeatmapScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.map_outlined,
-              size: 80,
-              color: Colors.grey.shade300,
-            ),
+            Icon(Icons.map_outlined, size: 80, color: Colors.grey.shade300),
             const SizedBox(height: 24),
             Text(
               'Price Heatmap Visualization',
@@ -310,112 +314,113 @@ class _PriceHeatmapScreenState extends State<PriceHeatmapScreen> {
     }
 
     return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Row(
-            children: [
-              Expanded(
-                child: Text(
-                  'Price Heatmap for $_selectedCommodity',
-                  style: AppTextStyles.h3,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-              IconButton(
-                icon: const Icon(Icons.info_outline),
-                onPressed: _showInfoDialog,
-              ),
-            ],
-          ),
-        ),
-
-        // Legend
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: _buildPriceLegend(minPrice, maxPrice),
-        ),
-        const SizedBox(height: 4),
-        // Map
-        Expanded(
-          child: Stack(
-            children: [
-              FlutterMap(
-                mapController: _mapController,
-                options: MapOptions(
-                  initialCenter: LatLng(22.5937, 78.9629), // Center of India
-                  initialZoom: 4.5,
-                  maxZoom: 10.0,
-                  minZoom: 3.5,
-                ),
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Row(
                 children: [
-                  TileLayer(
-                    urlTemplate:
-                        'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                    userAgentPackageName: 'com.kisan.veer.app',
+                  Expanded(
+                    child: Text(
+                      'Price Heatmap for $_selectedCommodity',
+                      style: AppTextStyles.h3,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
-                  MarkerLayer(
-                    markers: _buildMarkers(minPrice, maxPrice),
+                  IconButton(
+                    icon: const Icon(Icons.info_outline),
+                    onPressed: _showInfoDialog,
                   ),
-                  Positioned(
-                    bottom: 8,
-                    right: 8,
-                    child: Container(
-                      padding: const EdgeInsets.all(8.0),
-                      child: const Text(
-                        '© OpenStreetMap contributors',
-                        style: TextStyle(fontSize: 10),
+                ],
+              ),
+            ),
+
+            // Legend
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: _buildPriceLegend(minPrice, maxPrice),
+            ),
+            const SizedBox(height: 4),
+            // Map
+            Expanded(
+              child: Stack(
+                children: [
+                  FlutterMap(
+                    mapController: _mapController,
+                    options: MapOptions(
+                      initialCenter: LatLng(
+                        22.5937,
+                        78.9629,
+                      ), // Center of India
+                      initialZoom: 4.5,
+                      maxZoom: 10.0,
+                      minZoom: 3.5,
+                    ),
+                    children: [
+                      TileLayer(
+                        urlTemplate:
+                            'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                        userAgentPackageName: 'com.kisan.veer.app',
                       ),
+                      MarkerLayer(markers: _buildMarkers(minPrice, maxPrice)),
+                      Positioned(
+                        bottom: 8,
+                        right: 8,
+                        child: Container(
+                          padding: const EdgeInsets.all(8.0),
+                          child: const Text(
+                            '© OpenStreetMap contributors',
+                            style: TextStyle(fontSize: 10),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  // Zoom controls
+                  Positioned(
+                    right: 16,
+                    bottom: 16,
+                    child: Column(
+                      children: [
+                        FloatingActionButton.small(
+                          heroTag: 'zoomIn',
+                          onPressed: () {
+                            _mapController.move(
+                              _mapController.camera.center,
+                              _mapController.camera.zoom + 0.5,
+                            );
+                          },
+                          backgroundColor: Colors.white,
+                          foregroundColor: Colors.black,
+                          child: const Icon(Icons.add),
+                        ),
+                        const SizedBox(height: 8),
+                        FloatingActionButton.small(
+                          heroTag: 'zoomOut',
+                          onPressed: () {
+                            _mapController.move(
+                              _mapController.camera.center,
+                              _mapController.camera.zoom - 0.5,
+                            );
+                          },
+                          backgroundColor: Colors.white,
+                          foregroundColor: Colors.black,
+                          child: const Icon(Icons.remove),
+                        ),
+                      ],
                     ),
                   ),
                 ],
               ),
+            ),
 
-              // Zoom controls
-              Positioned(
-                right: 16,
-                bottom: 16,
-                child: Column(
-                  children: [
-                    FloatingActionButton.small(
-                      heroTag: 'zoomIn',
-                      onPressed: () {
-                        _mapController.move(
-                          _mapController.camera.center,
-                          _mapController.camera.zoom + 0.5,
-                        );
-                      },
-                      backgroundColor: Colors.white,
-                      foregroundColor: Colors.black,
-                      child: const Icon(Icons.add),
-                    ),
-                    const SizedBox(height: 8),
-                    FloatingActionButton.small(
-                      heroTag: 'zoomOut',
-                      onPressed: () {
-                        _mapController.move(
-                          _mapController.camera.center,
-                          _mapController.camera.zoom - 0.5,
-                        );
-                      },
-                      backgroundColor: Colors.white,
-                      foregroundColor: Colors.black,
-                      child: const Icon(Icons.remove),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-
-        // State price list
-        SizedBox(
-          height: 140,
-          child: _buildStatePriceList(),
-        ),
-      ],
-    ).animate().fadeIn(duration: 500.ms).slideY(
+            // State price list
+            SizedBox(height: 140, child: _buildStatePriceList()),
+          ],
+        )
+        .animate()
+        .fadeIn(duration: 500.ms)
+        .slideY(
           begin: 0.1,
           end: 0,
           duration: 500.ms,
@@ -447,15 +452,12 @@ class _PriceHeatmapScreenState extends State<PriceHeatmapScreen> {
                     width: 40,
                     height: 40,
                     decoration: BoxDecoration(
-                      color: color.withOpacity(0.7),
+                      color: color.withValues(alpha: 0.7),
                       shape: BoxShape.circle,
-                      border: Border.all(
-                        color: Colors.white,
-                        width: 2,
-                      ),
+                      border: Border.all(color: Colors.white, width: 2),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
+                          color: Colors.black.withValues(alpha: 0.2),
                           blurRadius: 5,
                           spreadRadius: 1,
                         ),
@@ -508,7 +510,7 @@ class _PriceHeatmapScreenState extends State<PriceHeatmapScreen> {
         borderRadius: BorderRadius.circular(8),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 4,
             spreadRadius: 1,
           ),
@@ -524,11 +526,7 @@ class _PriceHeatmapScreenState extends State<PriceHeatmapScreen> {
             ),
           ),
           const SizedBox(width: 8),
-          Container(
-            width: 16,
-            height: 16,
-            color: Colors.green.shade700,
-          ),
+          Container(width: 16, height: 16, color: Colors.green.shade700),
           Flexible(
             child: Container(
               height: 16,
@@ -545,11 +543,7 @@ class _PriceHeatmapScreenState extends State<PriceHeatmapScreen> {
               ),
             ),
           ),
-          Container(
-            width: 16,
-            height: 16,
-            color: Colors.red.shade500,
-          ),
+          Container(width: 16, height: 16, color: Colors.red.shade500),
           const SizedBox(width: 8),
           Text(
             '₹${minPrice.toInt()}',
@@ -597,8 +591,11 @@ class _PriceHeatmapScreenState extends State<PriceHeatmapScreen> {
                   final data = _heatmapData[index];
                   final minPrice = _heatmapData.first.averagePrice;
                   final maxPrice = _heatmapData.last.averagePrice;
-                  final color =
-                      _getPriceColor(data.averagePrice, minPrice, maxPrice);
+                  final color = _getPriceColor(
+                    data.averagePrice,
+                    minPrice,
+                    maxPrice,
+                  );
 
                   return Container(
                     width: 120,
@@ -648,32 +645,22 @@ class _PriceHeatmapScreenState extends State<PriceHeatmapScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              '$_selectedCommodity Price',
-              style: AppTextStyles.subtitle,
-            ),
+            Text('$_selectedCommodity Price', style: AppTextStyles.subtitle),
             const SizedBox(height: 8),
             Row(
               children: [
                 Text(
                   '₹${data.averagePrice.toStringAsFixed(2)}',
-                  style: AppTextStyles.h2.copyWith(
-                    color: AppColors.primary,
-                  ),
+                  style: AppTextStyles.h2.copyWith(color: AppColors.primary),
                 ),
                 Text(
                   '/Qtl',
-                  style: AppTextStyles.bodyMedium.copyWith(
-                    color: Colors.grey,
-                  ),
+                  style: AppTextStyles.bodyMedium.copyWith(color: Colors.grey),
                 ),
               ],
             ),
             const SizedBox(height: 16),
-            Text(
-              'Data Sample Size',
-              style: AppTextStyles.subtitle,
-            ),
+            Text('Data Sample Size', style: AppTextStyles.subtitle),
             const SizedBox(height: 4),
             Text(
               '${data.count} market records',
@@ -713,71 +700,41 @@ class _PriceHeatmapScreenState extends State<PriceHeatmapScreen> {
               style: AppTextStyles.bodyMedium,
             ),
             const SizedBox(height: 16),
-            Text(
-              'Color Key:',
-              style: AppTextStyles.subtitle,
-            ),
+            Text('Color Key:', style: AppTextStyles.subtitle),
             const SizedBox(height: 8),
             Row(
               children: [
-                Container(
-                  width: 16,
-                  height: 16,
-                  color: Colors.green.shade700,
-                ),
+                Container(width: 16, height: 16, color: Colors.green.shade700),
                 const SizedBox(width: 8),
-                const Expanded(
-                  child: Text('Lower prices'),
-                ),
+                const Expanded(child: Text('Lower prices')),
               ],
             ),
             const SizedBox(height: 4),
             Row(
               children: [
-                Container(
-                  width: 16,
-                  height: 16,
-                  color: Colors.green.shade500,
-                ),
+                Container(width: 16, height: 16, color: Colors.green.shade500),
                 const SizedBox(width: 8),
-                const Expanded(
-                  child: Text('Below average prices'),
-                ),
+                const Expanded(child: Text('Below average prices')),
               ],
             ),
             const SizedBox(height: 4),
             Row(
               children: [
-                Container(
-                  width: 16,
-                  height: 16,
-                  color: Colors.orange.shade500,
-                ),
+                Container(width: 16, height: 16, color: Colors.orange.shade500),
                 const SizedBox(width: 8),
-                const Expanded(
-                  child: Text('Above average prices'),
-                ),
+                const Expanded(child: Text('Above average prices')),
               ],
             ),
             const SizedBox(height: 4),
             Row(
               children: [
-                Container(
-                  width: 16,
-                  height: 16,
-                  color: Colors.red.shade500,
-                ),
+                Container(width: 16, height: 16, color: Colors.red.shade500),
                 const SizedBox(width: 8),
-                const Expanded(
-                  child: Text('Higher prices'),
-                ),
+                const Expanded(child: Text('Higher prices')),
               ],
             ),
             const SizedBox(height: 16),
-            Text(
-              'Data Source:',
-              style: AppTextStyles.subtitle,
-            ),
+            Text('Data Source:', style: AppTextStyles.subtitle),
             const SizedBox(height: 4),
             const Text(
               'AGMARKNET - A Government of India Portal for Agricultural Marketing Information',

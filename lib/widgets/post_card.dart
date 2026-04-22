@@ -73,10 +73,10 @@ class PostCard extends StatelessWidget {
                       onPressed: onPin,
                       tooltip: post.isPinned ? 'Unpin post' : 'Pin post',
                     ),
-                  if (post.category != null)
+                  if (post.category.isNotEmpty)
                     Chip(
                       label: Text(
-                        post.category!,
+                        post.category,
                         style: const TextStyle(fontSize: 12),
                       ),
                       padding: EdgeInsets.zero,
@@ -128,9 +128,8 @@ class PostCard extends StatelessWidget {
                     return CachedNetworkImage(
                       imageUrl: post.imageUrls[index],
                       fit: BoxFit.cover,
-                      placeholder: (context, url) => const Center(
-                        child: CircularProgressIndicator(),
-                      ),
+                      placeholder: (context, url) =>
+                          const Center(child: CircularProgressIndicator()),
                       errorWidget: (context, url, error) =>
                           const Icon(Icons.error),
                     );

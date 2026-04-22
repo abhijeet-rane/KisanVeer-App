@@ -7,6 +7,7 @@ import 'package:geocoding/geocoding.dart';
 import 'package:kisan_veer/services/cache_service.dart';
 import 'package:kisan_veer/services/weather_alert_service.dart';
 import 'package:kisan_veer/services/crop_advice_service.dart';
+import 'package:kisan_veer/utils/app_logger.dart';
 
 class WeatherService {
   final SupabaseClient _client = Supabase.instance.client;
@@ -35,7 +36,8 @@ class WeatherService {
 
     if (permission == LocationPermission.deniedForever) {
       return Future.error(
-          'Location permissions are permanently denied, we cannot request permissions.');
+        'Location permissions are permanently denied, we cannot request permissions.',
+      );
     }
 
     return await Geolocator.getCurrentPosition();
@@ -48,22 +50,29 @@ class WeatherService {
           .from('secrets')
           .select('key_value')
           .eq('key_name', 'openweather_api_key')
-          .single(); // Ensures only one row is fetched
+          .maybeSingle();
 
-      if (response == null || response['key_value'] == null) {
-        throw Exception('API key not found in Supabase.');
+      final key = response?['key_value'] as String?;
+      if (key == null || key.isEmpty) {
+        throw Exception('Weather API key not found in Supabase secrets.');
       }
-
-      return response['key_value'];
-    } catch (e) {
-      print('Error getting API key: $e');
-      throw Exception('Failed to get API key');
+      return key;
+    } catch (e, s) {
+      AppLogger.e(
+        'Error getting weather API key',
+        tag: 'Weather',
+        error: e,
+        stackTrace: s,
+      );
+      throw Exception('Failed to get weather API key');
     }
   }
 
   /// Get current weather data by coordinates
   Future<Map<String, dynamic>> getCurrentWeather(
-      double latitude, double longitude) async {
+    double latitude,
+    double longitude,
+  ) async {
     final apiKey = await _getApiKey();
     final url =
         'https://api.openweathermap.org/data/2.5/weather?lat=$latitude&lon=$longitude&units=metric&appid=$apiKey';
@@ -95,8 +104,8 @@ class WeatherService {
         'windSpeed': data['wind']['speed'].round(),
         'precipitation': 0, // OpenWeatherMap doesn't provide this directly
         'pressure': data['main']['pressure'],
-        'visibility':
-            (data['visibility'] / 1000).round(), // Convert meters to kilometers
+        'visibility': (data['visibility'] / 1000)
+            .round(), // Convert meters to kilometers
         'uvIndex': 0, // Not available in basic API
         'icon': _getWeatherIcon(data['weather'][0]['icon']),
       };
@@ -107,7 +116,9 @@ class WeatherService {
 
   /// Get hourly forecast (using free 5-day/3-hour forecast API)
   Future<List<Map<String, dynamic>>> getHourlyForecast(
-      double latitude, double longitude) async {
+    double latitude,
+    double longitude,
+  ) async {
     final apiKey = await _getApiKey();
     final url =
         'https://api.openweathermap.org/data/2.5/forecast?lat=$latitude&lon=$longitude&units=metric&appid=$apiKey';
@@ -135,7 +146,9 @@ class WeatherService {
 
   /// Get 5-day forecast using free forecast API
   Future<List<Map<String, dynamic>>> getDailyForecast(
-      double latitude, double longitude) async {
+    double latitude,
+    double longitude,
+  ) async {
     final apiKey = await _getApiKey();
     final url =
         'https://api.openweathermap.org/data/2.5/forecast?lat=$latitude&lon=$longitude&units=metric&appid=$apiKey';
@@ -149,8 +162,9 @@ class WeatherService {
       // Extract daily forecast by grouping 3-hour forecasts by day
       final Map<String, List<dynamic>> dailyForecastMap = {};
       for (final forecast in forecastList) {
-        final dateTime =
-            DateTime.fromMillisecondsSinceEpoch(forecast['dt'] * 1000);
+        final dateTime = DateTime.fromMillisecondsSinceEpoch(
+          forecast['dt'] * 1000,
+        );
         final day = DateFormat('yyyy-MM-dd').format(dateTime);
 
         if (!dailyForecastMap.containsKey(day)) {
@@ -187,8 +201,9 @@ class WeatherService {
         });
 
         final count = forecasts.length;
-        final dateTime =
-            DateTime.fromMillisecondsSinceEpoch(forecasts[0]['dt'] * 1000);
+        final dateTime = DateTime.fromMillisecondsSinceEpoch(
+          forecasts[0]['dt'] * 1000,
+        );
 
         dailyForecast.add({
           'day': DateFormat('EEE').format(dateTime),
@@ -211,8 +226,11 @@ class WeatherService {
   /// Get city name from coordinates
   Future<String> getCityName(double latitude, double longitude) async {
     final apiKey = await _getApiKey();
-    final response = await http.get(Uri.parse(
-        'https://api.openweathermap.org/data/2.5/weather?lat=$latitude&lon=$longitude&appid=$apiKey'));
+    final response = await http.get(
+      Uri.parse(
+        'https://api.openweathermap.org/data/2.5/weather?lat=$latitude&lon=$longitude&appid=$apiKey',
+      ),
+    );
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
@@ -224,7 +242,8 @@ class WeatherService {
 
   /// Get farming advice from Supabase or generate based on weather
   Future<List<Map<String, dynamic>>> getFarmingAdvice(
-      Map<String, dynamic> currentWeather) async {
+    Map<String, dynamic> currentWeather,
+  ) async {
     try {
       final String condition = currentWeather['condition'] ?? '';
       final List<Map<String, dynamic>> allAdvice = [];
@@ -254,29 +273,35 @@ class WeatherService {
 
       // Convert general advice to our format
       if (generalResponse.isNotEmpty) {
-        allAdvice
-            .addAll(List<Map<String, dynamic>>.from(generalResponse.map((item) {
-          return {
-            'crop': 'General',
-            'advice': item['advice_description'],
-            'iconName': item['icon_name'],
-            'color': item['color_hex'],
-            'region': item['region'] ?? 'Maharashtra',
-            'currentStage': item['growth_stage'] ?? '',
-            'title': item['advice_title'],
-          };
-        })));
+        allAdvice.addAll(
+          List<Map<String, dynamic>>.from(
+            generalResponse.map((item) {
+              return {
+                'crop': 'General',
+                'advice': item['advice_description'],
+                'iconName': item['icon_name'],
+                'color': item['color_hex'],
+                'region': item['region'] ?? 'Maharashtra',
+                'currentStage': item['growth_stage'] ?? '',
+                'title': item['advice_title'],
+              };
+            }),
+          ),
+        );
       }
 
       // Get user's selected crops for crop-specific advice
       // Force refresh to get latest crop selections
-      final userCrops =
-          await _cropAdviceService.getUserCrops(forceRefresh: true);
+      final userCrops = await _cropAdviceService.getUserCrops(
+        forceRefresh: true,
+      );
 
       // Get crop-specific advice using cropAdviceService
       // This will handle fetching from database and fallback to generated advice
-      final cropSpecificAdvice = await _cropAdviceService
-          .getCropSpecificAdvice(currentWeather, specificCrops: userCrops);
+      final cropSpecificAdvice = await _cropAdviceService.getCropSpecificAdvice(
+        currentWeather,
+        specificCrops: userCrops,
+      );
 
       // Add crop-specific advice to our list
       if (cropSpecificAdvice.isNotEmpty) {
@@ -290,14 +315,15 @@ class WeatherService {
 
       return allAdvice;
     } catch (e) {
-      print('Error getting farming advice: $e');
+      AppLogger.e('Error getting farming advice', tag: 'Weather', error: e);
       return _generateAdvice(currentWeather);
     }
   }
 
   /// Generate advice based on weather conditions (fallback when no database advice is found)
   List<Map<String, dynamic>> _generateAdvice(
-      Map<String, dynamic> currentWeather) {
+    Map<String, dynamic> currentWeather,
+  ) {
     final List<Map<String, dynamic>> advice = [];
     final String condition = currentWeather['condition'] ?? '';
     final int temp = currentWeather['temperature'] ?? 25;
@@ -423,8 +449,8 @@ class WeatherService {
         // Always get fresh farming advice even with cached weather data
         final currentWeather = cachedData['currentWeather'];
         final genericAdvice = await getFarmingAdvice(currentWeather);
-        final cropSpecificAdvice =
-            await _cropAdviceService.getCropSpecificAdvice(currentWeather);
+        final cropSpecificAdvice = await _cropAdviceService
+            .getCropSpecificAdvice(currentWeather);
 
         // Update advice in cached data
         cachedData['farmingAdvice'] = [...genericAdvice, ...cropSpecificAdvice];
@@ -435,7 +461,9 @@ class WeatherService {
       // If no cached data, fetch fresh data
       final position = await _getCurrentLocation();
       final weatherData = await _getWeatherDataByCoordinates(
-          position.latitude, position.longitude);
+        position.latitude,
+        position.longitude,
+      );
 
       // Cache the new data
       await _cacheService.cacheWeatherData(weatherData);
@@ -445,14 +473,16 @@ class WeatherService {
 
       return weatherData;
     } catch (e) {
-      print('Error fetching weather data: $e');
+      AppLogger.e('Error fetching weather data', tag: 'Weather', error: e);
       throw Exception('Failed to fetch weather data: $e');
     }
   }
 
   /// Get weather data by coordinates - internal method
   Future<Map<String, dynamic>> _getWeatherDataByCoordinates(
-      double latitude, double longitude) async {
+    double latitude,
+    double longitude,
+  ) async {
     final city = await getCityName(latitude, longitude);
     final currentWeather = await getCurrentWeather(latitude, longitude);
     final hourlyForecast = await getHourlyForecast(latitude, longitude);
@@ -460,8 +490,9 @@ class WeatherService {
 
     // Get farming advice - now with crop-specific advice
     final genericAdvice = await getFarmingAdvice(currentWeather);
-    final cropSpecificAdvice =
-        await _cropAdviceService.getCropSpecificAdvice(currentWeather);
+    final cropSpecificAdvice = await _cropAdviceService.getCropSpecificAdvice(
+      currentWeather,
+    );
 
     // Combine both types of advice
     final List<Map<String, dynamic>> combinedAdvice = [
@@ -483,8 +514,9 @@ class WeatherService {
   Future<Map<String, dynamic>> searchLocationWeather(String query) async {
     try {
       // Check if we have cached data for this location
-      final cachedData =
-          await _cacheService.getCachedLocationWeatherData(query);
+      final cachedData = await _cacheService.getCachedLocationWeatherData(
+        query,
+      );
       if (cachedData != null) {
         return cachedData;
       }
@@ -510,7 +542,7 @@ class WeatherService {
 
       return weatherData;
     } catch (e) {
-      print('Error searching location: $e');
+      AppLogger.e('Error searching location', tag: 'Weather', error: e);
       throw Exception('Failed to find weather for location: $e');
     }
   }
@@ -558,7 +590,8 @@ class WeatherService {
 
   /// Get crop-specific advice only
   Future<List<Map<String, dynamic>>> getCropAdvice(
-      Map<String, dynamic> currentWeather) async {
+    Map<String, dynamic> currentWeather,
+  ) async {
     return await _cropAdviceService.getCropSpecificAdvice(currentWeather);
   }
 }

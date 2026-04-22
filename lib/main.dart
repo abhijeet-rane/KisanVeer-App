@@ -8,6 +8,7 @@ import 'package:kisan_veer/screens/market/price_alerts_screen.dart';
 import 'package:kisan_veer/services/localization_service.dart';
 import 'package:kisan_veer/screens/onboarding/splash_screen.dart';
 import 'package:kisan_veer/services/notifications_service.dart';
+import 'package:kisan_veer/services/analytics_service.dart';
 import 'package:kisan_veer/services/auth_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -33,6 +34,11 @@ void main() async {
   // Initialize auth state listener to save sessions for biometric login
   AuthService().initAuthStateListener();
 
+  // Initialize analytics so events are batched & flushed in the background
+  AnalyticsService().initialize(
+    userId: Supabase.instance.client.auth.currentUser?.id,
+  );
+
   await NotificationsService.initialize();
 
   runApp(const MyApp());
@@ -56,9 +62,7 @@ class MyApp extends StatelessWidget {
       home: const SplashScreen(),
       // Custom page transitions for premium feel
       onGenerateRoute: _generateRoute,
-      routes: {
-        '/splash': (context) => const SplashScreen(),
-      },
+      routes: {'/splash': (context) => const SplashScreen()},
     );
   }
 
@@ -83,19 +87,13 @@ class MyApp extends StatelessWidget {
         return null;
     }
 
-    return PremiumPageRoute(
-      builder: (context) => page,
-      settings: settings,
-    );
+    return PremiumPageRoute(builder: (context) => page, settings: settings);
   }
 }
 
 /// Custom page route with premium transition animation
 class PremiumPageRoute<T> extends MaterialPageRoute<T> {
-  PremiumPageRoute({
-    required super.builder,
-    super.settings,
-  });
+  PremiumPageRoute({required super.builder, super.settings});
 
   @override
   Duration get transitionDuration => const Duration(milliseconds: 400);
@@ -109,16 +107,10 @@ class PremiumPageRoute<T> extends MaterialPageRoute<T> {
   ) {
     // Fade + slight scale transition
     return FadeTransition(
-      opacity: CurvedAnimation(
-        parent: animation,
-        curve: Curves.easeOut,
-      ),
+      opacity: CurvedAnimation(parent: animation, curve: Curves.easeOut),
       child: ScaleTransition(
         scale: Tween<double>(begin: 0.95, end: 1.0).animate(
-          CurvedAnimation(
-            parent: animation,
-            curve: Curves.easeOutCubic,
-          ),
+          CurvedAnimation(parent: animation, curve: Curves.easeOutCubic),
         ),
         child: child,
       ),

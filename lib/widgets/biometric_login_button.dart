@@ -121,21 +121,22 @@ class _BiometricLoginButtonState extends State<BiometricLoginButton>
         Row(
           children: [
             Expanded(
-                child:
-                    Divider(color: AppColors.textSecondary.withOpacity(0.3))),
+              child: Divider(
+                color: AppColors.textSecondary.withValues(alpha: 0.3),
+              ),
+            ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Text(
                 'or',
-                style: TextStyle(
-                  color: AppColors.textSecondary,
-                  fontSize: 14,
-                ),
+                style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
               ),
             ),
             Expanded(
-                child:
-                    Divider(color: AppColors.textSecondary.withOpacity(0.3))),
+              child: Divider(
+                color: AppColors.textSecondary.withValues(alpha: 0.3),
+              ),
+            ),
           ],
         ),
         const SizedBox(height: 20),
@@ -150,9 +151,9 @@ class _BiometricLoginButtonState extends State<BiometricLoginButton>
               height: 72,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: AppColors.primary.withOpacity(0.1),
+                color: AppColors.primary.withValues(alpha: 0.1),
                 border: Border.all(
-                  color: AppColors.primary.withOpacity(0.3),
+                  color: AppColors.primary.withValues(alpha: 0.3),
                   width: 2,
                 ),
               ),
@@ -182,10 +183,7 @@ class _BiometricLoginButtonState extends State<BiometricLoginButton>
         // Label
         Text(
           'Login with $_biometricTypeName',
-          style: TextStyle(
-            color: AppColors.textSecondary,
-            fontSize: 14,
-          ),
+          style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
         ),
       ],
     );
@@ -254,10 +252,7 @@ class _BiometricSettingsToggleState extends State<BiometricSettingsToggle> {
 
   void _showSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        behavior: SnackBarBehavior.floating,
-      ),
+      SnackBar(content: Text(message), behavior: SnackBarBehavior.floating),
     );
   }
 
@@ -277,14 +272,8 @@ class _BiometricSettingsToggleState extends State<BiometricSettingsToggle> {
 
     if (!_isAvailable) {
       return ListTile(
-        leading: Icon(
-          Icons.fingerprint,
-          color: Colors.grey,
-        ),
-        title: Text(
-          'Biometric Login',
-          style: TextStyle(color: Colors.grey),
-        ),
+        leading: Icon(Icons.fingerprint, color: Colors.grey),
+        title: Text('Biometric Login', style: TextStyle(color: Colors.grey)),
         subtitle: Text(
           'Not available on this device',
           style: TextStyle(color: Colors.grey),

@@ -32,8 +32,9 @@ class SessionManager {
     onSessionExpired = onExpired;
 
     // Check if session is already expired
-    final isExpired =
-        await _secureStorage.isSessionExpired(timeout: sessionTimeout);
+    final isExpired = await _secureStorage.isSessionExpired(
+      timeout: sessionTimeout,
+    );
     if (isExpired) {
       AppLogger.w('Session expired on app start', tag: 'Session');
       await handleSessionExpired();
@@ -85,8 +86,9 @@ class SessionManager {
       // Check if token is about to expire
       final expiresAt = session.expiresAt;
       if (expiresAt != null) {
-        final expiryTime =
-            DateTime.fromMillisecondsSinceEpoch(expiresAt * 1000);
+        final expiryTime = DateTime.fromMillisecondsSinceEpoch(
+          expiresAt * 1000,
+        );
         final now = DateTime.now();
 
         // Refresh if expiring in less than 10 minutes
@@ -152,8 +154,9 @@ class SessionManager {
     if (!hasCredentials) return false;
 
     // Check if session is expired
-    final isExpired =
-        await _secureStorage.isSessionExpired(timeout: sessionTimeout);
+    final isExpired = await _secureStorage.isSessionExpired(
+      timeout: sessionTimeout,
+    );
     if (isExpired) return false;
 
     // Check Supabase session

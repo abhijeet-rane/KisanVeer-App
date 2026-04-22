@@ -13,10 +13,8 @@ import 'order_details_screen.dart';
 class OrderConfirmationScreen extends StatelessWidget {
   final Order order;
 
-  const OrderConfirmationScreen({
-    Key? key,
-    required this.order,
-  }) : super(key: key);
+  const OrderConfirmationScreen({Key? key, required this.order})
+    : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -51,10 +49,7 @@ class OrderConfirmationScreen extends StatelessWidget {
             const SizedBox(height: 8),
             const Text(
               'Your order has been confirmed.',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.black87,
-              ),
+              style: TextStyle(fontSize: 16, color: Colors.black87),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 32),
@@ -74,10 +69,7 @@ class OrderConfirmationScreen extends StatelessWidget {
               onPressed: () => _viewOrderDetails(context),
               child: Text(
                 'View Order Details',
-                style: TextStyle(
-                  color: AppColors.primary,
-                  fontSize: 16,
-                ),
+                style: TextStyle(color: AppColors.primary, fontSize: 16),
               ),
             ),
           ],
@@ -92,11 +84,8 @@ class OrderConfirmationScreen extends StatelessWidget {
       child: Lottie.asset(
         'assets/animations/order_success.json',
         repeat: false,
-        errorBuilder: (context, error, stackTrace) => Icon(
-          Icons.check_circle,
-          color: Colors.green,
-          size: 100,
-        ),
+        errorBuilder: (context, error, stackTrace) =>
+            Icon(Icons.check_circle, color: Colors.green, size: 100),
       ),
     );
   }
@@ -106,9 +95,7 @@ class OrderConfirmationScreen extends StatelessWidget {
 
     return Card(
       elevation: 4,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -116,10 +103,7 @@ class OrderConfirmationScreen extends StatelessWidget {
           children: [
             const Text(
               'Order Information',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             _buildInfoRow('Order ID', order.id.substring(0, 8)),
@@ -127,7 +111,9 @@ class OrderConfirmationScreen extends StatelessWidget {
             _buildInfoRow('Payment Method', order.paymentMethod ?? 'Online'),
             _buildInfoRow('Order Items', '${order.items?.length ?? 0} items'),
             _buildInfoRow(
-                'Total Amount', '₹${order.totalAmount.toStringAsFixed(2)}'),
+              'Total Amount',
+              '₹${order.totalAmount.toStringAsFixed(2)}',
+            ),
             _buildInfoRow('Status', _getStatusText(order.status)),
           ],
         ),
@@ -138,9 +124,7 @@ class OrderConfirmationScreen extends StatelessWidget {
   Widget _buildDeliveryDetails() {
     return Card(
       elevation: 4,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -148,10 +132,7 @@ class OrderConfirmationScreen extends StatelessWidget {
           children: [
             const Text(
               'Delivery Details',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             _buildInfoRow('Address', order.address.fullAddress),
@@ -169,10 +150,7 @@ class OrderConfirmationScreen extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  Icon(
-                    Icons.delivery_dining,
-                    color: Colors.green,
-                  ),
+                  Icon(Icons.delivery_dining, color: Colors.green),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Column(
@@ -212,19 +190,13 @@ class OrderConfirmationScreen extends StatelessWidget {
             width: 120,
             child: Text(
               label,
-              style: TextStyle(
-                color: Colors.grey[600],
-                fontSize: 14,
-              ),
+              style: TextStyle(color: Colors.grey[600], fontSize: 14),
             ),
           ),
           Expanded(
             child: Text(
               value,
-              style: const TextStyle(
-                fontWeight: FontWeight.w500,
-                fontSize: 14,
-              ),
+              style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
             ),
           ),
         ],

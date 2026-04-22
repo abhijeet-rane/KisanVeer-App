@@ -7,11 +7,8 @@ class LoanCard extends StatelessWidget {
   final Loan loan;
   final VoidCallback onPaymentSuccess;
 
-  const LoanCard({
-    Key? key,
-    required this.loan,
-    required this.onPaymentSuccess,
-  }) : super(key: key);
+  const LoanCard({Key? key, required this.loan, required this.onPaymentSuccess})
+    : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -41,9 +38,9 @@ class LoanCard extends StatelessWidget {
                 Text(
                   loan.title,
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.green.shade900,
-                      ),
+                    fontWeight: FontWeight.bold,
+                    color: Colors.green.shade900,
+                  ),
                 ),
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -70,22 +67,29 @@ class LoanCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 _buildInfoColumn(
-                    'Amount',
-                    '₹${loan.totalAmount.toStringAsFixed(0)}',
-                    Colors.green.shade900),
-                _buildInfoColumn('Interest Rate', '${loan.interestRate}%',
-                    Colors.blue.shade800),
+                  'Amount',
+                  '₹${loan.totalAmount.toStringAsFixed(0)}',
+                  Colors.green.shade900,
+                ),
                 _buildInfoColumn(
-                    'Due Date', _formatDate(loan.endDate), Colors.red.shade800),
+                  'Interest Rate',
+                  '${loan.interestRate}%',
+                  Colors.blue.shade800,
+                ),
+                _buildInfoColumn(
+                  'Due Date',
+                  _formatDate(loan.endDate),
+                  Colors.red.shade800,
+                ),
               ],
             ),
             SizedBox(height: 16),
             Text(
               'Repayment Progress',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: Colors.blueGrey.shade700,
-                    fontWeight: FontWeight.w600,
-                  ),
+                color: Colors.blueGrey.shade700,
+                fontWeight: FontWeight.w600,
+              ),
             ),
             SizedBox(height: 8),
             ClipRRect(
@@ -93,8 +97,9 @@ class LoanCard extends StatelessWidget {
               child: LinearProgressIndicator(
                 value: progress,
                 backgroundColor: Colors.grey.shade300,
-                valueColor:
-                    AlwaysStoppedAnimation<Color>(Colors.green.shade600),
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  Colors.green.shade600,
+                ),
               ),
             ),
             SizedBox(height: 8),
@@ -104,13 +109,16 @@ class LoanCard extends StatelessWidget {
                 Text(
                   'Paid: ₹${(loan.totalAmount - loan.remainingAmount).toStringAsFixed(0)}',
                   style: TextStyle(
-                      color: Colors.green.shade900,
-                      fontWeight: FontWeight.w600),
+                    color: Colors.green.shade900,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
                 Text(
                   'Remaining: ₹${loan.remainingAmount.toStringAsFixed(0)}',
                   style: TextStyle(
-                      color: Colors.red.shade700, fontWeight: FontWeight.w600),
+                    color: Colors.red.shade700,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ],
             ),
@@ -133,8 +141,10 @@ class LoanCard extends StatelessWidget {
                       ),
                       side: BorderSide(color: Colors.green.shade700),
                     ),
-                    child: Text('Details',
-                        style: TextStyle(color: Colors.green.shade700)),
+                    child: Text(
+                      'Details',
+                      style: TextStyle(color: Colors.green.shade700),
+                    ),
                   ),
                 ),
                 SizedBox(width: 16),
@@ -164,7 +174,9 @@ class LoanCard extends StatelessWidget {
                     child: Text(
                       'Make Payment',
                       style: TextStyle(
-                          color: Colors.white, fontWeight: FontWeight.w600),
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                 ),
@@ -180,13 +192,7 @@ class LoanCard extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: TextStyle(
-            color: Colors.grey[600],
-            fontSize: 12,
-          ),
-        ),
+        Text(label, style: TextStyle(color: Colors.grey[600], fontSize: 12)),
         SizedBox(height: 4),
         Text(
           value,

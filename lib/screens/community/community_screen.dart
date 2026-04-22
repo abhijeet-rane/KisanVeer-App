@@ -44,25 +44,29 @@ class _CommunityScreenState extends State<CommunityScreen>
     super.dispose();
   }
 
+  static const int _pageSize = 10;
+
   Future<void> _loadInitialData() async {
     setState(() => _isLoading = true);
     try {
       final categories = await _communityService.getCategories();
       final posts = await _communityService.getPosts(
         category: _selectedCategory,
+        offset: 0,
+        limit: _pageSize,
       );
 
       setState(() {
         _categories = categories;
         _posts = posts;
-        _hasMore = posts.length >= 10;
+        _hasMore = posts.length >= _pageSize;
         _offset = posts.length;
       });
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error loading data: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error loading data: $e')));
       }
     } finally {
       if (mounted) {
@@ -85,20 +89,22 @@ class _CommunityScreenState extends State<CommunityScreen>
     try {
       final posts = await _communityService.getPosts(
         category: _selectedCategory,
+        offset: _offset,
+        limit: _pageSize,
       );
 
       if (mounted) {
         setState(() {
           _posts.addAll(posts);
-          _hasMore = posts.length >= 10;
+          _hasMore = posts.length >= _pageSize;
           _offset += posts.length;
         });
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error loading more posts: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error loading more posts: $e')));
       }
     } finally {
       if (mounted) {

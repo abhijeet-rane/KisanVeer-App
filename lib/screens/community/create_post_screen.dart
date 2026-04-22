@@ -8,10 +8,8 @@ import 'package:path/path.dart' as path;
 class CreatePostScreen extends StatefulWidget {
   final List<PostCategory> categories;
 
-  const CreatePostScreen({
-    Key? key,
-    required this.categories,
-  }) : super(key: key);
+  const CreatePostScreen({Key? key, required this.categories})
+    : super(key: key);
 
   @override
   State<CreatePostScreen> createState() => _CreatePostScreenState();
@@ -40,13 +38,10 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
 
   Future<void> _pickImages() async {
     final images = await _imagePicker.pickMultiImage();
-    if (images != null) {
-      setState(() {
-        _selectedImages.addAll(
-          images.map((xFile) => File(xFile.path)).toList(),
-        );
-      });
-    }
+    if (images.isEmpty) return;
+    setState(() {
+      _selectedImages.addAll(images.map((xFile) => File(xFile.path)).toList());
+    });
   }
 
   void _removeImage(int index) {
@@ -81,8 +76,10 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       final imageUrls = <String>[];
       for (final imageFile in _selectedImages) {
         final fileName = path.basename(imageFile.path);
-        final imageUrl =
-            await _communityService.uploadPostImage(imageFile, fileName);
+        final imageUrl = await _communityService.uploadPostImage(
+          imageFile,
+          fileName,
+        );
         imageUrls.add(imageUrl);
       }
 
@@ -100,9 +97,9 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error creating post: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error creating post: $e')));
       }
     } finally {
       if (mounted) {
@@ -142,10 +139,12 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                 border: OutlineInputBorder(),
               ),
               items: widget.categories
-                  .map((category) => DropdownMenuItem(
-                        value: category.name,
-                        child: Text(category.name),
-                      ))
+                  .map(
+                    (category) => DropdownMenuItem(
+                      value: category.name,
+                      child: Text(category.name),
+                    ),
+                  )
                   .toList(),
               onChanged: (value) => setState(() => _selectedCategory = value),
               validator: (value) =>

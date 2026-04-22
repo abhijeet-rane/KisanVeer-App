@@ -1,8 +1,10 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'dart:async';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:kisan_veer/models/user_model.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:kisan_veer/services/analytics_service.dart';
 import 'package:kisan_veer/utils/app_logger.dart';
 import 'package:kisan_veer/services/secure_storage_service.dart';
 
@@ -22,18 +24,31 @@ class AuthService {
     if (_listenerInitialized) return;
     _listenerInitialized = true;
 
-    supabase.auth.onAuthStateChange.listen((data) {
+    supabase.auth.onAuthStateChange.listen((data) async {
       final AuthChangeEvent event = data.event;
       final Session? session = data.session;
 
-      if (event == AuthChangeEvent.signedIn && session != null) {
-        // Save session for biometric on ANY sign in
-        _saveSessionForBiometric(session);
-        AppLogger.d('Session saved on auth state change', tag: 'Auth');
-      } else if (event == AuthChangeEvent.signedOut) {
-        // Clear tokens on sign out
-        _secureStorage.clearAuthTokens();
+      if (event == AuthChangeEvent.signedOut) {
+        // Keep the refresh token around when the user has opted into
+        // biometric login, so a fingerprint tap can restore the session.
+        final biometricEnabled = await _secureStorage.isBiometricEnabled();
+        await _secureStorage.clearAuthTokens(
+          keepRefreshToken: biometricEnabled,
+        );
+        AnalyticsService().clearUser();
         AppLogger.d('Tokens cleared on sign out', tag: 'Auth');
+      } else if (session != null) {
+        // Supabase rotates the refresh token on every auto-refresh, so
+        // mirror whatever is current on EVERY event that carries a session
+        // (signedIn, tokenRefreshed, userUpdated, initialSession, etc.).
+        // Without this, the token in secure storage goes stale and the
+        // server rejects it with 400 / refresh_token_not_found when
+        // biometric login tries to redeem it after sign-out.
+        await _saveSessionForBiometric(session);
+        if (event == AuthChangeEvent.signedIn) {
+          AnalyticsService().setUserId(session.user.id);
+        }
+        AppLogger.d('Session mirrored on ${event.name}', tag: 'Auth');
       }
     });
   }
@@ -84,6 +99,8 @@ class AuthService {
         'crops': [],
         'updated_at': DateTime.now().toIso8601String(),
       });
+
+      AnalyticsService().logSignUp('email');
     } catch (e) {
       throw _handleAuthException(e);
     }
@@ -93,8 +110,16 @@ class AuthService {
   Future<void> _sendUserToSupabase(Session? session) async {
     if (session == null) return;
 
-    final url = Uri.parse(
-        'https://wmqpftdxdduhbdsjybzu.supabase.co/functions/v1/handle-new-user');
+    final supabaseUrl = dotenv.env['SUPABASE_URL'];
+    if (supabaseUrl == null || supabaseUrl.isEmpty) {
+      AppLogger.w(
+        'SUPABASE_URL is not set — skipping handle-new-user webhook',
+        tag: 'Auth',
+      );
+      return;
+    }
+
+    final url = Uri.parse('$supabaseUrl/functions/v1/handle-new-user');
 
     final response = await http.post(
       url,
@@ -104,10 +129,7 @@ class AuthService {
       },
       body: jsonEncode({
         'event': 'INSERT',
-        'session': {
-          'user_id': session.user.id,
-          'email': session.user.email,
-        },
+        'session': {'user_id': session.user.id, 'email': session.user.email},
       }),
     );
 
@@ -132,6 +154,8 @@ class AuthService {
       if (response.session != null) {
         await _saveSessionForBiometric(response.session!);
       }
+
+      AnalyticsService().logLogin('email');
     } catch (e) {
       throw _handleAuthException(e);
     }
@@ -149,8 +173,11 @@ class AuthService {
       );
       AppLogger.d('Session saved for biometric login', tag: 'Auth');
     } catch (e) {
-      AppLogger.e('Failed to save session for biometric',
-          tag: 'Auth', error: e);
+      AppLogger.e(
+        'Failed to save session for biometric',
+        tag: 'Auth',
+        error: e,
+      );
     }
   }
 
@@ -177,9 +204,23 @@ class AuthService {
       }
 
       return false;
+    } on AuthException catch (e) {
+      // Refresh token was revoked / expired / rotated past our copy. Purge
+      // it so the biometric button goes away and the user isn't offered a
+      // broken shortcut — they need to sign in with a password once more.
+      AppLogger.w(
+        'Stored refresh token rejected by Supabase (${e.code ?? 'unknown'})'
+        ' — clearing so biometric prompt is hidden until next login.',
+        tag: 'Auth',
+      );
+      await _secureStorage.clearAuthTokens();
+      return false;
     } catch (e) {
-      AppLogger.e('Failed to restore session for biometric',
-          tag: 'Auth', error: e);
+      AppLogger.e(
+        'Failed to restore session for biometric',
+        tag: 'Auth',
+        error: e,
+      );
       return false;
     }
   }
@@ -198,10 +239,11 @@ class AuthService {
 
   // Sign out
   Future<void> signOut() async {
-    // Clear tokens but keep biometric enabled setting
-    // So user can still use biometric after re-logging in
-    await _secureStorage.clearAuthTokens();
-    // Don't clear biometric enabled - keep it persistent
+    // If biometric login is enabled, keep the refresh token in secure
+    // storage so the user can restore their session with a fingerprint
+    // tap. Otherwise wipe everything.
+    final biometricEnabled = await _secureStorage.isBiometricEnabled();
+    await _secureStorage.clearAuthTokens(keepRefreshToken: biometricEnabled);
     await supabase.auth.signOut();
   }
 
@@ -263,10 +305,13 @@ class AuthService {
       final userId = supabase.auth.currentUser?.id;
       if (userId == null) throw 'User not logged in';
 
-      await supabase.from('user_preferences').update({
-        'crops': crops,
-        'updated_at': DateTime.now().toIso8601String(),
-      }).eq('user_id', userId);
+      await supabase
+          .from('user_preferences')
+          .update({
+            'crops': crops,
+            'updated_at': DateTime.now().toIso8601String(),
+          })
+          .eq('user_id', userId);
 
       // Notify listeners that crops have been updated
       _notifyUserDataChange();

@@ -42,16 +42,12 @@ class PostSearchDelegate extends SearchDelegate<Post?> {
         }
 
         if (snapshot.hasError) {
-          return Center(
-            child: Text('Error: ${snapshot.error}'),
-          );
+          return Center(child: Text('Error: ${snapshot.error}'));
         }
 
         final posts = snapshot.data ?? [];
         if (posts.isEmpty) {
-          return const Center(
-            child: Text('No posts found'),
-          );
+          return const Center(child: Text('No posts found'));
         }
 
         return ListView.builder(
@@ -73,9 +69,9 @@ class PostSearchDelegate extends SearchDelegate<Post?> {
                     post.likesCount++;
                   }
                 } catch (e) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Error: $e')),
-                  );
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text('Error: $e')));
                 }
               },
             );
@@ -92,18 +88,11 @@ class PostSearchDelegate extends SearchDelegate<Post?> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.search,
-              size: 64,
-              color: Colors.grey[400],
-            ),
+            Icon(Icons.search, size: 64, color: Colors.grey[400]),
             SizedBox(height: 16),
             Text(
               'Search for posts by title or content',
-              style: TextStyle(
-                color: Colors.grey[600],
-                fontSize: 16,
-              ),
+              style: TextStyle(color: Colors.grey[600], fontSize: 16),
             ),
           ],
         ),

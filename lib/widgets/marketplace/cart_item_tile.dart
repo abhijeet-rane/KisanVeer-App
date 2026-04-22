@@ -35,10 +35,7 @@ class CartItemTile extends StatelessWidget {
           child: Center(
             child: Text(
               cartItem.quantity.toString(),
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 14,
-              ),
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
             ),
           ),
         ),
@@ -64,11 +61,7 @@ class CartItemTile extends StatelessWidget {
           color: Colors.grey[200],
           borderRadius: BorderRadius.circular(4),
         ),
-        child: Icon(
-          icon,
-          size: 16,
-          color: AppColors.primary,
-        ),
+        child: Icon(icon, size: 16, color: AppColors.primary),
       ),
     );
   }
@@ -87,18 +80,13 @@ class CartItemTile extends StatelessWidget {
         alignment: Alignment.centerRight,
         padding: const EdgeInsets.only(right: 20),
         color: Colors.red,
-        child: const Icon(
-          Icons.delete,
-          color: Colors.white,
-        ),
+        child: const Icon(Icons.delete, color: Colors.white),
       ),
       onDismissed: (direction) => onRemove(),
       child: Card(
         margin: const EdgeInsets.only(bottom: 12),
         elevation: 2,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         child: InkWell(
           onTap: () => Navigator.push(
             context,
@@ -171,9 +159,7 @@ class CartItemTile extends StatelessWidget {
                       const SizedBox(height: 4),
                       Text(
                         'Total: ₹${(product.price * cartItem.quantity).toStringAsFixed(2)}',
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w500,
-                        ),
+                        style: const TextStyle(fontWeight: FontWeight.w500),
                       ),
                     ],
                   ),
@@ -192,10 +178,7 @@ class CartItemTile extends StatelessWidget {
                       ),
                       child: const Text(
                         'Remove',
-                        style: TextStyle(
-                          color: Colors.red,
-                          fontSize: 12,
-                        ),
+                        style: TextStyle(color: Colors.red, fontSize: 12),
                       ),
                     ),
                   ],

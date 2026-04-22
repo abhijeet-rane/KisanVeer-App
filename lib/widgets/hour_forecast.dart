@@ -26,7 +26,7 @@ class HourForecast extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             spreadRadius: 1,
             blurRadius: 5,
             offset: const Offset(0, 2),
@@ -43,11 +43,7 @@ class HourForecast extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 10),
-          SvgPicture.asset(
-            icon,
-            height: 28,
-            width: 28,
-          ),
+          SvgPicture.asset(icon, height: 28, width: 28),
           const SizedBox(height: 8),
           Text(
             temperature,

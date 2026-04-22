@@ -9,7 +9,7 @@ import '../../services/profile_service.dart';
 class ApplicationFormScreen extends StatefulWidget {
   final SchemeModel scheme;
   const ApplicationFormScreen({Key? key, required this.scheme})
-      : super(key: key);
+    : super(key: key);
 
   @override
   State<ApplicationFormScreen> createState() => _ApplicationFormScreenState();
@@ -54,13 +54,16 @@ class _ApplicationFormScreenState extends State<ApplicationFormScreen> {
 
   Future<void> _pickFiles() async {
     final result = await FilePicker.platform.pickFiles(
-        allowMultiple: true,
-        type: FileType.custom,
-        allowedExtensions: ['pdf', 'jpg', 'jpeg', 'png']);
+      allowMultiple: true,
+      type: FileType.custom,
+      allowedExtensions: ['pdf', 'jpg', 'jpeg', 'png'],
+    );
     if (result != null && result.files.isNotEmpty) {
       setState(() {
-        _selectedFiles =
-            result.paths.whereType<String>().map((p) => File(p)).toList();
+        _selectedFiles = result.paths
+            .whereType<String>()
+            .map((p) => File(p))
+            .toList();
       });
     }
   }
@@ -73,8 +76,9 @@ class _ApplicationFormScreenState extends State<ApplicationFormScreen> {
       _errorMessage = '';
     });
     try {
-      final uploadedFileUrls =
-          await _schemesService.uploadApplicationDocuments(_selectedFiles);
+      final uploadedFileUrls = await _schemesService.uploadApplicationDocuments(
+        _selectedFiles,
+      );
       // Use the public method from SchemesService to get the current user id
       final userId = _schemesService.getCurrentUserId();
       if (userId == null) {
@@ -103,7 +107,8 @@ class _ApplicationFormScreenState extends State<ApplicationFormScreen> {
       await _schemesService.createApplication(appModel);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Application submitted successfully!')));
+          SnackBar(content: Text('Application submitted successfully!')),
+        );
         Navigator.pop(context);
       }
     } catch (e) {
@@ -127,7 +132,7 @@ class _ApplicationFormScreenState extends State<ApplicationFormScreen> {
         'Aurangabad',
         'Solapur',
         'Kolhapur',
-        'Others'
+        'Others',
       ],
       'Gujarat': ['Ahmedabad', 'Surat', 'Vadodara', 'Rajkot', 'Others'],
       'Madhya Pradesh': [
@@ -136,7 +141,7 @@ class _ApplicationFormScreenState extends State<ApplicationFormScreen> {
         'Jabalpur',
         'Gwalior',
         'Ujjain',
-        'Others'
+        'Others',
       ],
       'Rajasthan': ['Jaipur', 'Jodhpur', 'Kota', 'Ajmer', 'Udaipur', 'Others'],
       'Karnataka': [
@@ -145,7 +150,7 @@ class _ApplicationFormScreenState extends State<ApplicationFormScreen> {
         'Mangaluru',
         'Hubballi-Dharwad',
         'Belagavi',
-        'Others'
+        'Others',
       ],
       'Uttar Pradesh': [
         'Lucknow',
@@ -153,7 +158,7 @@ class _ApplicationFormScreenState extends State<ApplicationFormScreen> {
         'Ghaziabad',
         'Agra',
         'Varanasi',
-        'Others'
+        'Others',
       ],
       'Punjab': [
         'Ludhiana',
@@ -161,7 +166,7 @@ class _ApplicationFormScreenState extends State<ApplicationFormScreen> {
         'Jalandhar',
         'Patiala',
         'Bathinda',
-        'Others'
+        'Others',
       ],
       'Haryana': [
         'Faridabad',
@@ -169,7 +174,7 @@ class _ApplicationFormScreenState extends State<ApplicationFormScreen> {
         'Rohtak',
         'Hisar',
         'Panipat',
-        'Others'
+        'Others',
       ],
       'Bihar': [
         'Patna',
@@ -177,7 +182,7 @@ class _ApplicationFormScreenState extends State<ApplicationFormScreen> {
         'Bhagalpur',
         'Muzaffarpur',
         'Darbhanga',
-        'Others'
+        'Others',
       ],
       'West Bengal': [
         'Kolkata',
@@ -185,7 +190,7 @@ class _ApplicationFormScreenState extends State<ApplicationFormScreen> {
         'Siliguri',
         'Durgapur',
         'Bardhaman',
-        'Others'
+        'Others',
       ],
       'Tamil Nadu': [
         'Chennai',
@@ -193,7 +198,7 @@ class _ApplicationFormScreenState extends State<ApplicationFormScreen> {
         'Madurai',
         'Tiruchirappalli',
         'Salem',
-        'Others'
+        'Others',
       ],
       'Andhra Pradesh': [
         'Visakhapatnam',
@@ -201,7 +206,7 @@ class _ApplicationFormScreenState extends State<ApplicationFormScreen> {
         'Guntur',
         'Nellore',
         'Kurnool',
-        'Others'
+        'Others',
       ],
       'Telangana': [
         'Hyderabad',
@@ -209,7 +214,7 @@ class _ApplicationFormScreenState extends State<ApplicationFormScreen> {
         'Karimnagar',
         'Nizamabad',
         'Khammam',
-        'Others'
+        'Others',
       ],
       'Kerala': [
         'Thiruvananthapuram',
@@ -217,7 +222,7 @@ class _ApplicationFormScreenState extends State<ApplicationFormScreen> {
         'Kozhikode',
         'Thrissur',
         'Kollam',
-        'Others'
+        'Others',
       ],
       'Odisha': [
         'Bhubaneswar',
@@ -225,7 +230,7 @@ class _ApplicationFormScreenState extends State<ApplicationFormScreen> {
         'Rourkela',
         'Berhampur',
         'Sambalpur',
-        'Others'
+        'Others',
       ],
       'Chhattisgarh': [
         'Raipur',
@@ -233,7 +238,7 @@ class _ApplicationFormScreenState extends State<ApplicationFormScreen> {
         'Durg',
         'Rajnandgaon',
         'Korba',
-        'Others'
+        'Others',
       ],
       'Jharkhand': [
         'Ranchi',
@@ -241,7 +246,7 @@ class _ApplicationFormScreenState extends State<ApplicationFormScreen> {
         'Dhanbad',
         'Bokaro',
         'Deoghar',
-        'Others'
+        'Others',
       ],
       'Assam': [
         'Guwahati',
@@ -249,7 +254,7 @@ class _ApplicationFormScreenState extends State<ApplicationFormScreen> {
         'Dibrugarh',
         'Jorhat',
         'Nagaon',
-        'Others'
+        'Others',
       ],
       'Goa': ['Panaji', 'Vasco da Gama', 'Margao', 'Mapusa', 'Ponda', 'Others'],
       'Delhi': [
@@ -258,9 +263,9 @@ class _ApplicationFormScreenState extends State<ApplicationFormScreen> {
         'South Delhi',
         'East Delhi',
         'West Delhi',
-        'Others'
+        'Others',
       ],
-      'Others': ['Others']
+      'Others': ['Others'],
     };
     return districtMap[state] ?? ['Others'];
   }
@@ -287,7 +292,7 @@ class _ApplicationFormScreenState extends State<ApplicationFormScreen> {
       'Assam',
       'Goa',
       'Delhi',
-      'Others'
+      'Others',
     ];
   }
 
@@ -304,8 +309,10 @@ class _ApplicationFormScreenState extends State<ApplicationFormScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Scheme: ${widget.scheme.schemeName}',
-                        style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text(
+                      'Scheme: ${widget.scheme.schemeName}',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
                     SizedBox(height: 16),
                     TextFormField(
                       initialValue: _name,
@@ -330,10 +337,12 @@ class _ApplicationFormScreenState extends State<ApplicationFormScreen> {
                           ? _state
                           : null,
                       items: _getStates()
-                          .map((state) => DropdownMenuItem(
-                                value: state,
-                                child: Text(state),
-                              ))
+                          .map(
+                            (state) => DropdownMenuItem(
+                              value: state,
+                              child: Text(state),
+                            ),
+                          )
                           .toList(),
                       onChanged: (value) {
                         setState(() {
@@ -347,15 +356,18 @@ class _ApplicationFormScreenState extends State<ApplicationFormScreen> {
                     SizedBox(height: 8),
                     DropdownButtonFormField<String>(
                       decoration: InputDecoration(labelText: 'District'),
-                      value: _district != null &&
+                      value:
+                          _district != null &&
                               _getDistrictsForState(_state).contains(_district)
                           ? _district
                           : null,
                       items: _getDistrictsForState(_state)
-                          .map((district) => DropdownMenuItem(
-                                value: district,
-                                child: Text(district),
-                              ))
+                          .map(
+                            (district) => DropdownMenuItem(
+                              value: district,
+                              child: Text(district),
+                            ),
+                          )
                           .toList(),
                       onChanged: (value) {
                         setState(() {
@@ -368,9 +380,11 @@ class _ApplicationFormScreenState extends State<ApplicationFormScreen> {
                     SizedBox(height: 8),
                     TextFormField(
                       decoration: InputDecoration(
-                          labelText: 'Landholding (acres/hectares)'),
-                      keyboardType:
-                          TextInputType.numberWithOptions(decimal: true),
+                        labelText: 'Landholding (acres/hectares)',
+                      ),
+                      keyboardType: TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
                       validator: (v) => v == null || v.isEmpty
                           ? 'Landholding required'
                           : null,
@@ -380,8 +394,10 @@ class _ApplicationFormScreenState extends State<ApplicationFormScreen> {
                     DropdownButtonFormField<String>(
                       decoration: InputDecoration(labelText: 'Caste Category'),
                       items: ['SC', 'ST', 'OBC', 'General']
-                          .map((cat) =>
-                              DropdownMenuItem(value: cat, child: Text(cat)))
+                          .map(
+                            (cat) =>
+                                DropdownMenuItem(value: cat, child: Text(cat)),
+                          )
                           .toList(),
                       validator: (v) => v == null || v.isEmpty
                           ? 'Select caste category'

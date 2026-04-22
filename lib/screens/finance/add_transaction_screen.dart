@@ -5,7 +5,7 @@ class AddTransactionScreen extends StatefulWidget {
   final bool isIncome;
 
   const AddTransactionScreen({Key? key, required this.isIncome})
-      : super(key: key);
+    : super(key: key);
 
   @override
   _AddTransactionScreenState createState() => _AddTransactionScreenState();
@@ -24,7 +24,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     'Business',
     'Investment',
     'Rental',
-    'Other'
+    'Other',
   ];
 
   final List<String> _expenseCategories = [
@@ -35,14 +35,15 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     'Education',
     'Shopping',
     'Entertainment',
-    'Other'
+    'Other',
   ];
 
   @override
   void initState() {
     super.initState();
-    _selectedCategory =
-        widget.isIncome ? _incomeCategories.first : _expenseCategories.first;
+    _selectedCategory = widget.isIncome
+        ? _incomeCategories.first
+        : _expenseCategories.first;
   }
 
   Future<void> _selectDate(BuildContext context) async {
@@ -81,7 +82,8 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                  '${widget.isIncome ? "Income" : "Expense"} added successfully!'),
+                '${widget.isIncome ? "Income" : "Expense"} added successfully!',
+              ),
               backgroundColor: Colors.green,
             ),
           );
@@ -90,10 +92,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Error: $e'),
-              backgroundColor: Colors.red,
-            ),
+            SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
           );
         }
       }
@@ -139,11 +138,12 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                 items:
                     (widget.isIncome ? _incomeCategories : _expenseCategories)
                         .map((String category) {
-                  return DropdownMenuItem<String>(
-                    value: category,
-                    child: Text(category),
-                  );
-                }).toList(),
+                          return DropdownMenuItem<String>(
+                            value: category,
+                            child: Text(category),
+                          );
+                        })
+                        .toList(),
                 onChanged: (String? newValue) {
                   if (newValue != null) {
                     setState(() {

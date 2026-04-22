@@ -48,8 +48,9 @@ class CommentModel {
       userName: json['userName'] ?? '',
       userPhotoUrl: json['userPhotoUrl'] ?? '',
       likeCount: json['likeCount'] ?? 0,
-      likedBy:
-          json['likedBy'] != null ? List<String>.from(json['likedBy']) : [],
+      likedBy: json['likedBy'] != null
+          ? List<String>.from(json['likedBy'])
+          : [],
       createdAt: json['createdAt'] != null
           ? DateTime.parse(json['createdAt'])
           : DateTime.now(),

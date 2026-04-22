@@ -29,7 +29,7 @@ class ForecastCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             spreadRadius: 1,
             blurRadius: 5,
             offset: const Offset(0, 2),
@@ -51,11 +51,7 @@ class ForecastCard extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                SvgPicture.asset(
-                  icon,
-                  height: 24,
-                  width: 24,
-                ),
+                SvgPicture.asset(icon, height: 24, width: 24),
                 const SizedBox(width: 8),
                 Flexible(
                   child: Text(

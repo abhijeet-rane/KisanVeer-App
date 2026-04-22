@@ -89,7 +89,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           gradient: LinearGradient(
             colors: [
               Colors.green.shade400,
-              Colors.green.shade700
+              Colors.green.shade700,
             ], // Gradient effect
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -178,9 +178,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                         fontWeight: FontWeight.w500,
                                       ),
                                     ).animate().fadeIn(
-                                          duration:
-                                              const Duration(milliseconds: 500),
-                                        ),
+                                      duration: const Duration(
+                                        milliseconds: 500,
+                                      ),
+                                    ),
                                     const SizedBox(height: 5),
                                     Text(
                                       _currentUser?.name ?? 'User',
@@ -190,22 +191,25 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ).animate().fadeIn(
-                                          duration:
-                                              const Duration(milliseconds: 500),
-                                          delay:
-                                              const Duration(milliseconds: 200),
-                                        ),
+                                      duration: const Duration(
+                                        milliseconds: 500,
+                                      ),
+                                      delay: const Duration(milliseconds: 200),
+                                    ),
                                   ],
                                 ),
                                 CircleAvatar(
                                   radius: 30,
                                   backgroundColor: Colors.white,
-                                  child: _currentUser
-                                              ?.profileImageUrl.isNotEmpty ==
+                                  child:
+                                      _currentUser
+                                              ?.profileImageUrl
+                                              .isNotEmpty ==
                                           true
                                       ? ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(30),
+                                          borderRadius: BorderRadius.circular(
+                                            30,
+                                          ),
                                           child: Image.network(
                                             _currentUser!.profileImageUrl,
                                             width: 60,
@@ -218,10 +222,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                         )
                                       : _buildInitialsAvatar(),
                                 ).animate().scale(
-                                      duration:
-                                          const Duration(milliseconds: 600),
-                                      curve: Curves.easeOutBack,
-                                    ),
+                                  duration: const Duration(milliseconds: 600),
+                                  curve: Curves.easeOutBack,
+                                ),
                               ],
                             ),
                             const SizedBox(height: 20),
@@ -231,7 +234,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 vertical: 12,
                               ),
                               decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.2),
+                                color: Colors.white.withValues(alpha: 0.2),
                                 borderRadius: BorderRadius.circular(15),
                               ),
                               child: Row(
@@ -254,9 +257,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 ],
                               ),
                             ).animate().fadeIn(
-                                  duration: const Duration(milliseconds: 500),
-                                  delay: const Duration(milliseconds: 400),
-                                ),
+                              duration: const Duration(milliseconds: 500),
+                              delay: const Duration(milliseconds: 400),
+                            ),
                           ],
                         ),
                       ),
@@ -269,16 +272,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           children: [
                             // Weather card
                             _buildWeatherCard().animate().fadeIn(
-                                  duration: const Duration(milliseconds: 600),
-                                  delay: const Duration(milliseconds: 500),
-                                ),
+                              duration: const Duration(milliseconds: 600),
+                              delay: const Duration(milliseconds: 500),
+                            ),
 
                             const SizedBox(height: 24),
 
                             // Services Section (Advanced UI)
                             Padding(
                               padding: const EdgeInsets.symmetric(
-                                  vertical: 12.0, horizontal: 5.0),
+                                vertical: 12.0,
+                                horizontal: 5.0,
+                              ),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -291,7 +296,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     ),
                                   ),
                                   const SizedBox(
-                                      height: 4), // Space before underline
+                                    height: 4,
+                                  ), // Space before underline
                                   Container(
                                     width: 112, // Small underline effect
                                     height: 4,
@@ -314,26 +320,36 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               mainAxisSpacing: 12,
                               childAspectRatio: 1.2,
                               children: [
-                                _buildServiceCard(Icons.store, "Marketplace",
-                                    const MarketplaceScreen()),
                                 _buildServiceCard(
-                                    Icons.trending_up,
-                                    "Market Insights",
-                                    const MarketInsightsScreen()),
-                                _buildServiceCard(Icons.calculate,
-                                    "Financial Tools", const FinanceScreen()),
+                                  Icons.store,
+                                  "Marketplace",
+                                  const MarketplaceScreen(),
+                                ),
                                 _buildServiceCard(
-                                    Icons.wb_sunny,
-                                    "Weather\n Forecasts",
-                                    const WeatherScreen()),
+                                  Icons.trending_up,
+                                  "Market Insights",
+                                  const MarketInsightsScreen(),
+                                ),
                                 _buildServiceCard(
-                                    Icons.groups,
-                                    "Community Network",
-                                    const CommunityScreen()),
+                                  Icons.calculate,
+                                  "Financial Tools",
+                                  const FinanceScreen(),
+                                ),
                                 _buildServiceCard(
-                                    Icons.account_balance,
-                                    "Government Schemes\n& Subsidies",
-                                    const SchemesListingScreen()),
+                                  Icons.wb_sunny,
+                                  "Weather\n Forecasts",
+                                  const WeatherScreen(),
+                                ),
+                                _buildServiceCard(
+                                  Icons.groups,
+                                  "Community Network",
+                                  const CommunityScreen(),
+                                ),
+                                _buildServiceCard(
+                                  Icons.account_balance,
+                                  "Government Schemes\n& Subsidies",
+                                  const SchemesListingScreen(),
+                                ),
                                 _buildServiceCard(
                                   Icons.monitor,
                                   "Smart Farm\nMonitor",
@@ -366,16 +382,51 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 ),
                               ],
                             ).animate().fadeIn(
-                                  duration: const Duration(milliseconds: 600),
-                                  delay: const Duration(milliseconds: 800),
-                                ),
+                              duration: const Duration(milliseconds: 600),
+                              delay: const Duration(milliseconds: 800),
+                            ),
 
                             const SizedBox(height: 16),
 
                             _buildMarketInsightsCard().animate().fadeIn(
-                                  duration: const Duration(milliseconds: 600),
-                                  delay: const Duration(milliseconds: 900),
+                              duration: const Duration(milliseconds: 600),
+                              delay: const Duration(milliseconds: 900),
+                            ),
+
+                            const SizedBox(height: 30),
+
+                            // Government schemes
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Government Schemes',
+                                  style: AppTextStyles.h3,
                                 ),
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            const SchemesListingScreen(),
+                                      ),
+                                    );
+                                  },
+                                  child: const Text('See All'),
+                                ),
+                              ],
+                            ).animate().fadeIn(
+                              duration: const Duration(milliseconds: 600),
+                              delay: const Duration(milliseconds: 1000),
+                            ),
+
+                            const SizedBox(height: 16),
+
+                            _buildGovernmentSchemesCard().animate().fadeIn(
+                              duration: const Duration(milliseconds: 600),
+                              delay: const Duration(milliseconds: 1100),
+                            ),
 
                             const SizedBox(height: 24),
                           ],
@@ -457,36 +508,36 @@ class _DashboardScreenState extends State<DashboardScreen> {
       case 'sunny':
         return [
           const Color(0xFFFFA726),
-          const Color(0xFFFF7043)
+          const Color(0xFFFF7043),
         ]; // Orange gradient
       case 'rain':
       case 'rainy':
       case 'drizzle':
         return [
           const Color(0xFF42A5F5),
-          const Color(0xFF1976D2)
+          const Color(0xFF1976D2),
         ]; // Blue gradient
       case 'thunderstorm':
         return [
           const Color(0xFF5E35B1),
-          const Color(0xFF3949AB)
+          const Color(0xFF3949AB),
         ]; // Purple-blue gradient
       case 'snow':
         return [
           const Color(0xFF78909C),
-          const Color(0xFF546E7A)
+          const Color(0xFF546E7A),
         ]; // Gray-blue gradient
       case 'clouds':
       case 'partly cloudy':
       case 'mostly cloudy':
         return [
           const Color(0xFF5C6BC0),
-          const Color(0xFF3949AB)
+          const Color(0xFF3949AB),
         ]; // Indigo gradient
       default:
         return [
           const Color(0xFF1E88E5),
-          const Color(0xFF3686FF)
+          const Color(0xFF3686FF),
         ]; // Default blue gradient
     }
   }
@@ -529,9 +580,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(
-            builder: (context) => const WeatherScreen(),
-          ),
+          MaterialPageRoute(builder: (context) => const WeatherScreen()),
         ).then((_) => _loadWeatherData()); // Refresh data when returning
       },
       child: Container(
@@ -543,14 +592,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
             colors: _isLoadingWeather
                 ? [
                     const Color(0xFF3686FF),
-                    const Color(0xFF3686FF).withOpacity(0.7),
+                    const Color(0xFF3686FF).withValues(alpha: 0.7),
                   ]
                 : _getWeatherGradient(
-                    _weatherData?['currentWeather']?['condition']),
+                    _weatherData?['currentWeather']?['condition'],
+                  ),
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.blue.withOpacity(0.2),
+              color: Colors.blue.withValues(alpha: 0.2),
               blurRadius: 10,
               offset: const Offset(0, 5),
             ),
@@ -560,9 +610,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           padding: const EdgeInsets.all(20),
           child: _isLoadingWeather
               ? const Center(
-                  child: CircularProgressIndicator(
-                    color: Colors.white,
-                  ),
+                  child: CircularProgressIndicator(color: Colors.white),
                 )
               : Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -592,7 +640,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 child: Text(
                                   _weatherData?['location'] ?? 'Your Location',
                                   style: TextStyle(
-                                    color: Colors.white.withOpacity(0.9),
+                                    color: Colors.white.withValues(alpha: 0.9),
                                     fontSize: 14,
                                   ),
                                   overflow: TextOverflow.ellipsis,
@@ -614,7 +662,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           Text(
                             _getCropAdvice(_weatherData),
                             style: TextStyle(
-                              color: Colors.white.withOpacity(0.9),
+                              color: Colors.white.withValues(alpha: 0.9),
                               fontSize: 14,
                             ),
                             maxLines: 2,
@@ -629,12 +677,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           width: 80,
                           height: 80,
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.2),
+                            color: Colors.white.withValues(alpha: 0.2),
                             shape: BoxShape.circle,
                           ),
                           child: Icon(
                             _getWeatherIcon(
-                                _weatherData?['currentWeather']?['condition']),
+                              _weatherData?['currentWeather']?['condition'],
+                            ),
                             color: Colors.white,
                             size: 50,
                           ),
@@ -668,54 +717,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  Widget _buildActionItem(IconData icon, String title, Color color) {
-    return GestureDetector(
-      onTap: () {
-        // Navigate based on action
-      },
-      child: Column(
-        children: [
-          Container(
-            width: 56,
-            height: 56,
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
-              shape: BoxShape.circle,
-            ),
-            child: Center(
-              child: Icon(
-                icon,
-                color: color,
-                size: 28,
-              ),
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            title,
-            style: AppTextStyles.caption.copyWith(
-              color: AppColors.textPrimary,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-    );
-  }
-
-  // Import the necessary services and models at the top if not already imported:
-  // import 'package:kisan_veer/services/market_service.dart';
-  // import 'package:kisan_veer/models/market_models.dart';
-
   Widget _buildMarketInsightsCard() {
     final MarketService _marketService = MarketService();
     return FutureBuilder<List<PinnedCommodity>>(
       future: _marketService.getPinnedCommodities(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return CustomCard(
-            child: Center(child: CircularProgressIndicator()),
-          );
+          return CustomCard(child: Center(child: CircularProgressIndicator()));
         }
         if (!snapshot.hasData || snapshot.data!.isEmpty) {
           return CustomCard(
@@ -754,13 +762,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
               ),
               Divider(height: 1),
               ...pinnedList.take(4).map((pinned) {
-                final isProfit = ((pinned.currentPrice - pinned.initialPrice) /
+                final isProfit =
+                    ((pinned.currentPrice - pinned.initialPrice) /
                             pinned.initialPrice) *
                         100 >=
                     0;
                 return Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   child: Row(
                     children: [
                       Expanded(
@@ -770,22 +781,24 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           children: [
                             Text(
                               pinned.commodity,
-                              style: AppTextStyles.bodyLarge
-                                  .copyWith(fontWeight: FontWeight.bold),
+                              style: AppTextStyles.bodyLarge.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                            if ((pinned.market != null &&
-                                pinned.market!.isNotEmpty))
+                            if (pinned.market != null &&
+                                pinned.market!.isNotEmpty)
                               Text(
                                 pinned.market!,
-                                style: AppTextStyles.bodySmall
-                                    .copyWith(color: Colors.grey[700]),
+                                style: AppTextStyles.bodySmall.copyWith(
+                                  color: Colors.grey[700],
+                                ),
                               ),
-                            if ((pinned.state != null &&
-                                pinned.state.isNotEmpty))
+                            if (pinned.state.isNotEmpty)
                               Text(
-                                pinned.state!,
-                                style: AppTextStyles.bodySmall
-                                    .copyWith(color: Colors.grey[500]),
+                                pinned.state,
+                                style: AppTextStyles.bodySmall.copyWith(
+                                  color: Colors.grey[500],
+                                ),
                               ),
                           ],
                         ),
@@ -797,26 +810,29 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           children: [
                             Text(
                               '₹${pinned.currentPrice.toStringAsFixed(0)}',
-                              style: AppTextStyles.bodyLarge
-                                  .copyWith(fontWeight: FontWeight.bold),
+                              style: AppTextStyles.bodyLarge.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                             Container(
                               margin: const EdgeInsets.only(top: 4),
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 8, vertical: 2),
+                                horizontal: 8,
+                                vertical: 2,
+                              ),
                               decoration: BoxDecoration(
                                 color: isProfit
-                                    ? Colors.green.withOpacity(0.1)
-                                    : Colors.red.withOpacity(0.1),
+                                    ? Colors.green.withValues(alpha: 0.1)
+                                    : Colors.red.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(4),
                               ),
                               child: Text(
                                 (() {
                                   double percent = pinned.initialPrice != 0
                                       ? ((pinned.currentPrice -
-                                                  pinned.initialPrice) /
-                                              pinned.initialPrice) *
-                                          100
+                                                    pinned.initialPrice) /
+                                                pinned.initialPrice) *
+                                            100
                                       : 0;
                                   String sign = percent >= 0 ? '+' : '';
                                   return '$sign${percent.toStringAsFixed(1)}%';
@@ -839,7 +855,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.05),
+                  color: AppColors.primary.withValues(alpha: 0.05),
                   borderRadius: const BorderRadius.only(
                     bottomLeft: Radius.circular(16),
                     bottomRight: Radius.circular(16),
@@ -872,6 +888,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Widget _buildGovernmentSchemesCard() {
+    void _openSchemes() {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const SchemesListingScreen()),
+      );
+    }
+
     return CustomCard(
       padding: EdgeInsets.zero,
       child: Column(
@@ -881,20 +904,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: Colors.blue.withOpacity(0.1),
+                color: Colors.blue.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
-                Icons.account_balance,
-                color: Colors.blue,
-              ),
+              child: const Icon(Icons.account_balance, color: Colors.blue),
             ),
             title: const Text('PM-KISAN Scheme'),
             subtitle: const Text('Income support of ₹6000 per year'),
             trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-            onTap: () {
-              // Navigate to scheme details
-            },
+            onTap: _openSchemes,
           ),
           const Divider(height: 1),
           ListTile(
@@ -902,7 +920,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: Colors.orange.withOpacity(0.1),
+                color: Colors.orange.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
@@ -913,28 +931,29 @@ class _DashboardScreenState extends State<DashboardScreen> {
             title: const Text('Pradhan Mantri Krishi Sinchai Yojana'),
             subtitle: const Text('Irrigation support for farmers'),
             trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-            onTap: () {
-              // Navigate to scheme details
-            },
+            onTap: _openSchemes,
           ),
           const Divider(height: 1),
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(vertical: 12),
-            decoration: BoxDecoration(
-              color: AppColors.primary.withOpacity(0.05),
-              borderRadius: const BorderRadius.only(
-                bottomLeft: Radius.circular(16),
-                bottomRight: Radius.circular(16),
+          InkWell(
+            onTap: _openSchemes,
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              decoration: BoxDecoration(
+                color: AppColors.primary.withValues(alpha: 0.05),
+                borderRadius: const BorderRadius.only(
+                  bottomLeft: Radius.circular(16),
+                  bottomRight: Radius.circular(16),
+                ),
               ),
-            ),
-            child: Text(
-              'View all schemes',
-              style: AppTextStyles.bodyMedium.copyWith(
-                color: AppColors.primary,
-                fontWeight: FontWeight.w600,
+              child: Text(
+                'View all schemes',
+                style: AppTextStyles.bodyMedium.copyWith(
+                  color: AppColors.primary,
+                  fontWeight: FontWeight.w600,
+                ),
+                textAlign: TextAlign.center,
               ),
-              textAlign: TextAlign.center,
             ),
           ),
         ],

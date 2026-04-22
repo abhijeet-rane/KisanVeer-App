@@ -34,31 +34,71 @@ class AppLogger {
   }
 
   /// Debug log - only in debug mode
-  static void d(String message,
-      {String? tag, Object? error, StackTrace? stackTrace}) {
-    _log(_levelDebug, '🔍', message,
-        tag: tag, error: error, stackTrace: stackTrace);
+  static void d(
+    String message, {
+    String? tag,
+    Object? error,
+    StackTrace? stackTrace,
+  }) {
+    _log(
+      _levelDebug,
+      '🔍',
+      message,
+      tag: tag,
+      error: error,
+      stackTrace: stackTrace,
+    );
   }
 
   /// Info log
-  static void i(String message,
-      {String? tag, Object? error, StackTrace? stackTrace}) {
-    _log(_levelInfo, 'ℹ️', message,
-        tag: tag, error: error, stackTrace: stackTrace);
+  static void i(
+    String message, {
+    String? tag,
+    Object? error,
+    StackTrace? stackTrace,
+  }) {
+    _log(
+      _levelInfo,
+      'ℹ️',
+      message,
+      tag: tag,
+      error: error,
+      stackTrace: stackTrace,
+    );
   }
 
   /// Warning log
-  static void w(String message,
-      {String? tag, Object? error, StackTrace? stackTrace}) {
-    _log(_levelWarning, '⚠️', message,
-        tag: tag, error: error, stackTrace: stackTrace);
+  static void w(
+    String message, {
+    String? tag,
+    Object? error,
+    StackTrace? stackTrace,
+  }) {
+    _log(
+      _levelWarning,
+      '⚠️',
+      message,
+      tag: tag,
+      error: error,
+      stackTrace: stackTrace,
+    );
   }
 
   /// Error log
-  static void e(String message,
-      {String? tag, Object? error, StackTrace? stackTrace}) {
-    _log(_levelError, '❌', message,
-        tag: tag, error: error, stackTrace: stackTrace);
+  static void e(
+    String message, {
+    String? tag,
+    Object? error,
+    StackTrace? stackTrace,
+  }) {
+    _log(
+      _levelError,
+      '❌',
+      message,
+      tag: tag,
+      error: error,
+      stackTrace: stackTrace,
+    );
   }
 
   /// Success log (uses info level)
@@ -77,8 +117,9 @@ class AppLogger {
   /// Performance log (uses debug level)
   static void performance(String message, {Duration? duration, String? tag}) {
     if (kDebugMode && _minLevel <= _levelDebug) {
-      final durationStr =
-          duration != null ? ' (${duration.inMilliseconds}ms)' : '';
+      final durationStr = duration != null
+          ? ' (${duration.inMilliseconds}ms)'
+          : '';
       _log(_levelDebug, '⚡', '$message$durationStr', tag: tag ?? 'Perf');
     }
   }
@@ -116,12 +157,7 @@ class AppLogger {
 }
 
 /// Log levels enum for external configuration
-enum LogLevel {
-  debug,
-  info,
-  warning,
-  error,
-}
+enum LogLevel { debug, info, warning, error }
 
 /// Extension for easy try-catch logging
 extension LoggerExtension on Object {

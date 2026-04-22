@@ -65,10 +65,7 @@ class CustomCard extends StatelessWidget {
           : cardContent,
     );
 
-    return Container(
-      margin: margin,
-      child: card,
-    );
+    return Container(margin: margin, child: card);
   }
 }
 
@@ -137,10 +134,7 @@ class TitledCard extends StatelessWidget {
             ),
           ),
           // Card content
-          Container(
-            padding: const EdgeInsets.all(16),
-            child: content,
-          ),
+          Container(padding: const EdgeInsets.all(16), child: content),
         ],
       ),
     );
@@ -257,14 +251,13 @@ class _ExpandableCardState extends State<ExpandableCard>
             child: AnimatedBuilder(
               animation: _controller,
               builder: (BuildContext context, Widget? child) {
-                return SizeTransition(
-                  sizeFactor: _heightFactor,
-                  child: child,
-                );
+                return SizeTransition(sizeFactor: _heightFactor, child: child);
               },
               child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
                 child: widget.content,
               ),
             ),

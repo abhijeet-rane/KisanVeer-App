@@ -39,10 +39,7 @@ class _AnimatedPressButtonState extends State<AnimatedPressButton>
     _scaleAnimation = Tween<double>(
       begin: 1.0,
       end: widget.scaleAmount,
-    ).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeInOut,
-    ));
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override
@@ -81,10 +78,7 @@ class _AnimatedPressButtonState extends State<AnimatedPressButton>
       onTapUp: _onTapUp,
       onTapCancel: _onTapCancel,
       onTap: _onTap,
-      child: ScaleTransition(
-        scale: _scaleAnimation,
-        child: widget.child,
-      ),
+      child: ScaleTransition(scale: _scaleAnimation, child: widget.child),
     );
   }
 }
@@ -128,10 +122,7 @@ class AnimatedCard extends StatelessWidget {
     );
 
     if (onTap != null) {
-      return AnimatedPressButton(
-        onPressed: onTap,
-        child: card,
-      );
+      return AnimatedPressButton(onPressed: onTap, child: card);
     }
 
     return card;
@@ -167,9 +158,10 @@ class _AnimatedFABState extends State<AnimatedFAB>
       vsync: this,
       duration: const Duration(milliseconds: 200),
     );
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.9).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
+    _scaleAnimation = Tween<double>(
+      begin: 1.0,
+      end: 0.9,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
   }
 
   @override

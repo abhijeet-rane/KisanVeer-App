@@ -2,6 +2,7 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:kisan_veer/services/weather_service.dart';
 import 'package:kisan_veer/services/auth_service.dart';
+import 'package:kisan_veer/utils/app_logger.dart';
 import 'package:flutter/material.dart' show Color;
 import 'package:geolocator/geolocator.dart';
 
@@ -14,7 +15,8 @@ class NotificationsService {
   static Future<void> initialize() async {
     const AndroidInitializationSettings androidSettings =
         AndroidInitializationSettings(
-            '@mipmap/ic_launcher'); // Your launcher icon
+          '@mipmap/ic_launcher',
+        ); // Your launcher icon
 
     const InitializationSettings initSettings = InitializationSettings(
       android: androidSettings,
@@ -26,13 +28,13 @@ class NotificationsService {
   static Future<void> showWelcomeNotification() async {
     const AndroidNotificationDetails androidDetails =
         AndroidNotificationDetails(
-      'weather_channel',
-      'Weather Notifications',
-      channelDescription: 'Notification shown when weather tab is opened',
-      importance: Importance.max,
-      priority: Priority.high,
-      playSound: true,
-    );
+          'weather_channel',
+          'Weather Notifications',
+          channelDescription: 'Notification shown when weather tab is opened',
+          importance: Importance.max,
+          priority: Priority.high,
+          playSound: true,
+        );
 
     const NotificationDetails notificationDetails = NotificationDetails(
       android: androidDetails,
@@ -81,32 +83,35 @@ class NotificationsService {
 
       // Build notification content with HTML styling
       final String notificationContent = _buildWeatherNotificationContent(
-          weatherData, cityName, hourlyForecast);
+        weatherData,
+        cityName,
+        hourlyForecast,
+      );
 
       // Configure the notification channel for rich content with custom styling
       final AndroidNotificationDetails androidDetails =
           AndroidNotificationDetails(
-        'weather_channel',
-        'Weather Notifications',
-        channelDescription: 'Shows current weather information',
-        importance: Importance.high,
-        priority: Priority.high,
-        styleInformation: BigTextStyleInformation(
-          notificationContent,
-          htmlFormatBigText: true,
-          contentTitle: notificationTitle,
-          htmlFormatContentTitle: true,
-          summaryText:
-              '${weatherData['description'] ?? weatherData['condition']}',
-          htmlFormatSummaryText: true,
-        ),
-        color: Color(_getWeatherColor(weatherData['condition'])),
-        colorized: true,
-        ongoing: true, // Make it persistent
-        playSound: false, // No sound for weather updates
-        enableLights: true,
-        largeIcon: DrawableResourceAndroidBitmap('@mipmap/ic_launcher'),
-      );
+            'weather_channel',
+            'Weather Notifications',
+            channelDescription: 'Shows current weather information',
+            importance: Importance.high,
+            priority: Priority.high,
+            styleInformation: BigTextStyleInformation(
+              notificationContent,
+              htmlFormatBigText: true,
+              contentTitle: notificationTitle,
+              htmlFormatContentTitle: true,
+              summaryText:
+                  '${weatherData['description'] ?? weatherData['condition']}',
+              htmlFormatSummaryText: true,
+            ),
+            color: Color(_getWeatherColor(weatherData['condition'])),
+            colorized: true,
+            ongoing: true, // Make it persistent
+            playSound: false, // No sound for weather updates
+            enableLights: true,
+            largeIcon: DrawableResourceAndroidBitmap('@mipmap/ic_launcher'),
+          );
 
       final NotificationDetails notificationDetails = NotificationDetails(
         android: androidDetails,
@@ -120,7 +125,11 @@ class NotificationsService {
         notificationDetails,
       );
     } catch (e) {
-      print('Error showing weather notification: $e');
+      AppLogger.e(
+        'Error showing weather notification',
+        tag: 'Notifications',
+        error: e,
+      );
     }
   }
 
@@ -138,7 +147,8 @@ class NotificationsService {
     for (int i = 0; i < 7 && i < hourlyForecast.length; i++) {
       final forecast = hourlyForecast[i];
       final String hourIcon = _getWeatherIconForForecast(forecast['condition']);
-      final String hour = forecast['hour'].toString().split(':')[0] +
+      final String hour =
+          forecast['hour'].toString().split(':')[0] +
           (forecast['hour'].toString().contains('AM') ? ' AM' : ' PM');
 
       forecastBuffer.write('''
@@ -169,33 +179,6 @@ class NotificationsService {
   </div>
 </div>
 ''';
-  }
-
-  /// Returns an emoji based on weather condition
-  static String _getWeatherEmoji(String condition) {
-    switch (condition.toLowerCase()) {
-      case 'clear':
-      case 'sunny':
-        return '☀️';
-      case 'clouds':
-      case 'partly cloudy':
-        return '⛅';
-      case 'cloudy':
-      case 'overcast':
-        return '☁️';
-      case 'rain':
-      case 'drizzle':
-        return '🌧️';
-      case 'thunderstorm':
-        return '⛈️';
-      case 'snow':
-        return '❄️';
-      case 'mist':
-      case 'fog':
-        return '🌫️';
-      default:
-        return '🌤️';
-    }
   }
 
   /// Returns HTML for weather icons in the main display

@@ -50,9 +50,9 @@ class _CreateCommunityScreenState extends State<CreateCommunityScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error creating community: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error creating community: $e')));
       }
     } finally {
       if (mounted) {
@@ -64,10 +64,7 @@ class _CreateCommunityScreenState extends State<CreateCommunityScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Create Community'),
-        elevation: 0,
-      ),
+      appBar: AppBar(title: const Text('Create Community'), elevation: 0),
       body: Form(
         key: _formKey,
         child: ListView(

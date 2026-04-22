@@ -7,8 +7,10 @@ class AccessibilityUtils {
   AccessibilityUtils._();
 
   /// Announce message to screen reader
-  static void announce(String message,
-      {TextDirection textDirection = TextDirection.ltr}) {
+  static void announce(
+    String message, {
+    TextDirection textDirection = TextDirection.ltr,
+  }) {
     SemanticsService.announce(message, textDirection);
   }
 
@@ -131,20 +133,12 @@ class FocusHighlight extends StatelessWidget {
 
 /// Extension for easy semantic labeling
 extension AccessibleWidget on Widget {
-  Widget withSemanticLabel(String label) => Semantics(
-        label: label,
-        child: this,
-      );
+  Widget withSemanticLabel(String label) =>
+      Semantics(label: label, child: this);
 
-  Widget asButton(String label) => Semantics(
-        button: true,
-        label: label,
-        child: this,
-      );
+  Widget asButton(String label) =>
+      Semantics(button: true, label: label, child: this);
 
-  Widget asHeader(String label) => Semantics(
-        header: true,
-        label: label,
-        child: this,
-      );
+  Widget asHeader(String label) =>
+      Semantics(header: true, label: label, child: this);
 }

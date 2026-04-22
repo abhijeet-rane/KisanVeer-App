@@ -24,20 +24,31 @@ class AuthService {
     if (_listenerInitialized) return;
     _listenerInitialized = true;
 
-    supabase.auth.onAuthStateChange.listen((data) {
+    supabase.auth.onAuthStateChange.listen((data) async {
       final AuthChangeEvent event = data.event;
       final Session? session = data.session;
 
-      if (event == AuthChangeEvent.signedIn && session != null) {
-        // Save session for biometric on ANY sign in
-        _saveSessionForBiometric(session);
-        AnalyticsService().setUserId(session.user.id);
-        AppLogger.d('Session saved on auth state change', tag: 'Auth');
-      } else if (event == AuthChangeEvent.signedOut) {
-        // Clear tokens on sign out
-        _secureStorage.clearAuthTokens();
+      if (event == AuthChangeEvent.signedOut) {
+        // Keep the refresh token around when the user has opted into
+        // biometric login, so a fingerprint tap can restore the session.
+        final biometricEnabled = await _secureStorage.isBiometricEnabled();
+        await _secureStorage.clearAuthTokens(
+          keepRefreshToken: biometricEnabled,
+        );
         AnalyticsService().clearUser();
         AppLogger.d('Tokens cleared on sign out', tag: 'Auth');
+      } else if (session != null) {
+        // Supabase rotates the refresh token on every auto-refresh, so
+        // mirror whatever is current on EVERY event that carries a session
+        // (signedIn, tokenRefreshed, userUpdated, initialSession, etc.).
+        // Without this, the token in secure storage goes stale and the
+        // server rejects it with 400 / refresh_token_not_found when
+        // biometric login tries to redeem it after sign-out.
+        await _saveSessionForBiometric(session);
+        if (event == AuthChangeEvent.signedIn) {
+          AnalyticsService().setUserId(session.user.id);
+        }
+        AppLogger.d('Session mirrored on ${event.name}', tag: 'Auth');
       }
     });
   }
@@ -193,6 +204,17 @@ class AuthService {
       }
 
       return false;
+    } on AuthException catch (e) {
+      // Refresh token was revoked / expired / rotated past our copy. Purge
+      // it so the biometric button goes away and the user isn't offered a
+      // broken shortcut — they need to sign in with a password once more.
+      AppLogger.w(
+        'Stored refresh token rejected by Supabase (${e.code ?? 'unknown'})'
+        ' — clearing so biometric prompt is hidden until next login.',
+        tag: 'Auth',
+      );
+      await _secureStorage.clearAuthTokens();
+      return false;
     } catch (e) {
       AppLogger.e(
         'Failed to restore session for biometric',
@@ -217,10 +239,11 @@ class AuthService {
 
   // Sign out
   Future<void> signOut() async {
-    // Clear tokens but keep biometric enabled setting
-    // So user can still use biometric after re-logging in
-    await _secureStorage.clearAuthTokens();
-    // Don't clear biometric enabled - keep it persistent
+    // If biometric login is enabled, keep the refresh token in secure
+    // storage so the user can restore their session with a fingerprint
+    // tap. Otherwise wipe everything.
+    final biometricEnabled = await _secureStorage.isBiometricEnabled();
+    await _secureStorage.clearAuthTokens(keepRefreshToken: biometricEnabled);
     await supabase.auth.signOut();
   }
 

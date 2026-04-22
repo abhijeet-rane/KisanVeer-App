@@ -69,24 +69,43 @@ class SecureStorageService {
     return _storage.read(key: _keyUserEmail);
   }
 
-  /// Check if user has stored credentials
+  /// Check if user has stored credentials that can be used to restore
+  /// a session — either a live access token, or a refresh token left
+  /// behind after logout for biometric re-entry.
   Future<bool> hasStoredCredentials() async {
-    final token = await getAccessToken();
-    return token != null && token.isNotEmpty;
+    final accessToken = await getAccessToken();
+    if (accessToken != null && accessToken.isNotEmpty) return true;
+    final refreshToken = await getRefreshToken();
+    return refreshToken != null && refreshToken.isNotEmpty;
   }
 
-  /// Clear all auth tokens (logout)
-  Future<void> clearAuthTokens() async {
+  /// Clear auth tokens on logout.
+  ///
+  /// When [keepRefreshToken] is true, the refresh token (and the identity
+  /// fields needed to restore it) are preserved so biometric login can
+  /// re-establish the session later. The short-lived access token and
+  /// session timestamps are always cleared.
+  Future<void> clearAuthTokens({bool keepRefreshToken = false}) async {
     try {
-      await Future.wait([
+      final deletions = <Future<void>>[
         _storage.delete(key: _keyAccessToken),
-        _storage.delete(key: _keyRefreshToken),
-        _storage.delete(key: _keyUserId),
-        _storage.delete(key: _keyUserEmail),
         _storage.delete(key: _keyLastActivity),
         _storage.delete(key: _keySessionExpiry),
-      ]);
-      AppLogger.d('Auth tokens cleared', tag: 'SecureStorage');
+      ];
+      if (!keepRefreshToken) {
+        deletions.addAll([
+          _storage.delete(key: _keyRefreshToken),
+          _storage.delete(key: _keyUserId),
+          _storage.delete(key: _keyUserEmail),
+        ]);
+      }
+      await Future.wait(deletions);
+      AppLogger.d(
+        keepRefreshToken
+            ? 'Access token cleared; refresh token kept for biometric'
+            : 'Auth tokens cleared',
+        tag: 'SecureStorage',
+      );
     } catch (e) {
       AppLogger.e(
         'Failed to clear auth tokens',

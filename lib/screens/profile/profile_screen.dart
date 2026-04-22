@@ -33,7 +33,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final AuthService _authService = AuthService();
   UserModel? _currentUser;
   bool _isLoading = true;
-  bool _isDarkMode = false;
   String _selectedLanguage = 'English';
   bool _notificationsEnabled = true;
   final ScrollController _scrollController = ScrollController();
@@ -58,7 +57,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       'icon': Icons.settings_outlined,
       'items': [
         {'title': 'Language', 'icon': Icons.language_outlined},
-        {'title': 'Dark Mode', 'icon': Icons.dark_mode_outlined},
         {'title': 'Clear Cache', 'icon': Icons.delete_outline},
       ],
     },
@@ -355,16 +353,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget? _buildSettingControl(String settingTitle) {
     switch (settingTitle) {
-      case 'Dark Mode':
-        return Switch(
-          value: _isDarkMode,
-          activeColor: AppColors.primary,
-          onChanged: (value) {
-            setState(() {
-              _isDarkMode = value;
-            });
-          },
-        );
       case 'Biometric Login':
         return null; // Will be handled specially
       case 'Notifications':

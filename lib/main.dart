@@ -53,7 +53,6 @@ class MyApp extends StatelessWidget {
       title: 'Kisan Veer',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.light,
       localizationsDelegates: LocalizationService.localizationsDelegates,
       supportedLocales: LocalizationService.supportedLocales,

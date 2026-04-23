@@ -16,10 +16,11 @@ import 'package:kisan_veer/screens/profile/privacy_settings_screen.dart';
 import 'package:kisan_veer/screens/profile/report_problem_screen.dart';
 import 'package:kisan_veer/screens/profile/terms_of_service_screen.dart';
 import 'package:kisan_veer/services/auth_service.dart';
+import 'package:kisan_veer/services/biometric_service.dart';
 import 'package:kisan_veer/services/cache_service.dart';
 import 'package:kisan_veer/services/offline_storage_service.dart';
 import 'package:kisan_veer/utils/app_logger.dart';
-import 'package:kisan_veer/widgets/biometric_login_button.dart';
+import 'package:kisan_veer/utils/haptic_utils.dart';
 import 'package:kisan_veer/widgets/ui/ui.dart';
 
 /// V2 profile & settings screen.
@@ -668,11 +669,87 @@ class _SettingRow extends StatelessWidget {
   }
 }
 
-class _BiometricRow extends StatelessWidget {
+/// Inline biometric toggle row used inside the Profile settings list.
+///
+/// Intentionally does *not* delegate to `BiometricSettingsToggle` —
+/// that widget renders a [SwitchListTile], which expects to be a child
+/// of a Column-like surface and asserts when placed inside a flex
+/// [Row]. We render a plain [Switch.adaptive] as the trailing control
+/// so the row lays out correctly in the settings card.
+class _BiometricRow extends StatefulWidget {
   const _BiometricRow();
 
   @override
+  State<_BiometricRow> createState() => _BiometricRowState();
+}
+
+class _BiometricRowState extends State<_BiometricRow> {
+  final BiometricService _biometricService = BiometricService();
+
+  bool _loading = true;
+  bool _available = false;
+  bool _enabled = false;
+  String _typeName = 'Biometric';
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    try {
+      final canCheck = await _biometricService.canCheckBiometrics();
+      final isEnabled = await _biometricService.isBiometricEnabled();
+      final typeName = await _biometricService.getBiometricTypeName();
+      if (!mounted) return;
+      setState(() {
+        _available = canCheck;
+        _enabled = isEnabled;
+        _typeName = typeName;
+        _loading = false;
+      });
+    } catch (e) {
+      AppLogger.w('Biometric check failed: $e', tag: 'Profile');
+      if (!mounted) return;
+      setState(() => _loading = false);
+    }
+  }
+
+  Future<void> _toggle(bool value) async {
+    if (!_available) return;
+    HapticUtils.selection();
+    try {
+      if (value) {
+        final ok = await _biometricService.enableBiometric();
+        if (!mounted) return;
+        if (ok) {
+          setState(() => _enabled = true);
+          AppSnackBar.success(context, '$_typeName login enabled');
+        }
+      } else {
+        await _biometricService.disableBiometric();
+        if (!mounted) return;
+        setState(() => _enabled = false);
+        AppSnackBar.info(context, '$_typeName login disabled');
+      }
+    } catch (e) {
+      AppLogger.e('Biometric toggle failed', tag: 'Profile', error: e);
+      if (!mounted) return;
+      AppSnackBar.error(context, 'Could not update biometric login');
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final subtitle = _loading
+        ? 'Checking…'
+        : !_available
+        ? 'Not available on this device'
+        : _enabled
+        ? 'Enabled'
+        : 'Disabled';
+
     return Padding(
       padding: const EdgeInsets.symmetric(
         horizontal: AppSpacing.space16,
@@ -696,15 +773,47 @@ class _BiometricRow extends StatelessWidget {
           ),
           const SizedBox(width: AppSpacing.space12),
           Expanded(
-            child: Text(
-              'Biometric login',
-              style: AppTextStyles.bodyLarge.copyWith(
-                color: AppColors.onSurface,
-                fontWeight: FontWeight.w500,
-              ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '$_typeName login',
+                  style: AppTextStyles.bodyLarge.copyWith(
+                    color: AppColors.onSurface,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  subtitle,
+                  style: AppTextStyles.bodySmall.copyWith(
+                    color: AppColors.onSurfaceVariant,
+                  ),
+                ),
+              ],
             ),
           ),
-          const BiometricSettingsToggle(),
+          const SizedBox(width: AppSpacing.space8),
+          SizedBox(
+            height: 32,
+            child: _loading
+                ? const Padding(
+                    padding: EdgeInsets.all(6),
+                    child: SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: AppColors.primary,
+                      ),
+                    ),
+                  )
+                : Switch.adaptive(
+                    value: _enabled,
+                    activeColor: AppColors.primary,
+                    onChanged: _available ? _toggle : null,
+                  ),
+          ),
         ],
       ),
     );

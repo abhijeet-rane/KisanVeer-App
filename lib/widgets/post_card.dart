@@ -173,34 +173,38 @@ class PostCard extends StatelessWidget {
       padding: const EdgeInsets.only(top: AppSpacing.space8),
       child: SizedBox(
         height: 220,
-        child: PageView.builder(
-          itemCount: post.imageUrls.length,
-          itemBuilder: (context, index) {
-            return CachedNetworkImage(
-              imageUrl: post.imageUrls[index],
-              fit: BoxFit.cover,
-              placeholder: (_, _) => Container(
-                color: AppColors.surfaceContainerLow,
-                alignment: Alignment.center,
-                child: const SizedBox(
-                  width: 24,
-                  height: 24,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    color: AppColors.primary,
+        // Post title already conveys what this post is about, so the
+        // image is decorative as far as screen readers are concerned.
+        child: ExcludeSemantics(
+          child: PageView.builder(
+            itemCount: post.imageUrls.length,
+            itemBuilder: (context, index) {
+              return CachedNetworkImage(
+                imageUrl: post.imageUrls[index],
+                fit: BoxFit.cover,
+                placeholder: (_, _) => Container(
+                  color: AppColors.surfaceContainerLow,
+                  alignment: Alignment.center,
+                  child: const SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: AppColors.primary,
+                    ),
                   ),
                 ),
-              ),
-              errorWidget: (_, _, _) => Container(
-                color: AppColors.surfaceContainerLow,
-                alignment: Alignment.center,
-                child: const Icon(
-                  Icons.image_not_supported_outlined,
-                  color: AppColors.onSurfaceVariant,
+                errorWidget: (_, _, _) => Container(
+                  color: AppColors.surfaceContainerLow,
+                  alignment: Alignment.center,
+                  child: const Icon(
+                    Icons.image_not_supported_outlined,
+                    color: AppColors.onSurfaceVariant,
+                  ),
                 ),
-              ),
-            );
-          },
+              );
+            },
+          ),
         ),
       ),
     );

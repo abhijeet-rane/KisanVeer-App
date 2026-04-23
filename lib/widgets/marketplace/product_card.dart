@@ -33,28 +33,32 @@ class ProductCard extends StatelessWidget {
             borderRadius: const BorderRadius.vertical(
               top: Radius.circular(AppRadii.lg),
             ),
-            child: SizedBox(
-              height: 180,
-              width: double.infinity,
-              child: product.imageUrls.isNotEmpty
-                  ? CachedNetworkImage(
-                      imageUrl: product.imageUrls.first,
-                      fit: BoxFit.cover,
-                      placeholder: (_, _) => Container(
-                        color: AppColors.surfaceContainerLow,
-                        alignment: Alignment.center,
-                        child: const SizedBox(
-                          width: 24,
-                          height: 24,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: AppColors.primary,
+            // Product name + price + unit already announced below, so
+            // the banner image is decorative for screen readers.
+            child: ExcludeSemantics(
+              child: SizedBox(
+                height: 180,
+                width: double.infinity,
+                child: product.imageUrls.isNotEmpty
+                    ? CachedNetworkImage(
+                        imageUrl: product.imageUrls.first,
+                        fit: BoxFit.cover,
+                        placeholder: (_, _) => Container(
+                          color: AppColors.surfaceContainerLow,
+                          alignment: Alignment.center,
+                          child: const SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: AppColors.primary,
+                            ),
                           ),
                         ),
-                      ),
-                      errorWidget: (_, _, _) => _placeholder(),
-                    )
-                  : _placeholder(),
+                        errorWidget: (_, _, _) => _placeholder(),
+                      )
+                    : _placeholder(),
+              ),
             ),
           ),
           Padding(

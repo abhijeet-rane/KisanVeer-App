@@ -247,6 +247,7 @@ class _CommunityDetailsScreenState extends State<CommunityDetailsScreen>
                     children: [
                       IconButton(
                         icon: const Icon(Icons.check, color: Colors.green),
+                        tooltip: 'Approve request',
                         onPressed: () async {
                           try {
                             await _communityService.processJoinRequest(
@@ -270,6 +271,7 @@ class _CommunityDetailsScreenState extends State<CommunityDetailsScreen>
                       ),
                       IconButton(
                         icon: const Icon(Icons.close, color: Colors.red),
+                        tooltip: 'Reject request',
                         onPressed: () async {
                           try {
                             await _communityService.processJoinRequest(

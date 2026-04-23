@@ -255,6 +255,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                           child: IconButton(
                             icon: const Icon(Icons.remove_circle),
                             color: Colors.red,
+                            tooltip: 'Remove image',
                             onPressed: () => _removeImage(index),
                           ),
                         ),

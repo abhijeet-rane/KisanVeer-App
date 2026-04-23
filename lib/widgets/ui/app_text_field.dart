@@ -141,121 +141,152 @@ class _AppTextFieldState extends State<AppTextField> {
 
     final double borderWidth = (_focused || hasError) ? 1.5 : 1;
 
+    // Screen-reader note: we render the label as its own Text above the
+    // field so the focus ring sits cleanly on just the input, but we
+    // don't want the label announced twice. Exclude the visible Text
+    // from semantics and pass the label into the TextFormField so
+    // TalkBack / VoiceOver reads "<label>, edit box" once.
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (widget.label != null) ...[
-          Text(
-            widget.label!,
-            style: AppTextStyles.labelLarge.copyWith(
-              color: hasError ? AppColors.danger : AppColors.onSurfaceVariant,
+          ExcludeSemantics(
+            child: Text(
+              widget.label!,
+              style: AppTextStyles.labelLarge.copyWith(
+                color: hasError ? AppColors.danger : AppColors.onSurfaceVariant,
+              ),
             ),
           ),
           const SizedBox(height: AppSpacing.space6),
         ],
-        AnimatedContainer(
-          duration: AppMotion.fast,
-          curve: AppMotion.standard,
-          decoration: BoxDecoration(
-            color: widget.enabled
-                ? AppColors.surfaceContainerLow
-                : AppColors.surfaceContainer,
-            borderRadius: AppRadii.brMd,
-            border: Border.all(color: borderColor, width: borderWidth),
-          ),
-          child: TextFormField(
-            controller: widget.controller,
-            initialValue: widget.initialValue,
-            focusNode: _focusNode,
-            enabled: widget.enabled,
-            readOnly: widget.readOnly,
-            autofocus: widget.autofocus,
-            obscureText: widget.obscureText,
-            keyboardType: widget.keyboardType,
-            textInputAction: widget.textInputAction,
-            textCapitalization: widget.textCapitalization,
-            maxLines: widget.maxLines,
-            minLines: widget.minLines,
-            maxLength: widget.maxLength,
-            inputFormatters: widget.inputFormatters,
-            onChanged: widget.onChanged,
-            onFieldSubmitted: widget.onSubmitted,
-            onTap: widget.onTap,
-            validator: widget.validator,
-            autovalidateMode: widget.autovalidateMode,
-            cursorColor: AppColors.primary,
-            style: AppTextStyles.bodyLarge,
-            decoration: InputDecoration(
-              hintText: widget.hint,
-              hintStyle: AppTextStyles.bodyLarge.copyWith(
-                color: AppColors.textLight,
-              ),
-              prefixIcon: widget.prefixIcon == null
-                  ? null
-                  : Padding(
-                      padding: const EdgeInsets.only(
-                        left: AppSpacing.space12,
-                        right: AppSpacing.space8,
+        Semantics(
+          // Gives the field a stable accessible name regardless of
+          // its current content. TextFormField already announces the
+          // textField role on its own; we just attach the label here.
+          label: widget.label,
+          textField: true,
+          enabled: widget.enabled,
+          child: AnimatedContainer(
+            duration: AppMotion.fast,
+            curve: AppMotion.standard,
+            decoration: BoxDecoration(
+              color: widget.enabled
+                  ? AppColors.surfaceContainerLow
+                  : AppColors.surfaceContainer,
+              borderRadius: AppRadii.brMd,
+              border: Border.all(color: borderColor, width: borderWidth),
+            ),
+            child: TextFormField(
+              controller: widget.controller,
+              initialValue: widget.initialValue,
+              focusNode: _focusNode,
+              enabled: widget.enabled,
+              readOnly: widget.readOnly,
+              autofocus: widget.autofocus,
+              obscureText: widget.obscureText,
+              keyboardType: widget.keyboardType,
+              textInputAction: widget.textInputAction,
+              textCapitalization: widget.textCapitalization,
+              maxLines: widget.maxLines,
+              minLines: widget.minLines,
+              maxLength: widget.maxLength,
+              inputFormatters: widget.inputFormatters,
+              onChanged: widget.onChanged,
+              onFieldSubmitted: widget.onSubmitted,
+              onTap: widget.onTap,
+              validator: widget.validator,
+              autovalidateMode: widget.autovalidateMode,
+              cursorColor: AppColors.primary,
+              style: AppTextStyles.bodyLarge,
+              decoration: InputDecoration(
+                // label is echoed into the decoration purely for a11y —
+                // the visible label is rendered above and excluded from
+                // semantics. `labelText` would fight the custom layout,
+                // so we use `hintText` as the a11y fallback and rely on
+                // the Semantics label below for the canonical name.
+                hintText: widget.hint,
+                hintStyle: AppTextStyles.bodyLarge.copyWith(
+                  color: AppColors.textLight,
+                ),
+                prefixIcon: widget.prefixIcon == null
+                    ? null
+                    : Padding(
+                        padding: const EdgeInsets.only(
+                          left: AppSpacing.space12,
+                          right: AppSpacing.space8,
+                        ),
+                        child: Icon(
+                          widget.prefixIcon,
+                          size: 20,
+                          color: hasError
+                              ? AppColors.danger
+                              : _focused
+                              ? AppColors.primary
+                              : AppColors.onSurfaceVariant,
+                        ),
                       ),
-                      child: Icon(
-                        widget.prefixIcon,
-                        size: 20,
-                        color: hasError
-                            ? AppColors.danger
-                            : _focused
-                            ? AppColors.primary
-                            : AppColors.onSurfaceVariant,
+                prefixIconConstraints: const BoxConstraints(
+                  minHeight: 20,
+                  minWidth: 40,
+                ),
+                suffixIcon: widget.suffix == null
+                    ? null
+                    : Padding(
+                        padding: const EdgeInsets.only(
+                          right: AppSpacing.space12,
+                        ),
+                        child: widget.suffix,
                       ),
-                    ),
-              prefixIconConstraints: const BoxConstraints(
-                minHeight: 20,
-                minWidth: 40,
+                suffixIconConstraints: const BoxConstraints(
+                  minHeight: 20,
+                  minWidth: 40,
+                ),
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: widget.prefixIcon == null
+                      ? AppSpacing.space16
+                      : 0,
+                  vertical: AppSpacing.space16,
+                ),
+                border: InputBorder.none,
+                enabledBorder: InputBorder.none,
+                focusedBorder: InputBorder.none,
+                errorBorder: InputBorder.none,
+                focusedErrorBorder: InputBorder.none,
+                disabledBorder: InputBorder.none,
+                // We render the error text ourselves below so the field
+                // doesn't jump on focus.
+                errorStyle: const TextStyle(
+                  height: 0,
+                  fontSize: 0,
+                  color: Colors.transparent,
+                ),
+                counterText: '',
+                isDense: true,
               ),
-              suffixIcon: widget.suffix == null
-                  ? null
-                  : Padding(
-                      padding: const EdgeInsets.only(right: AppSpacing.space12),
-                      child: widget.suffix,
-                    ),
-              suffixIconConstraints: const BoxConstraints(
-                minHeight: 20,
-                minWidth: 40,
-              ),
-              contentPadding: EdgeInsets.symmetric(
-                horizontal: widget.prefixIcon == null ? AppSpacing.space16 : 0,
-                vertical: AppSpacing.space16,
-              ),
-              border: InputBorder.none,
-              enabledBorder: InputBorder.none,
-              focusedBorder: InputBorder.none,
-              errorBorder: InputBorder.none,
-              focusedErrorBorder: InputBorder.none,
-              disabledBorder: InputBorder.none,
-              // We render the error text ourselves below so the field
-              // doesn't jump on focus.
-              errorStyle: const TextStyle(
-                height: 0,
-                fontSize: 0,
-                color: Colors.transparent,
-              ),
-              counterText: '',
-              isDense: true,
             ),
           ),
         ),
         if (hasError || widget.helperText != null) ...[
           const SizedBox(height: AppSpacing.space6),
-          AnimatedSwitcher(
-            duration: AppMotion.fast,
-            child: Text(
-              hasError ? widget.errorText! : widget.helperText!,
-              key: ValueKey<String>(
-                hasError
-                    ? 'err:${widget.errorText}'
-                    : 'help:${widget.helperText}',
-              ),
-              style: AppTextStyles.labelMedium.copyWith(
-                color: hasError ? AppColors.danger : AppColors.onSurfaceVariant,
+          // Error text is announced as a live region so TalkBack/
+          // VoiceOver picks up new validation messages automatically.
+          Semantics(
+            liveRegion: hasError,
+            child: AnimatedSwitcher(
+              duration: AppMotion.fast,
+              child: Text(
+                hasError ? widget.errorText! : widget.helperText!,
+                key: ValueKey<String>(
+                  hasError
+                      ? 'err:${widget.errorText}'
+                      : 'help:${widget.helperText}',
+                ),
+                style: AppTextStyles.labelMedium.copyWith(
+                  color: hasError
+                      ? AppColors.danger
+                      : AppColors.onSurfaceVariant,
+                ),
               ),
             ),
           ),

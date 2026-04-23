@@ -572,6 +572,7 @@ class CommunitySearchDelegate extends SearchDelegate {
     return [
       IconButton(
         icon: const Icon(Icons.clear),
+        tooltip: 'Clear search',
         onPressed: () {
           query = '';
         },
@@ -583,6 +584,7 @@ class CommunitySearchDelegate extends SearchDelegate {
   Widget buildLeading(BuildContext context) {
     return IconButton(
       icon: const Icon(Icons.arrow_back),
+      tooltip: 'Back',
       onPressed: () {
         close(context, null);
       },

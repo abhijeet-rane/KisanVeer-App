@@ -174,6 +174,7 @@ class _AppButtonState extends State<AppButton> {
       button: true,
       enabled: !_disabled,
       label: widget.semanticLabel ?? widget.label,
+      excludeSemantics: true, // avoid double-announcing the inner label
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTapDown: (_) => _setPressed(true),
@@ -294,8 +295,12 @@ class _ButtonMetrics {
 _ButtonMetrics _metricsFor(AppButtonSize size) {
   switch (size) {
     case AppButtonSize.sm:
+      // Nudged from 36 → 40 for better thumb hit-area. Still visually
+      // compact but closer to the WCAG 2.5.5 / Material 3 40dp guidance
+      // for dense controls. Prefer [AppButtonSize.md] (48dp) for any
+      // standalone primary action.
       return const _ButtonMetrics(
-        minHeight: 36,
+        minHeight: 40,
         minWidth: 72,
         padding: EdgeInsets.symmetric(
           horizontal: AppSpacing.space16,

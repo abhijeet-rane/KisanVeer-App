@@ -370,6 +370,7 @@ class _CommunityThreadScreenState extends State<CommunityThreadScreen> {
                 children: [
                   IconButton(
                     icon: const Icon(Icons.photo_library),
+                    tooltip: 'Attach photos',
                     onPressed: _isSending ? null : _pickImages,
                   ),
                   const SizedBox(width: 8),
@@ -398,6 +399,9 @@ class _CommunityThreadScreenState extends State<CommunityThreadScreen> {
                   ),
                   const SizedBox(width: 8),
                   IconButton(
+                    tooltip: widget.thread != null
+                        ? 'Send message'
+                        : 'Create discussion',
                     icon: _isSending
                         ? const SizedBox(
                             width: 24,

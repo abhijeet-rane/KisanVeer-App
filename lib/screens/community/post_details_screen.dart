@@ -300,6 +300,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                 ),
                 const SizedBox(width: 16),
                 IconButton(
+                  tooltip: 'Post comment',
                   onPressed: _isPostingComment ? null : _postComment,
                   icon: _isPostingComment
                       ? const SizedBox(

@@ -41,12 +41,23 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Build APK
+      # 1) Universal MUST run before split-per-abi. Split-first leaves Gradle in a split-only
+      #    graph; a later `flutter build apk --release` may not emit app-release.apk where
+      #    the tool expects it (local + CI).
+      # 2) Copy universal aside before splits in case the split build clears app-release.apk.
+      # No Gradle `splits {}` in app/build.gradle.kts — avoids AGP ABI-filter NPE with Flutter splits.
+      - name: Build universal APK
+        run: flutter build apk --release
+
+      - name: Preserve universal APK
+        run: cp build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/_kisan-veer-universal.apk
+
+      - name: Build split APKs
         run: flutter build apk --release --split-per-abi
 
       - name: Rename APKs
         run: |
-          mv build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/kisan-veer.apk
+          mv build/app/outputs/flutter-apk/_kisan-veer-universal.apk build/app/outputs/flutter-apk/kisan-veer.apk
           mv build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk build/app/outputs/flutter-apk/kisan-veer-armeabi-v7a.apk
           mv build/app/outputs/flutter-apk/app-arm64-v8a-release.apk build/app/outputs/flutter-apk/kisan-veer-arm64-v8a.apk
           mv build/app/outputs/flutter-apk/app-x86_64-release.apk build/app/outputs/flutter-apk/kisan-veer-x86_64.apk

@@ -35,15 +35,11 @@ android {
         multiDexEnabled = true
     }
 
-    // Split APK by ABI for smaller download sizes
-    splits {
-        abi {
-            isEnable = true
-            reset()
-            include("armeabi-v7a", "arm64-v8a", "x86_64")
-            isUniversalApk = true
-        }
-    }
+    // Per-ABI APKs are produced by `flutter build apk --release --split-per-abi`.
+    // Do not duplicate ABI splits here: combining Gradle `splits { abi { ... } }`
+    // (especially `isUniversalApk = true`) with Flutter's split flow creates a
+    // universal output whose ABI filter is null; AGP 8.7+ then throws
+    // "output.getFilter(...ABI) must not be null" during packaging.
 
     buildTypes {
         getByName("release") {

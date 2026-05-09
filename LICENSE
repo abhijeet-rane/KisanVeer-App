@@ -1,21 +1,226 @@
-MIT License
+KisanVeer Proprietary Software License Agreement
 
-Copyright (c) 2026 Abhijeet Rane
+Copyright (c) 2026 Abhijeet Rane. All Rights Reserved.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+IMPORTANT — READ CAREFULLY BEFORE ACCESSING OR USING THIS SOFTWARE.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+This Proprietary Software License Agreement ("Agreement") governs all access to
+and use of the software project, source code, object code, documentation,
+assets, and related materials identified as "KisanVeer" and made available
+through this repository or any other distribution channel (collectively, the
+"Software"). By accessing, viewing, cloning, downloading, or otherwise using the
+Software, you ("Licensee") acknowledge that you have read this Agreement, that
+you understand it, and that you agree to be bound by its terms. If you do not
+agree, do not access or use the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+For questions regarding permissions not expressly granted below, contact the
+copyright holder at the contact method designated in this repository.
+
+──────────────────────────────────────────────────────────────────────────────
+
+1. DEFINITIONS
+
+   1.1 "Copyright Holder" means Abhijeet Rane, the owner of all right, title,
+       and interest in and to the Software, unless otherwise stated in writing.
+
+   1.2 "Commercial Use" means any use of the Software, in whole or in part,
+       that is intended for or directed toward commercial advantage, monetary
+       compensation, fundraising, or the benefit of any business, organization,
+       or revenue-generating activity, whether direct or indirect.
+
+   1.3 "Educational Reference" means private, non-commercial study of the
+       Software for personal learning, academic coursework, or professional
+       skill development, without distribution, public performance, or
+       integration into any product or service.
+
+   1.4 "Redistribution" means any act of making the Software, or any portion or
+       derivative of it, available to third parties by any means, including
+       without limitation: hosting copies on other servers or repositories,
+       sharing archives, peer-to-peer transfer, inclusion in another codebase
+       repository accessible to others, or distribution as part of any bundle.
+
+──────────────────────────────────────────────────────────────────────────────
+
+2. OWNERSHIP
+
+   The Software is proprietary and confidential to the Copyright Holder. The
+   Copyright Holder retains all right, title, and interest in and to the
+   Software, including all copyrights, patent rights (if any), trade secrets,
+   trademarks, and other intellectual property rights. This Agreement does not
+   grant Licensee any ownership interest in the Software.
+
+   Licensee shall not remove, alter, obscure, or falsify any copyright,
+   proprietary, or attribution notices appearing in the Software.
+
+──────────────────────────────────────────────────────────────────────────────
+
+3. LIMITED GRANT — VIEWING AND EDUCATIONAL REFERENCE ONLY
+
+   Subject to strict compliance with this Agreement, the Copyright Holder
+   grants Licensee a personal, revocable, non-exclusive, non-transferable,
+   non-sublicensable, limited right to:
+
+   (a) View the Software as publicly displayed on the GitHub (or successor)
+       repository officially designated by the Copyright Holder for KisanVeer;
+
+   (b) Download or clone a single local copy of the Software solely for
+       private, non-commercial Educational Reference, without further
+       reproduction or sharing of that copy.
+
+   No other rights are granted by implication, estoppel, or otherwise.
+
+──────────────────────────────────────────────────────────────────────────────
+
+4. RESTRICTIONS — ALL USE NOT EXPRESSLY PERMITTED IS PROHIBITED
+
+   Without the prior express written permission of the Copyright Holder,
+   Licensee shall not, and shall not permit any third party to:
+
+   4.1 Use the Software for any Commercial Use;
+
+   4.2 Sell, rent, lease, license, sublicense, assign, or otherwise transfer
+       the Software or any rights therein;
+
+   4.3 Redistribute the Software, or any portion, modification, or derivative
+       work based on the Software;
+
+   4.4 Modify, adapt, translate, reverse engineer, decompile, or disassemble
+       the Software, except to the extent such restriction is prohibited by
+       applicable law—and any information so obtained may not be disclosed or
+       used except as required by law;
+
+   4.5 Incorporate the Software, in whole or in part, into any commercial or
+       non-commercial product, service, platform, application, or offering;
+
+   4.6 Use the Software to provide services (including SaaS, hosted, or managed
+       offerings) to third parties;
+
+   4.7 Claim or imply ownership, original authorship, or exclusive rights in
+       the Software, or misrepresent the origin of the Software;
+
+   4.8 Use the name "KisanVeer," project branding, or the Copyright Holder's
+       name in a manner that suggests endorsement, affiliation, or sponsorship
+       without prior written consent;
+
+   4.9 Circumvent or disable any technical measures, license checks, or usage
+       restrictions associated with the Software;
+
+   4.10 Use the Software in any manner that violates applicable law or
+        infringes the rights of any third party.
+
+   Any permission to modify, fork for public display, contribute changes, or
+   use the Software beyond Section 3 must be obtained in advance through a
+   separate written agreement signed by the Copyright Holder.
+
+──────────────────────────────────────────────────────────────────────────────
+
+5. NO SUBLICENSE
+
+   Licensee may not grant sublicenses of any kind. Any attempted sublicense
+   shall be void and of no effect.
+
+──────────────────────────────────────────────────────────────────────────────
+
+6. THIRD-PARTY COMPONENTS
+
+   The Software may incorporate or depend on third-party open-source or
+   commercial components. Such third-party components remain subject to their
+   respective licenses. Nothing in this Agreement restricts rights granted under
+   those third-party licenses solely with respect to those components; however,
+   this Agreement continues to apply in full to all original KisanVeer materials
+   and to the Software as a combined work to the maximum extent permitted by
+   law.
+
+──────────────────────────────────────────────────────────────────────────────
+
+7. TERMINATION
+
+   This Agreement terminates automatically and without notice upon any breach
+   by Licensee. Upon termination, all rights granted under Section 3 cease
+   immediately. Sections 2, 4 through 6, 7 through 12, and any accrued
+   obligations shall survive termination.
+
+──────────────────────────────────────────────────────────────────────────────
+
+8. EXPORT AND COMPLIANCE
+
+   Licensee is responsible for compliance with all applicable export control,
+   sanctions, and trade compliance laws and regulations.
+
+──────────────────────────────────────────────────────────────────────────────
+
+9. NO WARRANTY — "AS IS"
+
+   THE SOFTWARE IS PROVIDED "AS IS" AND "AS AVAILABLE," WITHOUT WARRANTY OF ANY
+   KIND, WHETHER EXPRESS, IMPLIED, STATUTORY, OR OTHERWISE, INCLUDING WITHOUT
+   LIMITATION ANY IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+   PARTICULAR PURPOSE, TITLE, NON-INFRINGEMENT, OR THAT THE SOFTWARE WILL BE
+   UNINTERRUPTED OR ERROR-FREE.
+
+   THE COPYRIGHT HOLDER DOES NOT WARRANT THAT THE SOFTWARE WILL MEET LICENSEE'S
+   REQUIREMENTS OR THAT DEFECTS WILL BE CORRECTED. LICENSEE'S USE IS AT LICENSEE'S
+   SOLE RISK.
+
+──────────────────────────────────────────────────────────────────────────────
+
+10. LIMITATION OF LIABILITY
+
+    TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, IN NO EVENT SHALL THE
+    COPYRIGHT HOLDER BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL,
+    CONSEQUENTIAL, EXEMPLARY, OR PUNITIVE DAMAGES, OR ANY LOSS OF PROFITS,
+    REVENUE, DATA, GOODWILL, OR BUSINESS INTERRUPTION, ARISING OUT OF OR
+    RELATED TO THIS AGREEMENT OR THE SOFTWARE, WHETHER BASED IN CONTRACT, TORT
+    (INCLUDING NEGLIGENCE), STRICT LIABILITY, OR ANY OTHER THEORY, EVEN IF
+    ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
+
+    IN NO EVENT SHALL THE AGGREGATE LIABILITY OF THE COPYRIGHT HOLDER ARISING
+    OUT OF OR RELATED TO THIS AGREEMENT EXCEED THE GREATER OF (A) THE AMOUNTS
+    PAID BY LICENSEE TO THE COPYRIGHT HOLDER FOR THE SOFTWARE IN THE TWELVE (12)
+    MONTHS PRECEDING THE CLAIM, OR (B) ZERO UNITED STATES DOLLARS (US $0.00),
+    GIVEN THAT THE SOFTWARE IS PROVIDED WITHOUT CHARGE FOR THE LIMITED USES
+    EXPRESSLY PERMITTED HEREIN.
+
+──────────────────────────────────────────────────────────────────────────────
+
+11. INDEMNITY
+
+    To the extent permitted by law, Licensee agrees to indemnify, defend, and
+    hold harmless the Copyright Holder from any claims, damages, losses,
+    liabilities, and expenses (including reasonable attorneys' fees) arising
+    from Licensee's misuse of the Software or breach of this Agreement.
+
+──────────────────────────────────────────────────────────────────────────────
+
+12. GENERAL
+
+    12.1 Entire Agreement. This Agreement constitutes the entire agreement
+         between the parties concerning the subject matter hereof and
+         supersedes all prior or contemporaneous understandings.
+
+    12.2 Amendment. The Copyright Holder may update this Agreement by posting
+         a revised version in the repository. Continued use after posting
+         constitutes acceptance of the revised terms, except where prohibited
+         by law.
+
+    12.3 Severability. If any provision is held invalid or unenforceable, the
+         remaining provisions remain in full force and effect.
+
+    12.4 No Waiver. Failure to enforce any provision shall not constitute a
+         waiver of future enforcement.
+
+    12.5 Assignment. Licensee may not assign this Agreement. The Copyright
+         Holder may assign this Agreement in connection with a merger,
+         acquisition, or sale of assets.
+
+    12.6 Governing Law. This Agreement shall be governed by and construed in
+         accordance with the laws applicable in the jurisdiction of the
+         Copyright Holder's principal place of business, without regard to
+         conflict-of-law principles, except where preempted by mandatory rules
+         of Licensee's jurisdiction regarding consumer or non-waivable rights.
+
+──────────────────────────────────────────────────────────────────────────────
+
+“KisanVeer” is used herein to identify the software project. Third-party names
+and marks are the property of their respective owners.
+
+End of Agreement.

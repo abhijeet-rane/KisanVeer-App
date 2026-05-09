@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:kisan_veer/constants/app_colors.dart';
+import 'package:kisan_veer/widgets/ui/ui.dart';
 import 'package:kisan_veer/models/marketplace_models.dart';
 import 'package:kisan_veer/screens/marketplace/order_confirmation_screen.dart';
 import 'package:kisan_veer/services/analytics_service.dart';
@@ -163,9 +164,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       });
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Address saved successfully')),
-        );
+        AppSnackBar.success(context, 'Address saved');
       }
     } catch (e) {
       AppLogger.e('Error saving address', tag: 'Checkout', error: e);
@@ -183,9 +182,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     }
 
     if (_selectedAddress == null && !_useNewAddress) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select or add an address')),
-      );
+      AppSnackBar.warning(context, 'Select or add an address first');
       return;
     }
 
@@ -195,11 +192,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     String? apiKey = await _supabaseService.getPaymentApiKey('razorpay_key');
     if (apiKey == null) {
       setState(() => _processingPayment = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Error: Unable to retrieve payment API key'),
-        ),
-      );
+      AppSnackBar.error(context, 'Could not start payment. Please try again.');
       return;
     }
 
@@ -280,11 +273,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
       if (mounted) {
         setState(() => _processingPayment = false);
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => OrderConfirmationScreen(order: order),
-          ),
+        Navigator.of(context).pushReplacement(
+          AppPageRoute.of(OrderConfirmationScreen(order: order)),
         );
       }
     } catch (e) {
@@ -304,29 +294,24 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       _processingPayment = false;
       _razorpayError = response.message ?? 'Payment failed';
     });
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Payment failed: ${response.message}')),
+    AppSnackBar.error(
+      context,
+      'Payment failed: ${response.message ?? 'Unknown error'}',
     );
   }
 
   void _handleExternalWallet(ExternalWalletResponse response) {
     AppLogger.i('External wallet: ${response.walletName}', tag: 'Checkout');
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Payment through: ${response.walletName}')),
-    );
+    AppSnackBar.info(context, 'Payment via ${response.walletName}');
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
-      appBar: AppBar(
-        title: const Text('Checkout', style: TextStyle(color: Colors.white)),
-        backgroundColor: AppColors.primary,
-        elevation: 0,
-      ),
+      backgroundColor: AppColors.background,
+      appBar: const AppAppBar(title: 'Checkout', showBack: true),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const AppLoadingState(message: 'Preparing checkout…')
           : SingleChildScrollView(
               padding: const EdgeInsets.all(16),
               child: Column(

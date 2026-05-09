@@ -8,6 +8,7 @@ import 'package:kisan_veer/widgets/forecast_card.dart';
 import 'package:kisan_veer/widgets/hour_forecast.dart';
 import 'package:kisan_veer/services/weather_service.dart';
 import 'package:kisan_veer/screens/weather/location_search_screen.dart';
+import 'package:kisan_veer/widgets/ui/ui.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:kisan_veer/utils/app_logger.dart';
 import '../../services/notifications_service.dart';
@@ -105,10 +106,9 @@ class _WeatherScreenState extends State<WeatherScreen> {
   }
 
   Future<void> _searchLocation() async {
-    final result = await Navigator.push(
+    final result = await Navigator.of(
       context,
-      MaterialPageRoute(builder: (context) => const LocationSearchScreen()),
-    );
+    ).push<dynamic>(AppPageRoute.of(const LocationSearchScreen()));
 
     if (result != null && result is Map<String, dynamic>) {
       setState(() {
@@ -125,12 +125,8 @@ class _WeatherScreenState extends State<WeatherScreen> {
     await _weatherService.clearCache();
     await _loadWeatherData();
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Weather data refreshed'),
-        duration: Duration(seconds: 2),
-      ),
-    );
+    if (!mounted) return;
+    AppSnackBar.success(context, 'Weather data refreshed');
   }
 
   Future<void> _showCropSelectionDialog() async {
@@ -200,12 +196,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
       await _loadWeatherData();
 
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Crop selections updated'),
-          duration: Duration(seconds: 2),
-        ),
-      );
+      AppSnackBar.success(context, 'Crop selections updated');
     } catch (e, s) {
       AppLogger.e(
         'Failed to save user crops',
@@ -214,12 +205,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
         stackTrace: s,
       );
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Could not save crop selections'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      AppSnackBar.error(context, 'Could not save crop selections');
     }
   }
 

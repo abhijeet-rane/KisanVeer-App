@@ -1,11 +1,12 @@
+import 'package:animate_do/animate_do.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:kisan_veer/models/community_models.dart';
-import 'package:kisan_veer/services/community_service.dart';
-import 'package:kisan_veer/screens/community/create_community_screen.dart';
 import 'package:kisan_veer/screens/community/community_details_screen.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:animate_do/animate_do.dart';
+import 'package:kisan_veer/screens/community/create_community_screen.dart';
+import 'package:kisan_veer/services/community_service.dart';
+import 'package:kisan_veer/widgets/ui/ui.dart';
 
 class CommunitiesScreen extends StatefulWidget {
   const CommunitiesScreen({Key? key}) : super(key: key);
@@ -49,12 +50,9 @@ class _CommunitiesScreenState extends State<CommunitiesScreen> {
 
   void _navigateToCommunityDetails(Community community) {
     if (community.isMember) {
-      Navigator.push(
+      Navigator.of(
         context,
-        MaterialPageRoute(
-          builder: (context) => CommunityDetailsScreen(community: community),
-        ),
-      );
+      ).push(AppPageRoute.of(CommunityDetailsScreen(community: community)));
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Join the community to view details')),
@@ -354,13 +352,13 @@ class _CommunitiesScreenState extends State<CommunitiesScreen> {
                                 delay: const Duration(milliseconds: 300),
                                 child: GestureDetector(
                                   onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
+                                    Navigator.of(context)
+                                        .push(
+                                          AppPageRoute.of(
                                             const CreateCommunityScreen(),
-                                      ),
-                                    ).then((_) => _loadCommunities());
+                                          ),
+                                        )
+                                        .then((_) => _loadCommunities());
                                   },
                                   child: Container(
                                     width: double.infinity,
@@ -574,6 +572,7 @@ class CommunitySearchDelegate extends SearchDelegate {
     return [
       IconButton(
         icon: const Icon(Icons.clear),
+        tooltip: 'Clear search',
         onPressed: () {
           query = '';
         },
@@ -585,6 +584,7 @@ class CommunitySearchDelegate extends SearchDelegate {
   Widget buildLeading(BuildContext context) {
     return IconButton(
       icon: const Icon(Icons.arrow_back),
+      tooltip: 'Back',
       onPressed: () {
         close(context, null);
       },
@@ -634,12 +634,8 @@ class CommunitySearchDelegate extends SearchDelegate {
                 color: Colors.grey,
               ),
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        CommunityDetailsScreen(community: community),
-                  ),
+                Navigator.of(context).push(
+                  AppPageRoute.of(CommunityDetailsScreen(community: community)),
                 );
               },
             );

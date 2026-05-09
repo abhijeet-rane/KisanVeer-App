@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:kisan_veer/constants/app_colors.dart';
+import 'package:kisan_veer/widgets/ui/ui.dart';
 import 'package:kisan_veer/utils/app_logger.dart';
 import '../../models/scheme_model.dart';
 import '../../services/schemes_service.dart';
@@ -138,29 +140,27 @@ class _SchemesListingScreenState extends State<SchemesListingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Government Schemes'),
+      backgroundColor: AppColors.background,
+      appBar: AppAppBar(
+        title: 'Government schemes',
+        showBack: true,
         actions: [
           if (_isAdmin)
             IconButton(
-              icon: Icon(Icons.admin_panel_settings),
-              tooltip: 'Admin Panel',
+              icon: const Icon(Icons.admin_panel_settings),
+              tooltip: 'Admin panel',
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => AdminPanelScreen()),
-                );
+                Navigator.of(context).push(AppPageRoute.of(AdminPanelScreen()));
               },
             ),
           IconButton(
-            icon: Icon(Icons.assignment),
+            icon: const Icon(Icons.assignment_outlined),
             onPressed: () {
-              Navigator.push(
+              Navigator.of(
                 context,
-                MaterialPageRoute(builder: (context) => MyApplicationsScreen()),
-              );
+              ).push(AppPageRoute.of(MyApplicationsScreen()));
             },
-            tooltip: 'My Applications',
+            tooltip: 'My applications',
           ),
         ],
       ),
@@ -292,12 +292,9 @@ class _SchemesListingScreenState extends State<SchemesListingScreen> {
                             child: ElevatedButton(
                               child: Text('View Details'),
                               onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => SchemeDetailsScreen(
-                                      schemeId: scheme.id,
-                                    ),
+                                Navigator.of(context).push(
+                                  AppPageRoute.of(
+                                    SchemeDetailsScreen(schemeId: scheme.id),
                                   ),
                                 );
                               },

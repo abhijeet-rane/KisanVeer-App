@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:kisan_veer/constants/app_colors.dart';
+import 'package:kisan_veer/widgets/ui/ui.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../models/scheme_model.dart';
 import '../../services/schemes_service.dart';
@@ -58,20 +60,10 @@ class _SchemeDetailsScreenState extends State<SchemeDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Scheme Details'),
-        centerTitle: true,
-        elevation: 0,
-        backgroundColor: Colors.white,
-        iconTheme: const IconThemeData(color: Colors.black),
-        titleTextStyle: const TextStyle(
-          color: Colors.black,
-          fontWeight: FontWeight.bold,
-          fontSize: 20,
-        ),
-      ),
+      backgroundColor: AppColors.background,
+      appBar: const AppAppBar(title: 'Scheme details', showBack: true),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const AppLoadingState(message: 'Loading scheme…')
           : _errorMessage.isNotEmpty
           ? Center(child: Text(_errorMessage))
           : _scheme == null
@@ -315,11 +307,9 @@ class _SchemeDetailsScreenState extends State<SchemeDetailsScreen> {
                       ),
                       child: const Text('Apply via App'),
                       onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                ApplicationFormScreen(scheme: _scheme!),
+                        Navigator.of(context).push(
+                          AppPageRoute.of(
+                            ApplicationFormScreen(scheme: _scheme!),
                           ),
                         );
                       },

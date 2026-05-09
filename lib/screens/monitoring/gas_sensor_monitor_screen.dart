@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:kisan_veer/constants/app_colors.dart';
+import 'package:kisan_veer/widgets/ui/ui.dart';
 import 'package:intl/intl.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:kisan_veer/utils/app_logger.dart';
@@ -631,18 +633,18 @@ class _GasSensorMonitorScreenState extends State<GasSensorMonitorScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Smart Farm Monitor'),
-        backgroundColor: Colors.green.shade700,
+      backgroundColor: AppColors.background,
+      appBar: AppAppBar(
+        title: 'Smart farm monitor',
+        showBack: true,
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh),
+            icon: const Icon(Icons.refresh_rounded),
             onPressed: _fetchData,
             tooltip: 'Refresh',
           ),
         ],
       ),
-      backgroundColor: Colors.green.shade50,
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: ListView(

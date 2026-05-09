@@ -1,5 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:kisan_veer/constants/app_colors.dart';
+import 'package:kisan_veer/widgets/ui/ui.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:kisan_veer/models/community_models.dart';
 import 'package:kisan_veer/services/community_service.dart';
@@ -157,9 +159,10 @@ class _CommunityThreadScreenState extends State<CommunityThreadScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.thread?.title ?? 'New Discussion'),
-        elevation: 0,
+      backgroundColor: AppColors.background,
+      appBar: AppAppBar(
+        title: widget.thread?.title ?? 'New discussion',
+        showBack: true,
       ),
       body: Column(
         children: [
@@ -367,6 +370,7 @@ class _CommunityThreadScreenState extends State<CommunityThreadScreen> {
                 children: [
                   IconButton(
                     icon: const Icon(Icons.photo_library),
+                    tooltip: 'Attach photos',
                     onPressed: _isSending ? null : _pickImages,
                   ),
                   const SizedBox(width: 8),
@@ -395,6 +399,9 @@ class _CommunityThreadScreenState extends State<CommunityThreadScreen> {
                   ),
                   const SizedBox(width: 8),
                   IconButton(
+                    tooltip: widget.thread != null
+                        ? 'Send message'
+                        : 'Create discussion',
                     icon: _isSending
                         ? const SizedBox(
                             width: 24,

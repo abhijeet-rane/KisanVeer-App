@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:kisan_veer/constants/app_colors.dart';
+import 'package:kisan_veer/widgets/ui/ui.dart';
 import 'package:kisan_veer/constants/app_text_styles.dart';
 import 'package:kisan_veer/models/financial_models.dart';
 import 'package:kisan_veer/services/financial_service.dart';
@@ -106,18 +107,15 @@ class _FinanceScreenState extends State<FinanceScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        backgroundColor: AppColors.primary,
-        elevation: 0,
-        title: const Text(
-          'Financial Management',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-        ),
+      appBar: AppAppBar(
+        title: 'Finance',
+        showBack: true,
         bottom: TabBar(
           controller: _tabController,
-          indicatorColor: Colors.white,
-          labelColor: Colors.white,
-          unselectedLabelColor: Colors.white.withValues(alpha: 0.7),
+          indicatorColor: AppColors.primary,
+          indicatorWeight: 3,
+          labelColor: AppColors.primary,
+          unselectedLabelColor: AppColors.onSurfaceVariant,
           tabs: const [
             Tab(text: 'Dashboard'),
             Tab(text: 'Transactions'),
@@ -126,7 +124,7 @@ class _FinanceScreenState extends State<FinanceScreen>
         ),
       ),
       body: _isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? const AppLoadingState(message: 'Loading your finances…')
           : TabBarView(
               controller: _tabController,
               children: [
@@ -217,12 +215,9 @@ class _FinanceScreenState extends State<FinanceScreen>
           const SizedBox(height: 20),
           CustomButton(
             onPressed: () {
-              Navigator.push(
+              Navigator.of(
                 context,
-                MaterialPageRoute(
-                  builder: (context) => const FinancialReportsScreen(),
-                ),
-              );
+              ).push(AppPageRoute.of(const FinancialReportsScreen()));
             },
             text: 'View Reports',
             icon: Icons.bar_chart,
@@ -354,12 +349,9 @@ class _FinanceScreenState extends State<FinanceScreen>
             const SizedBox(height: 20),
             ElevatedButton.icon(
               onPressed: () {
-                Navigator.push(
+                Navigator.of(
                   context,
-                  MaterialPageRoute(
-                    builder: (context) => const CreditScoreScreen(),
-                  ),
-                );
+                ).push(AppPageRoute.of(const CreditScoreScreen()));
               },
               icon: Icon(Icons.analytics, color: Colors.white),
               label: Text(
@@ -439,12 +431,8 @@ class _FinanceScreenState extends State<FinanceScreen>
               children: [
                 CustomButton(
                   onPressed: () async {
-                    final result = await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            AddTransactionScreen(isIncome: true),
-                      ),
+                    final result = await Navigator.of(context).push(
+                      AppPageRoute.of(AddTransactionScreen(isIncome: true)),
                     );
                     if (result == true) {
                       _loadData();
@@ -457,12 +445,8 @@ class _FinanceScreenState extends State<FinanceScreen>
                 const SizedBox(width: 16),
                 CustomButton(
                   onPressed: () async {
-                    final result = await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            AddTransactionScreen(isIncome: false),
-                      ),
+                    final result = await Navigator.of(context).push(
+                      AppPageRoute.of(AddTransactionScreen(isIncome: false)),
                     );
                     if (result == true) {
                       _loadData();
@@ -496,12 +480,8 @@ class _FinanceScreenState extends State<FinanceScreen>
                   Expanded(
                     child: CustomButton(
                       onPressed: () async {
-                        final result = await Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                AddTransactionScreen(isIncome: true),
-                          ),
+                        final result = await Navigator.of(context).push(
+                          AppPageRoute.of(AddTransactionScreen(isIncome: true)),
                         );
                         if (result == true) {
                           _loadData();
@@ -516,11 +496,9 @@ class _FinanceScreenState extends State<FinanceScreen>
                   Expanded(
                     child: CustomButton(
                       onPressed: () async {
-                        final result = await Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                AddTransactionScreen(isIncome: false),
+                        final result = await Navigator.of(context).push(
+                          AppPageRoute.of(
+                            AddTransactionScreen(isIncome: false),
                           ),
                         );
                         if (result == true) {
@@ -648,12 +626,9 @@ class _FinanceScreenState extends State<FinanceScreen>
               title: const Text('Add Loan'),
               onTap: () async {
                 Navigator.pop(context);
-                final result = await Navigator.push(
+                final result = await Navigator.of(
                   context,
-                  MaterialPageRoute(
-                    builder: (context) => const AddLoanScreen(),
-                  ),
-                );
+                ).push(AppPageRoute.of(const AddLoanScreen()));
                 if (result == true) {
                   await _loadData();
                 }
@@ -666,12 +641,9 @@ class _FinanceScreenState extends State<FinanceScreen>
   }
 
   Future<void> _showAddTransactionScreen(bool isIncome) async {
-    final result = await Navigator.push(
+    final result = await Navigator.of(
       context,
-      MaterialPageRoute(
-        builder: (context) => AddTransactionScreen(isIncome: isIncome),
-      ),
-    );
+    ).push(AppPageRoute.of(AddTransactionScreen(isIncome: isIncome)));
 
     if (result == true) {
       await _loadData();

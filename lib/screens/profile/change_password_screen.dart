@@ -1,10 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:kisan_veer/constants/app_colors.dart';
-import 'package:kisan_veer/widgets/custom_button.dart';
+import 'package:kisan_veer/constants/app_motion.dart';
+import 'package:kisan_veer/constants/app_radii.dart';
+import 'package:kisan_veer/constants/app_spacing.dart';
+import 'package:kisan_veer/constants/app_text_styles.dart';
+import 'package:kisan_veer/utils/app_logger.dart';
+import 'package:kisan_veer/widgets/ui/ui.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
+/// V2 change password screen.
+///
+/// Single-column form with live password-strength checklist below the
+/// new-password field. The checklist turns green as each rule is met
+/// so the user gets continuous feedback rather than a terse error.
 class ChangePasswordScreen extends StatefulWidget {
-  const ChangePasswordScreen({Key? key}) : super(key: key);
+  const ChangePasswordScreen({super.key});
 
   @override
   State<ChangePasswordScreen> createState() => _ChangePasswordScreenState();
@@ -17,254 +27,325 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   final _confirmPasswordController = TextEditingController();
 
   bool _isLoading = false;
-  bool _obscureCurrentPassword = true;
-  bool _obscureNewPassword = true;
-  bool _obscureConfirmPassword = true;
+  bool _obscureCurrent = true;
+  bool _obscureNew = true;
+  bool _obscureConfirm = true;
 
   final _supabase = Supabase.instance.client;
 
   @override
+  void initState() {
+    super.initState();
+    _newPasswordController.addListener(_onNewPasswordChanged);
+  }
+
+  @override
   void dispose() {
+    _newPasswordController.removeListener(_onNewPasswordChanged);
     _currentPasswordController.dispose();
     _newPasswordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
   }
 
-  // Validate password meets requirements
-  bool _isPasswordValid(String password) {
-    // Minimum 8 characters, at least one uppercase letter, one lowercase letter,
-    // one number and one special character
-    final passwordRegExp = RegExp(
-      r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$',
-    );
-    return passwordRegExp.hasMatch(password);
+  void _onNewPasswordChanged() {
+    setState(() {});
   }
 
+  bool _hasMinLength(String p) => p.length >= 8;
+  bool _hasUpper(String p) => p.contains(RegExp(r'[A-Z]'));
+  bool _hasLower(String p) => p.contains(RegExp(r'[a-z]'));
+  bool _hasDigit(String p) => p.contains(RegExp(r'\d'));
+  bool _hasSpecial(String p) => p.contains(RegExp(r'[@$!%*?&#]'));
+
+  bool _isPasswordValid(String p) =>
+      _hasMinLength(p) &&
+      _hasUpper(p) &&
+      _hasLower(p) &&
+      _hasDigit(p) &&
+      _hasSpecial(p);
+
   String? _validateCurrentPassword(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Please enter your current password';
-    }
+    if (value == null || value.isEmpty) return 'Enter your current password';
     return null;
   }
 
   String? _validateNewPassword(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Please enter a new password';
-    }
+    if (value == null || value.isEmpty) return 'Enter a new password';
     if (value == _currentPasswordController.text) {
-      return 'New password must be different from current password';
+      return 'New password must differ from current password';
     }
     if (!_isPasswordValid(value)) {
-      return 'Password must have at least 8 characters, including uppercase, lowercase, number and special character';
+      return 'Password does not meet the requirements below';
     }
     return null;
   }
 
   String? _validateConfirmPassword(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Please confirm your new password';
-    }
-    if (value != _newPasswordController.text) {
-      return 'Passwords do not match';
-    }
+    if (value == null || value.isEmpty) return 'Re-enter your new password';
+    if (value != _newPasswordController.text) return 'Passwords do not match';
     return null;
   }
 
   Future<void> _changePassword() async {
-    if (_formKey.currentState!.validate()) {
-      setState(() {
-        _isLoading = true;
-      });
+    if (_isLoading) return;
+    if (!(_formKey.currentState?.validate() ?? false)) return;
+
+    setState(() => _isLoading = true);
+
+    try {
+      final currentUser = _supabase.auth.currentUser;
+      if (currentUser == null || currentUser.email == null) {
+        throw Exception('Not signed in');
+      }
 
       try {
-        // 1. First verify the current password by attempting to sign in
-        final currentUser = _supabase.auth.currentUser;
-        if (currentUser == null || currentUser.email == null) {
-          throw Exception('User not logged in or email not available');
-        }
-
-        // Attempt to sign in with current password to verify it's correct
-        try {
-          await _supabase.auth.signInWithPassword(
-            email: currentUser.email!,
-            password: _currentPasswordController.text,
-          );
-        } catch (e) {
-          throw Exception('Current password is incorrect');
-        }
-
-        // 2. Now update the password
-        await _supabase.auth.updateUser(
-          UserAttributes(password: _newPasswordController.text),
+        await _supabase.auth.signInWithPassword(
+          email: currentUser.email!,
+          password: _currentPasswordController.text,
         );
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Password changed successfully'),
-            backgroundColor: Colors.green,
-          ),
-        );
-
-        // Clear all fields after success
-        _currentPasswordController.clear();
-        _newPasswordController.clear();
-        _confirmPasswordController.clear();
-
-        // Return to previous screen after a delay
-        Future.delayed(const Duration(seconds: 2), () {
-          if (mounted) {
-            Navigator.pop(context);
-          }
-        });
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error: ${e.toString()}'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      } finally {
-        if (mounted) {
-          setState(() {
-            _isLoading = false;
-          });
-        }
+      } catch (_) {
+        throw Exception('Current password is incorrect');
       }
+
+      await _supabase.auth.updateUser(
+        UserAttributes(password: _newPasswordController.text),
+      );
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Password changed successfully'),
+          backgroundColor: AppColors.success,
+        ),
+      );
+
+      _currentPasswordController.clear();
+      _newPasswordController.clear();
+      _confirmPasswordController.clear();
+
+      Future.delayed(const Duration(seconds: 1), () {
+        if (mounted) Navigator.pop(context);
+      });
+    } catch (e) {
+      AppLogger.e('Change password failed', tag: 'ChangePassword', error: e);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Error: ${e.toString().replaceFirst('Exception: ', '')}',
+          ),
+          backgroundColor: AppColors.danger,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
-  }
-
-  // Non-async wrapper for handleChangePassword to use with CustomButton
-  void _handleChangePasswordSync() {
-    handleChangePassword();
-  }
-
-  void handleChangePassword() {
-    _changePassword();
   }
 
   @override
   Widget build(BuildContext context) {
+    final newP = _newPasswordController.text;
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Change Password'),
-        backgroundColor: AppColors.primary,
-        elevation: 0,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 16),
-              const Text(
-                'Change your password',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.primary,
+      backgroundColor: AppColors.background,
+      appBar: const AppAppBar(title: 'Change password', showBack: true),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.space16,
+            AppSpacing.space16,
+            AppSpacing.space16,
+            AppSpacing.space32,
+          ),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  'Set a new password',
+                  style: AppTextStyles.headlineSmall.copyWith(
+                    color: AppColors.onSurface,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                'For security reasons, please enter your current password before setting a new one.',
-                style: TextStyle(color: Colors.grey, fontSize: 14),
-              ),
-              const SizedBox(height: 32),
-              _buildPasswordField(
-                controller: _currentPasswordController,
-                labelText: 'Current Password',
-                obscureText: _obscureCurrentPassword,
-                onToggleObscure: () {
-                  setState(() {
-                    _obscureCurrentPassword = !_obscureCurrentPassword;
-                  });
-                },
-                validator: _validateCurrentPassword,
-              ),
-              const SizedBox(height: 24),
-              _buildPasswordField(
-                controller: _newPasswordController,
-                labelText: 'New Password',
-                obscureText: _obscureNewPassword,
-                onToggleObscure: () {
-                  setState(() {
-                    _obscureNewPassword = !_obscureNewPassword;
-                  });
-                },
-                validator: _validateNewPassword,
-              ),
-              const SizedBox(height: 24),
-              _buildPasswordField(
-                controller: _confirmPasswordController,
-                labelText: 'Confirm New Password',
-                obscureText: _obscureConfirmPassword,
-                onToggleObscure: () {
-                  setState(() {
-                    _obscureConfirmPassword = !_obscureConfirmPassword;
-                  });
-                },
-                validator: _validateConfirmPassword,
-              ),
-              const SizedBox(height: 40),
-              CustomButton(
-                onPressed: _isLoading ? () {} : _handleChangePasswordSync,
-                text: _isLoading ? 'Please wait...' : 'Change Password',
-                isLoading: _isLoading,
-                width: double.infinity,
-              ),
-              const SizedBox(height: 24),
-              if (!_isLoading)
-                const Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Password requirements:',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
-                      ),
-                    ),
-                    SizedBox(height: 8),
-                    Text('• At least 8 characters'),
-                    Text('• At least one uppercase letter (A-Z)'),
-                    Text('• At least one lowercase letter (a-z)'),
-                    Text('• At least one number (0-9)'),
-                    Text('• At least one special character (@#\$%^&*!)'),
-                  ],
+                const SizedBox(height: AppSpacing.space8),
+                Text(
+                  'For security, enter your current password before '
+                  'choosing a new one.',
+                  style: AppTextStyles.bodyMedium.copyWith(
+                    color: AppColors.onSurfaceVariant,
+                  ),
                 ),
-            ],
+                const SizedBox(height: AppSpacing.space24),
+                AppTextField(
+                  controller: _currentPasswordController,
+                  label: 'Current password',
+                  prefixIcon: Icons.lock_outline_rounded,
+                  obscureText: _obscureCurrent,
+                  textInputAction: TextInputAction.next,
+                  suffix: _ObscureToggle(
+                    obscured: _obscureCurrent,
+                    onToggle: () =>
+                        setState(() => _obscureCurrent = !_obscureCurrent),
+                  ),
+                  validator: _validateCurrentPassword,
+                ),
+                const SizedBox(height: AppSpacing.space16),
+                AppTextField(
+                  controller: _newPasswordController,
+                  label: 'New password',
+                  prefixIcon: Icons.lock_reset_rounded,
+                  obscureText: _obscureNew,
+                  textInputAction: TextInputAction.next,
+                  suffix: _ObscureToggle(
+                    obscured: _obscureNew,
+                    onToggle: () => setState(() => _obscureNew = !_obscureNew),
+                  ),
+                  validator: _validateNewPassword,
+                ),
+                const SizedBox(height: AppSpacing.space12),
+                _PasswordChecklist(
+                  minLength: _hasMinLength(newP),
+                  upper: _hasUpper(newP),
+                  lower: _hasLower(newP),
+                  digit: _hasDigit(newP),
+                  special: _hasSpecial(newP),
+                ),
+                const SizedBox(height: AppSpacing.space16),
+                AppTextField(
+                  controller: _confirmPasswordController,
+                  label: 'Confirm new password',
+                  prefixIcon: Icons.check_circle_outline_rounded,
+                  obscureText: _obscureConfirm,
+                  textInputAction: TextInputAction.done,
+                  onSubmitted: (_) => _changePassword(),
+                  suffix: _ObscureToggle(
+                    obscured: _obscureConfirm,
+                    onToggle: () =>
+                        setState(() => _obscureConfirm = !_obscureConfirm),
+                  ),
+                  validator: _validateConfirmPassword,
+                ),
+                const SizedBox(height: AppSpacing.space32),
+                AppButton(
+                  label: _isLoading ? 'Updating…' : 'Update password',
+                  size: AppButtonSize.lg,
+                  isFullWidth: true,
+                  isLoading: _isLoading,
+                  leadingIcon: Icons.shield_rounded,
+                  onPressed: _changePassword,
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
+}
 
-  Widget _buildPasswordField({
-    required TextEditingController controller,
-    required String labelText,
-    required bool obscureText,
-    required Function onToggleObscure,
-    required String? Function(String?) validator,
-  }) {
-    return TextFormField(
-      controller: controller,
-      obscureText: obscureText,
-      validator: validator,
-      decoration: InputDecoration(
-        labelText: labelText,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-        suffixIcon: IconButton(
-          icon: Icon(
-            obscureText ? Icons.visibility_off : Icons.visibility,
-            color: Colors.grey,
+class _ObscureToggle extends StatelessWidget {
+  const _ObscureToggle({required this.obscured, required this.onToggle});
+
+  final bool obscured;
+  final VoidCallback onToggle;
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      onPressed: onToggle,
+      icon: Icon(
+        obscured ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+        color: AppColors.onSurfaceVariant,
+        size: 20,
+      ),
+      tooltip: obscured ? 'Show password' : 'Hide password',
+    );
+  }
+}
+
+class _PasswordChecklist extends StatelessWidget {
+  const _PasswordChecklist({
+    required this.minLength,
+    required this.upper,
+    required this.lower,
+    required this.digit,
+    required this.special,
+  });
+
+  final bool minLength;
+  final bool upper;
+  final bool lower;
+  final bool digit;
+  final bool special;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.space12),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceContainerLow,
+        borderRadius: AppRadii.brMd,
+        border: Border.all(color: AppColors.outlineVariant, width: 1),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Password requirements',
+            style: AppTextStyles.labelMedium.copyWith(
+              color: AppColors.onSurfaceVariant,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 0.4,
+            ),
           ),
-          onPressed: () {
-            onToggleObscure();
-          },
-        ),
+          const SizedBox(height: AppSpacing.space8),
+          _RuleRow(text: 'At least 8 characters', met: minLength),
+          _RuleRow(text: 'One uppercase letter (A–Z)', met: upper),
+          _RuleRow(text: 'One lowercase letter (a–z)', met: lower),
+          _RuleRow(text: 'One digit (0–9)', met: digit),
+          _RuleRow(text: 'One special character (@, \$, !, …)', met: special),
+        ],
+      ),
+    );
+  }
+}
+
+class _RuleRow extends StatelessWidget {
+  const _RuleRow({required this.text, required this.met});
+
+  final String text;
+  final bool met;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 3),
+      child: Row(
+        children: [
+          AnimatedSwitcher(
+            duration: AppMotion.fast,
+            child: Icon(
+              met
+                  ? Icons.check_circle_rounded
+                  : Icons.radio_button_unchecked_rounded,
+              key: ValueKey<bool>(met),
+              color: met ? AppColors.success : AppColors.onSurfaceVariant,
+              size: 16,
+            ),
+          ),
+          const SizedBox(width: AppSpacing.space8),
+          Expanded(
+            child: Text(
+              text,
+              style: AppTextStyles.bodySmall.copyWith(
+                color: met ? AppColors.onSurface : AppColors.onSurfaceVariant,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

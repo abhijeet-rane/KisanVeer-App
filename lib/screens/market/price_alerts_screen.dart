@@ -1,49 +1,67 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:intl/intl.dart';
 import 'package:kisan_veer/constants/app_colors.dart';
+import 'package:kisan_veer/constants/app_motion.dart';
+import 'package:kisan_veer/constants/app_radii.dart';
+import 'package:kisan_veer/constants/app_spacing.dart';
 import 'package:kisan_veer/constants/app_text_styles.dart';
 import 'package:kisan_veer/models/market_models.dart';
 import 'package:kisan_veer/services/market_service.dart';
 import 'package:kisan_veer/utils/app_logger.dart';
-import 'package:flutter_animate/flutter_animate.dart';
-import 'package:intl/intl.dart';
+import 'package:kisan_veer/widgets/ui/ui.dart';
 
+/// V2 price alerts screen.
+///
+/// List of user-configured price alerts. Each alert card shows the
+/// condition, threshold, and location. A bottom-sheet form creates
+/// new alerts with cascading state → district → market selects.
 class PriceAlertsScreen extends StatefulWidget {
-  final String? initialCommodity;
-  final String? initialState;
-  final String? initialDistrict;
-  final String? initialMarket;
-
   const PriceAlertsScreen({
-    Key? key,
+    super.key,
     this.initialCommodity,
     this.initialState,
     this.initialDistrict,
     this.initialMarket,
-  }) : super(key: key);
+  });
+
+  final String? initialCommodity;
+  final String? initialState;
+  final String? initialDistrict;
+  final String? initialMarket;
 
   @override
   State<PriceAlertsScreen> createState() => _PriceAlertsScreenState();
 }
 
 class _PriceAlertsScreenState extends State<PriceAlertsScreen> {
-  late TextEditingController _commodityController;
+  final MarketService _marketService = MarketService();
+
+  final _commodityController = TextEditingController();
+  final _priceController = TextEditingController();
+
   String? _selectedState;
   String? _selectedDistrict;
   String? _selectedMarket;
+  String _selectedCondition = 'above';
+
+  bool _isLoading = true;
+  String? _errorMessage;
+
+  List<PriceAlert> _alerts = [];
+  List<String> _states = [];
+  List<String> _districts = [];
+  List<String> _markets = [];
 
   @override
   void initState() {
     super.initState();
-    _commodityController = TextEditingController(
-      text: widget.initialCommodity ?? '',
-    );
+    _commodityController.text = widget.initialCommodity ?? '';
     _selectedState = widget.initialState;
     _selectedDistrict = widget.initialDistrict;
     _selectedMarket = widget.initialMarket;
     _loadAlerts();
-
     _loadStates().then((_) {
-      // Ensure selected state is valid and exists in the list
       if (_selectedState != null && _states.contains(_selectedState)) {
         _loadDistricts().then((_) {
           if (_selectedDistrict != null &&
@@ -55,24 +73,6 @@ class _PriceAlertsScreenState extends State<PriceAlertsScreen> {
     });
   }
 
-  final MarketService _marketService = MarketService();
-
-  bool _isLoading = true;
-  String? _errorMessage;
-
-  // Active alerts
-  List<PriceAlert> _alerts = [];
-
-  // Form controllers
-
-  String? _selectedCondition = 'above';
-  final _priceController = TextEditingController();
-
-  // Data lists
-  List<String> _states = [];
-  List<String> _districts = [];
-  List<String> _markets = [];
-
   @override
   void dispose() {
     _commodityController.dispose();
@@ -81,19 +81,20 @@ class _PriceAlertsScreenState extends State<PriceAlertsScreen> {
   }
 
   Future<void> _loadAlerts() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
     try {
-      setState(() {
-        _isLoading = true;
-        _errorMessage = null;
-      });
-
       final alerts = await _marketService.getPriceAlerts();
-
+      if (!mounted) return;
       setState(() {
         _alerts = alerts;
         _isLoading = false;
       });
     } catch (e) {
+      AppLogger.e('Load alerts failed', tag: 'PriceAlerts', error: e);
+      if (!mounted) return;
       setState(() {
         _errorMessage = e.toString();
         _isLoading = false;
@@ -104,32 +105,25 @@ class _PriceAlertsScreenState extends State<PriceAlertsScreen> {
   Future<void> _loadStates() async {
     try {
       final states = await _marketService.getStates();
-
+      if (!mounted) return;
       setState(() {
         _states = states;
-
-        // Ensure selected state is valid and exists in the fetched list
-        if (_selectedState != null && states.contains(_selectedState)) {
-          _selectedState = _selectedState; // keep as is
-        } else {
-          _selectedState = null; // clear if invalid
+        if (_selectedState != null && !states.contains(_selectedState)) {
+          _selectedState = null;
         }
       });
     } catch (e) {
-      AppLogger.e('Error loading states', tag: 'PriceAlerts', error: e);
+      AppLogger.e('Load states failed', tag: 'PriceAlerts', error: e);
     }
   }
 
   Future<void> _loadDistricts() async {
     if (_selectedState == null) return;
-
     try {
       final districts = await _marketService.getDistricts(_selectedState!);
-
+      if (!mounted) return;
       setState(() {
         _districts = districts;
-
-        // Only reset district if it wasn't pre-selected
         if (_selectedDistrict == null ||
             !_districts.contains(_selectedDistrict)) {
           _selectedDistrict = null;
@@ -138,126 +132,76 @@ class _PriceAlertsScreenState extends State<PriceAlertsScreen> {
         }
       });
     } catch (e) {
-      AppLogger.e('Error loading districts', tag: 'PriceAlerts', error: e);
+      AppLogger.e('Load districts failed', tag: 'PriceAlerts', error: e);
     }
   }
 
   Future<void> _loadMarkets() async {
     if (_selectedState == null || _selectedDistrict == null) return;
-
     try {
       final markets = await _marketService.getMarkets(
         _selectedState!,
         _selectedDistrict!,
       );
-
+      if (!mounted) return;
       setState(() {
         _markets = markets;
-
-        // Only reset market if it wasn't pre-selected
         if (_selectedMarket == null || !_markets.contains(_selectedMarket)) {
           _selectedMarket = null;
         }
       });
     } catch (e) {
-      AppLogger.e('Error loading markets', tag: 'PriceAlerts', error: e);
+      AppLogger.e('Load markets failed', tag: 'PriceAlerts', error: e);
     }
   }
 
-  Future<void> _createAlert() async {
-    if (_commodityController.text.isEmpty ||
-        _priceController.text.isEmpty ||
+  Future<void> _createAlert(StateSetter sheetSetState) async {
+    if (_commodityController.text.trim().isEmpty ||
+        _priceController.text.trim().isEmpty ||
         _selectedState == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please fill in all required fields'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      _toast('Fill in commodity, state, and price', color: AppColors.danger);
+      return;
+    }
+
+    final price = double.tryParse(_priceController.text.trim());
+    if (price == null) {
+      _toast('Enter a valid price', color: AppColors.danger);
       return;
     }
 
     try {
-      final price = double.tryParse(_priceController.text);
-      if (price == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Please enter a valid price'),
-            backgroundColor: Colors.red,
-          ),
-        );
-        return;
-      }
-
-      final alert = PriceAlert(
-        id: 0.toString(), // Will be set by the database
-        userId: '', // Will be set by the service
-        commodity: _commodityController.text,
+      await _marketService.createPriceAlert(
+        commodity: _commodityController.text.trim(),
         state: _selectedState!,
         district: _selectedDistrict,
         market: _selectedMarket,
-        alertCondition: _selectedCondition!,
         thresholdPrice: price,
-        createdAt: DateTime.now(),
-        lastNotified: null,
-        isActive: true,
+        alertCondition: _selectedCondition,
       );
 
-      await _marketService.createPriceAlert(
-        commodity: alert.commodity,
-        state: alert.state,
-        district: alert.district,
-        market: alert.market,
-        thresholdPrice: alert.thresholdPrice,
-        alertCondition: alert.alertCondition,
-      );
-
-      // Reset form and refresh
       _commodityController.clear();
       _priceController.clear();
-
-      // Close the bottom sheet
+      if (!mounted) return;
       Navigator.pop(context);
-
-      // Refresh alerts
       _loadAlerts();
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Price alert created successfully'),
-          backgroundColor: Colors.green,
-        ),
-      );
+      _toast('Price alert created', color: AppColors.success);
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to create alert: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      AppLogger.e('Create alert failed', tag: 'PriceAlerts', error: e);
+      if (!mounted) return;
+      _toast('Could not create alert', color: AppColors.danger);
     }
   }
 
   Future<void> _deleteAlert(PriceAlert alert) async {
     try {
       await _marketService.deletePriceAlert(alert.id.toString());
-
-      // Refresh alerts
+      if (!mounted) return;
       _loadAlerts();
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Price alert deleted successfully'),
-          backgroundColor: Colors.green,
-        ),
-      );
+      _toast('Alert deleted', color: AppColors.primary);
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to delete alert: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      AppLogger.e('Delete alert failed', tag: 'PriceAlerts', error: e);
+      if (!mounted) return;
+      _toast('Could not delete alert', color: AppColors.danger);
     }
   }
 
@@ -267,527 +211,525 @@ class _PriceAlertsScreenState extends State<PriceAlertsScreen> {
         alertId: alert.id.toString(),
         isActive: !alert.isActive,
       );
-
-      // Refresh alerts
       _loadAlerts();
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to update alert: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      AppLogger.e('Toggle alert failed', tag: 'PriceAlerts', error: e);
+      if (!mounted) return;
+      _toast('Could not update alert', color: AppColors.danger);
     }
+  }
+
+  void _toast(String message, {required Color color}) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message), backgroundColor: color));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: const Text('Price Alerts'),
-        backgroundColor: AppColors.primary,
-        elevation: 0,
-        foregroundColor: Colors.white,
-      ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _errorMessage != null
-          ? _buildErrorView()
-          : _buildAlertsView(),
-      floatingActionButton: FloatingActionButton(
+      backgroundColor: AppColors.background,
+      appBar: const AppAppBar(title: 'Price alerts', showBack: true),
+      body: _buildBody(),
+      floatingActionButton: FloatingActionButton.extended(
         onPressed: _showCreateAlertSheet,
         backgroundColor: AppColors.primary,
-        child: const Icon(Icons.add),
+        foregroundColor: Colors.white,
+        icon: const Icon(Icons.add_rounded),
+        label: const Text('New alert'),
       ),
     );
   }
 
-  Widget _buildErrorView() {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.error_outline, size: 80, color: Colors.red.shade300),
-            const SizedBox(height: 16),
-            Text(
-              'Failed to load alerts',
-              style: AppTextStyles.h3,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              _errorMessage ?? 'Unknown error',
-              style: AppTextStyles.bodyMedium,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: _loadAlerts,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 32,
-                  vertical: 12,
-                ),
-              ),
-              child: const Text('Try Again'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildAlertsView() {
-    return _alerts.isEmpty ? _buildNoAlertsView() : _buildAlertsList();
-  }
-
-  Widget _buildNoAlertsView() {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.notifications_off_outlined,
-              size: 80,
-              color: Colors.grey.shade300,
-            ),
-            const SizedBox(height: 24),
-            Text(
-              'No Price Alerts',
-              style: AppTextStyles.h3,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Create price alerts to get notified when commodity prices meet your criteria.',
-              style: AppTextStyles.bodyMedium.copyWith(color: Colors.grey),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton.icon(
-              onPressed: _showCreateAlertSheet,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 32,
-                  vertical: 12,
-                ),
-              ),
-              icon: const Icon(Icons.add),
-              label: const Text('Create Alert'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildAlertsList() {
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: _alerts.length,
-      itemBuilder: (context, index) {
-        return _buildAlertCard(_alerts[index], index);
-      },
-    );
-  }
-
-  Widget _buildAlertCard(PriceAlert alert, int index) {
-    final dateFormat = DateFormat('MMM d, yyyy');
-
-    String locationString = alert.state;
-    if (alert.district != null) {
-      locationString += ', ${alert.district}';
+  Widget _buildBody() {
+    if (_isLoading && _alerts.isEmpty) {
+      return const AppLoadingState(message: 'Loading your alerts…');
     }
-    if (alert.market != null) {
-      locationString += ', ${alert.market}';
+    if (_errorMessage != null) {
+      return AppErrorState(
+        title: 'Could not load alerts',
+        message: _errorMessage,
+        onRetry: _loadAlerts,
+      );
     }
-
-    return Card(
-          margin: const EdgeInsets.only(bottom: 12),
-          elevation: 2,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+    if (_alerts.isEmpty) {
+      return ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        children: [
+          const SizedBox(height: 96),
+          AppEmptyState(
+            icon: Icons.notifications_off_outlined,
+            title: 'No price alerts yet',
+            message:
+                'Create alerts to get notified when prices cross your '
+                'threshold so you never miss a good sell or buy.',
+            actionLabel: 'Create alert',
+            onAction: _showCreateAlertSheet,
           ),
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Commodity name and alert status
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        alert.commodity,
-                        style: AppTextStyles.subtitle,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    Switch(
-                      value: alert.isActive,
-                      onChanged: (_) => _toggleAlert(alert),
-                      activeColor: AppColors.primary,
-                    ),
-                  ],
-                ),
-
-                // Alert condition
-                Row(
-                  children: [
-                    Icon(
-                      alert.condition == 'above'
-                          ? Icons.arrow_upward
-                          : Icons.arrow_downward,
-                      color: alert.condition == 'above'
-                          ? Colors.green
-                          : Colors.red,
-                      size: 16,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      '${alert.condition == 'above' ? 'Above' : 'Below'} ₹${alert.targetPrice.toStringAsFixed(2)}',
-                      style: AppTextStyles.bodyMedium.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: alert.condition == 'above'
-                            ? Colors.green
-                            : Colors.red,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-
-                // Location
-                Row(
-                  children: [
-                    const Icon(
-                      Icons.location_on_outlined,
-                      size: 16,
-                      color: Colors.grey,
-                    ),
-                    const SizedBox(width: 4),
-                    Expanded(
-                      child: Text(
-                        locationString,
-                        style: AppTextStyles.bodySmall.copyWith(
-                          color: Colors.grey,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-
-                // Created date
-                Row(
-                  children: [
-                    const Icon(
-                      Icons.calendar_today_outlined,
-                      size: 16,
-                      color: Colors.grey,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      'Created on ${dateFormat.format(alert.createdAt)}',
-                      style: AppTextStyles.bodySmall.copyWith(
-                        color: Colors.grey,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-
-                // Delete button
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: OutlinedButton.icon(
-                    onPressed: () => _deleteAlert(alert),
-                    icon: Icon(
-                      Icons.delete_outline,
-                      color: Colors.red.shade400,
-                      size: 18,
-                    ),
-                    label: Text(
-                      'Delete',
-                      style: TextStyle(color: Colors.red.shade400),
-                    ),
-                    style: OutlinedButton.styleFrom(
-                      side: BorderSide(color: Colors.red.shade400),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+        ],
+      );
+    }
+    return RefreshIndicator(
+      onRefresh: _loadAlerts,
+      color: AppColors.primary,
+      child: ListView.separated(
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.space16,
+          AppSpacing.space16,
+          AppSpacing.space16,
+          AppSpacing.space96,
+        ),
+        itemCount: _alerts.length,
+        separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.space12),
+        itemBuilder: (context, index) =>
+            _AlertCard(
+              alert: _alerts[index],
+              onToggle: () => _toggleAlert(_alerts[index]),
+              onDelete: () => _confirmDelete(_alerts[index]),
+            ).animate().fadeIn(
+              duration: AppMotion.base,
+              delay: Duration(milliseconds: 50 * index.clamp(0, 6)),
             ),
+      ),
+    );
+  }
+
+  void _confirmDelete(PriceAlert alert) {
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Delete alert?'),
+        content: Text(
+          'Remove the ${alert.condition} ₹${alert.targetPrice.toStringAsFixed(0)} '
+          'alert for ${alert.commodity}?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
           ),
-        )
-        .animate()
-        .fadeIn(
-          duration: 300.ms,
-          delay: Duration(milliseconds: 50 * index),
-        )
-        .slideY(
-          begin: 0.1,
-          end: 0,
-          duration: 300.ms,
-          delay: Duration(milliseconds: 50 * index),
-          curve: Curves.easeOutQuad,
-        );
+          FilledButton(
+            style: FilledButton.styleFrom(backgroundColor: AppColors.danger),
+            onPressed: () {
+              Navigator.pop(ctx);
+              _deleteAlert(alert);
+            },
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
   }
 
   void _showCreateAlertSheet() {
-    showModalBottomSheet(
+    showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.surface,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadii.xxl)),
       ),
-      builder: (context) {
-        return Padding(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom,
-            left: 16,
-            right: 16,
-            top: 16,
-          ),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Header
-                Center(
-                  child: Container(
-                    width: 40,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade300,
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Text('Create Price Alert', style: AppTextStyles.h3),
-                const SizedBox(height: 8),
-                Text(
-                  'Get notified when a commodity price meets your criteria.',
-                  style: AppTextStyles.bodyMedium.copyWith(color: Colors.grey),
-                ),
-                const SizedBox(height: 24),
-
-                // Commodity
-                Text('Commodity', style: AppTextStyles.subtitle),
-                const SizedBox(height: 8),
-                TextField(
-                  controller: _commodityController,
-                  decoration: InputDecoration(
-                    labelText: 'Commodity Name',
-                    hintText: 'e.g. Rice, Wheat, Tomato',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 12,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-
-                // Location section
-                Text('Location', style: AppTextStyles.subtitle),
-                const SizedBox(height: 8),
-
-                // State dropdown
-                DropdownButtonFormField<String>(
-                  value: _states.contains(_selectedState)
-                      ? _selectedState
-                      : null,
-                  items: _states.map((state) {
-                    return DropdownMenuItem<String>(
-                      value: state,
-                      child: Text(state),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedState = value;
-                    });
-                    _loadDistricts();
-                  },
-                  decoration: InputDecoration(
-                    labelText: 'State',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 12,
-                    ),
-                  ),
-                  hint: const Text('Select State'),
-                ),
-                const SizedBox(height: 16),
-
-                // District dropdown
-                DropdownButtonFormField<String>(
-                  decoration: InputDecoration(
-                    labelText: 'District (Optional)',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 12,
-                    ),
-                  ),
-                  value: _selectedDistrict,
-                  items: _districts.map((district) {
-                    return DropdownMenuItem<String>(
-                      value: district,
-                      child: Text(district),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedDistrict = value;
-                    });
-                    _loadMarkets();
-                  },
-                  hint: const Text('Select District (Optional)'),
-                ),
-                const SizedBox(height: 16),
-
-                // Market dropdown
-                if (_districts.isNotEmpty)
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      DropdownButtonFormField<String>(
-                        decoration: InputDecoration(
-                          labelText: 'Market (Optional)',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 12,
-                          ),
-                        ),
-                        value: _selectedMarket,
-                        items: _markets.map((market) {
-                          return DropdownMenuItem<String>(
-                            value: market,
-                            child: Text(market),
-                          );
-                        }).toList(),
-                        onChanged: (value) {
-                          setState(() {
-                            _selectedMarket = value;
-                          });
-                        },
-                        hint: const Text('Select Market (Optional)'),
-                      ),
-                      const SizedBox(height: 16),
-                    ],
-                  ),
-
-                // Alert condition
-                Text('Price Condition', style: AppTextStyles.subtitle),
-                const SizedBox(height: 8),
-                Row(
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (ctx, sheetSetState) {
+            return Padding(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(ctx).viewInsets.bottom,
+                left: AppSpacing.space20,
+                right: AppSpacing.space20,
+                top: AppSpacing.space16,
+              ),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Expanded(
-                      child: DropdownButtonFormField<String>(
-                        decoration: InputDecoration(
-                          labelText: 'Condition',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 12,
-                          ),
+                    Center(
+                      child: Container(
+                        width: 40,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: AppColors.outlineVariant,
+                          borderRadius: AppRadii.brFull,
                         ),
-                        value: _selectedCondition,
-                        items: const [
-                          DropdownMenuItem(
-                            value: 'above',
-                            child: Text('Above'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'below',
-                            child: Text('Below'),
-                          ),
-                        ],
-                        onChanged: (value) {
-                          setState(() {
-                            _selectedCondition = value;
-                          });
-                        },
                       ),
                     ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: TextField(
-                        controller: _priceController,
-                        decoration: InputDecoration(
-                          labelText: 'Price (₹)',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 12,
-                          ),
-                          prefixText: '₹ ',
-                        ),
-                        keyboardType: TextInputType.number,
+                    const SizedBox(height: AppSpacing.space16),
+                    Text(
+                      'Create price alert',
+                      style: AppTextStyles.titleLarge.copyWith(
+                        color: AppColors.onSurface,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Get notified when a commodity price meets your '
+                      'chosen threshold.',
+                      style: AppTextStyles.bodySmall.copyWith(
+                        color: AppColors.onSurfaceVariant,
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.space20),
+                    AppTextField(
+                      controller: _commodityController,
+                      label: 'Commodity',
+                      hint: 'e.g. Rice, Wheat, Tomato',
+                      prefixIcon: Icons.eco_outlined,
+                    ),
+                    const SizedBox(height: AppSpacing.space16),
+                    _buildDropdown(
+                      label: 'State',
+                      value: _states.contains(_selectedState)
+                          ? _selectedState
+                          : null,
+                      items: _states,
+                      onChanged: (v) async {
+                        sheetSetState(() => _selectedState = v);
+                        await _loadDistricts();
+                        sheetSetState(() {});
+                      },
+                      hint: 'Select state',
+                    ),
+                    const SizedBox(height: AppSpacing.space12),
+                    _buildDropdown(
+                      label: 'District (optional)',
+                      value: _districts.contains(_selectedDistrict)
+                          ? _selectedDistrict
+                          : null,
+                      items: _districts,
+                      onChanged: (v) async {
+                        sheetSetState(() => _selectedDistrict = v);
+                        await _loadMarkets();
+                        sheetSetState(() {});
+                      },
+                      hint: 'Select district',
+                    ),
+                    if (_markets.isNotEmpty) ...[
+                      const SizedBox(height: AppSpacing.space12),
+                      _buildDropdown(
+                        label: 'Market (optional)',
+                        value: _markets.contains(_selectedMarket)
+                            ? _selectedMarket
+                            : null,
+                        items: _markets,
+                        onChanged: (v) =>
+                            sheetSetState(() => _selectedMarket = v),
+                        hint: 'Select market',
+                      ),
+                    ],
+                    const SizedBox(height: AppSpacing.space20),
+                    Text(
+                      'Trigger when price is',
+                      style: AppTextStyles.labelLarge.copyWith(
+                        color: AppColors.onSurfaceVariant,
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.space8),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _ConditionPill(
+                            label: 'Above',
+                            icon: Icons.arrow_upward_rounded,
+                            selected: _selectedCondition == 'above',
+                            selectedColor: AppColors.success,
+                            onTap: () => sheetSetState(
+                              () => _selectedCondition = 'above',
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: AppSpacing.space8),
+                        Expanded(
+                          child: _ConditionPill(
+                            label: 'Below',
+                            icon: Icons.arrow_downward_rounded,
+                            selected: _selectedCondition == 'below',
+                            selectedColor: AppColors.danger,
+                            onTap: () => sheetSetState(
+                              () => _selectedCondition = 'below',
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: AppSpacing.space12),
+                    AppTextField(
+                      controller: _priceController,
+                      label: 'Price (₹ per quintal)',
+                      hint: 'e.g. 2500',
+                      prefixIcon: Icons.currency_rupee_rounded,
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.space24),
+                    AppButton(
+                      label: 'Create alert',
+                      size: AppButtonSize.lg,
+                      isFullWidth: true,
+                      leadingIcon: Icons.notifications_active_rounded,
+                      onPressed: () => _createAlert(sheetSetState),
+                    ),
+                    const SizedBox(height: AppSpacing.space16),
                   ],
                 ),
-                const SizedBox(height: 24),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
 
-                // Create button
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: _createAlert,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    child: Text(
-                      'Create Alert',
-                      style: AppTextStyles.buttonText.copyWith(
-                        color: Colors.white,
-                      ),
-                    ),
+  Widget _buildDropdown({
+    required String label,
+    required String? value,
+    required List<String> items,
+    required ValueChanged<String?> onChanged,
+    required String hint,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: AppTextStyles.labelLarge.copyWith(
+            color: AppColors.onSurfaceVariant,
+          ),
+        ),
+        const SizedBox(height: AppSpacing.space6),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.space12),
+          decoration: BoxDecoration(
+            color: AppColors.surfaceContainerLow,
+            borderRadius: AppRadii.brMd,
+            border: Border.all(color: AppColors.outlineVariant),
+          ),
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<String>(
+              value: value,
+              isExpanded: true,
+              hint: Text(hint, style: AppTextStyles.bodyMedium),
+              icon: const Icon(
+                Icons.keyboard_arrow_down_rounded,
+                color: AppColors.onSurfaceVariant,
+              ),
+              items: items
+                  .map(
+                    (s) => DropdownMenuItem<String>(value: s, child: Text(s)),
+                  )
+                  .toList(),
+              onChanged: onChanged,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _ConditionPill extends StatelessWidget {
+  const _ConditionPill({
+    required this.label,
+    required this.icon,
+    required this.selected,
+    required this.selectedColor,
+    required this.onTap,
+  });
+
+  final String label;
+  final IconData icon;
+  final bool selected;
+  final Color selectedColor;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: AppRadii.brMd,
+        child: AnimatedContainer(
+          duration: AppMotion.fast,
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.space12,
+            vertical: AppSpacing.space12,
+          ),
+          decoration: BoxDecoration(
+            color: selected
+                ? selectedColor.withValues(alpha: 0.12)
+                : AppColors.surfaceContainerLow,
+            borderRadius: AppRadii.brMd,
+            border: Border.all(
+              color: selected ? selectedColor : AppColors.outlineVariant,
+              width: selected ? 1.5 : 1,
+            ),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                icon,
+                color: selected ? selectedColor : AppColors.onSurfaceVariant,
+                size: 18,
+              ),
+              const SizedBox(width: AppSpacing.space8),
+              Text(
+                label,
+                style: AppTextStyles.titleSmall.copyWith(
+                  color: selected ? selectedColor : AppColors.onSurface,
+                  fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _AlertCard extends StatelessWidget {
+  const _AlertCard({
+    required this.alert,
+    required this.onToggle,
+    required this.onDelete,
+  });
+
+  final PriceAlert alert;
+  final VoidCallback onToggle;
+  final VoidCallback onDelete;
+
+  @override
+  Widget build(BuildContext context) {
+    final isAbove = alert.condition == 'above';
+    final condColor = isAbove ? AppColors.success : AppColors.danger;
+    final location = [
+      alert.state,
+      if (alert.district != null && alert.district!.isNotEmpty) alert.district!,
+      if (alert.market != null && alert.market!.isNotEmpty) alert.market!,
+    ].join(' · ');
+
+    return AppCard(
+      padding: const EdgeInsets.all(AppSpacing.space16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: condColor.withValues(alpha: 0.12),
+                  borderRadius: AppRadii.brMd,
+                ),
+                child: Icon(
+                  isAbove
+                      ? Icons.trending_up_rounded
+                      : Icons.trending_down_rounded,
+                  color: condColor,
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: AppSpacing.space12),
+              Expanded(
+                child: Text(
+                  alert.commodity,
+                  style: AppTextStyles.titleMedium.copyWith(
+                    color: AppColors.onSurface,
+                    fontWeight: FontWeight.w700,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              Switch.adaptive(
+                value: alert.isActive,
+                activeColor: AppColors.primary,
+                onChanged: (_) => onToggle(),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.space8),
+          Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.space12,
+              vertical: AppSpacing.space8,
+            ),
+            decoration: BoxDecoration(
+              color: condColor.withValues(alpha: 0.08),
+              borderRadius: AppRadii.brMd,
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  isAbove ? Icons.arrow_upward : Icons.arrow_downward,
+                  color: condColor,
+                  size: 14,
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  '${isAbove ? 'Above' : 'Below'} ₹${alert.targetPrice.toStringAsFixed(0)}',
+                  style: AppTextStyles.labelLarge.copyWith(
+                    color: condColor,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
-                const SizedBox(height: 24),
               ],
             ),
           ),
-        );
-      },
+          const SizedBox(height: AppSpacing.space12),
+          Row(
+            children: [
+              const Icon(
+                Icons.location_on_outlined,
+                size: 14,
+                color: AppColors.onSurfaceVariant,
+              ),
+              const SizedBox(width: 4),
+              Expanded(
+                child: Text(
+                  location,
+                  style: AppTextStyles.bodySmall.copyWith(
+                    color: AppColors.onSurfaceVariant,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Row(
+            children: [
+              const Icon(
+                Icons.calendar_today_outlined,
+                size: 14,
+                color: AppColors.onSurfaceVariant,
+              ),
+              const SizedBox(width: 4),
+              Text(
+                'Created ${DateFormat('d MMM, yyyy').format(alert.createdAt)}',
+                style: AppTextStyles.labelSmall.copyWith(
+                  color: AppColors.onSurfaceVariant,
+                ),
+              ),
+              const Spacer(),
+              AppButton(
+                label: 'Delete',
+                variant: AppButtonVariant.ghost,
+                size: AppButtonSize.sm,
+                leadingIcon: Icons.delete_outline_rounded,
+                onPressed: onDelete,
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

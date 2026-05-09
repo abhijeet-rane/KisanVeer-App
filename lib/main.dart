@@ -7,9 +7,11 @@ import 'package:kisan_veer/screens/market/pinned_commodities_screen.dart';
 import 'package:kisan_veer/screens/market/price_alerts_screen.dart';
 import 'package:kisan_veer/services/localization_service.dart';
 import 'package:kisan_veer/screens/onboarding/splash_screen.dart';
-import 'package:kisan_veer/services/notifications_service.dart';
 import 'package:kisan_veer/services/analytics_service.dart';
 import 'package:kisan_veer/services/auth_service.dart';
+import 'package:kisan_veer/services/notifications_service.dart';
+import 'package:kisan_veer/services/storage_service.dart';
+import 'package:kisan_veer/widgets/ui/app_page_route.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
@@ -24,6 +26,11 @@ void main() async {
 
   // Load environment variables
   await dotenv.load(fileName: ".env");
+
+  // Initialize local key/value storage — must happen before any screen
+  // that reads from SharedPreferences (profile badge count, cached
+  // notification history, language prefs, etc).
+  await StorageService().init();
 
   // Initialize Supabase using the values from .env
   await Supabase.initialize(
@@ -53,7 +60,6 @@ class MyApp extends StatelessWidget {
       title: 'Kisan Veer',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.light,
       localizationsDelegates: LocalizationService.localizationsDelegates,
       supportedLocales: LocalizationService.supportedLocales,
@@ -66,16 +72,21 @@ class MyApp extends StatelessWidget {
     );
   }
 
-  /// Generate routes with premium transitions
+  /// Resolve named routes to v2 page transitions. Top-level navigation
+  /// destinations (`/main`, `/login`) fade through — they're peer
+  /// shells. Deep destinations slide horizontally.
   Route<dynamic>? _generateRoute(RouteSettings settings) {
     Widget page;
+    AppPageTransition transition = AppPageTransition.sharedAxisX;
 
     switch (settings.name) {
       case '/main':
         page = const MainScreen();
+        transition = AppPageTransition.fadeThrough;
         break;
       case '/login':
         page = const LoginScreen();
+        transition = AppPageTransition.fadeThrough;
         break;
       case '/pinned_commodities':
         page = const PinnedCommoditiesScreen();
@@ -87,33 +98,10 @@ class MyApp extends StatelessWidget {
         return null;
     }
 
-    return PremiumPageRoute(builder: (context) => page, settings: settings);
-  }
-}
-
-/// Custom page route with premium transition animation
-class PremiumPageRoute<T> extends MaterialPageRoute<T> {
-  PremiumPageRoute({required super.builder, super.settings});
-
-  @override
-  Duration get transitionDuration => const Duration(milliseconds: 400);
-
-  @override
-  Widget buildTransitions(
-    BuildContext context,
-    Animation<double> animation,
-    Animation<double> secondaryAnimation,
-    Widget child,
-  ) {
-    // Fade + slight scale transition
-    return FadeTransition(
-      opacity: CurvedAnimation(parent: animation, curve: Curves.easeOut),
-      child: ScaleTransition(
-        scale: Tween<double>(begin: 0.95, end: 1.0).animate(
-          CurvedAnimation(parent: animation, curve: Curves.easeOutCubic),
-        ),
-        child: child,
-      ),
+    return AppPageRoute(
+      builder: (_) => page,
+      transition: transition,
+      settings: settings,
     );
   }
 }

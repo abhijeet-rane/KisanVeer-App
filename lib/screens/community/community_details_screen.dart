@@ -1,9 +1,10 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:kisan_veer/models/community_models.dart';
-import 'package:kisan_veer/services/community_service.dart';
 import 'package:kisan_veer/screens/community/community_thread_screen.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:kisan_veer/services/community_service.dart';
 import 'package:kisan_veer/widgets/community_members_sheet.dart';
+import 'package:kisan_veer/widgets/ui/ui.dart';
 
 class CommunityDetailsScreen extends StatefulWidget {
   final Community community;
@@ -169,13 +170,13 @@ class _CommunityDetailsScreenState extends State<CommunityDetailsScreen>
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.deepPurple,
-        onPressed: () => Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) =>
+        onPressed: () => Navigator.of(context)
+            .push(
+              AppPageRoute.of(
                 CommunityThreadScreen(community: widget.community),
-          ),
-        ).then((_) => _loadData()),
+              ),
+            )
+            .then((_) => _loadData()),
         child: const Icon(Icons.add, color: Colors.white),
       ),
     );
@@ -208,15 +209,16 @@ class _CommunityDetailsScreenState extends State<CommunityDetailsScreen>
                     style: TextStyle(color: Colors.grey[600]),
                   ),
                   trailing: const Icon(Icons.arrow_forward_ios, size: 14),
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => CommunityThreadScreen(
-                        community: widget.community,
-                        thread: thread,
-                      ),
-                    ),
-                  ).then((_) => _loadData()),
+                  onTap: () => Navigator.of(context)
+                      .push(
+                        AppPageRoute.of(
+                          CommunityThreadScreen(
+                            community: widget.community,
+                            thread: thread,
+                          ),
+                        ),
+                      )
+                      .then((_) => _loadData()),
                 ),
               );
             },
@@ -245,6 +247,7 @@ class _CommunityDetailsScreenState extends State<CommunityDetailsScreen>
                     children: [
                       IconButton(
                         icon: const Icon(Icons.check, color: Colors.green),
+                        tooltip: 'Approve request',
                         onPressed: () async {
                           try {
                             await _communityService.processJoinRequest(
@@ -268,6 +271,7 @@ class _CommunityDetailsScreenState extends State<CommunityDetailsScreen>
                       ),
                       IconButton(
                         icon: const Icon(Icons.close, color: Colors.red),
+                        tooltip: 'Reject request',
                         onPressed: () async {
                           try {
                             await _communityService.processJoinRequest(

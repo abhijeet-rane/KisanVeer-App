@@ -320,25 +320,40 @@ class NotificationService {
 
   // Load notification history from storage
   Future<void> _loadNotificationHistory() async {
-    final jsonString = await _storageService.getString('notification_history');
-    if (jsonString != null) {
+    try {
+      final jsonString = _storageService.getString('notification_history');
+      if (jsonString == null || jsonString.isEmpty) return;
       final List<dynamic> jsonList = json.decode(jsonString);
       _notificationHistory.clear();
       _notificationHistory.addAll(
         jsonList.map((json) => NotificationModel.fromJson(json)).toList(),
+      );
+    } catch (e) {
+      // Corrupted or unavailable storage — treat as empty history rather
+      // than crash the UI. The badge count will just read 0.
+      AppLogger.w(
+        'Failed to load notification history: $e',
+        tag: 'Notifications',
       );
     }
   }
 
   // Save notification history to storage
   Future<void> _saveNotificationHistory() async {
-    final jsonList = _notificationHistory
-        .map((notification) => notification.toJson())
-        .toList();
-    await _storageService.saveString(
-      'notification_history',
-      json.encode(jsonList),
-    );
+    try {
+      final jsonList = _notificationHistory
+          .map((notification) => notification.toJson())
+          .toList();
+      await _storageService.saveString(
+        'notification_history',
+        json.encode(jsonList),
+      );
+    } catch (e) {
+      AppLogger.w(
+        'Failed to save notification history: $e',
+        tag: 'Notifications',
+      );
+    }
   }
 
   // Get unread notification count

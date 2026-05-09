@@ -3,6 +3,7 @@ import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:kisan_veer/models/financial_models.dart';
 import 'package:kisan_veer/services/financial_service.dart';
 import 'package:kisan_veer/constants/app_colors.dart';
+import 'package:kisan_veer/widgets/ui/ui.dart';
 import 'package:kisan_veer/services/supabase_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:audioplayers/audioplayers.dart';
@@ -155,10 +156,8 @@ class _LoanPaymentScreenState extends State<LoanPaymentScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Make Payment'),
-        backgroundColor: AppColors.primary,
-      ),
+      backgroundColor: AppColors.background,
+      appBar: const AppAppBar(title: 'Make payment', showBack: true),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16),
         child: Form(

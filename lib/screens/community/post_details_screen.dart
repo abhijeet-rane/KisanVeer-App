@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:kisan_veer/constants/app_colors.dart';
+import 'package:kisan_veer/widgets/ui/ui.dart';
 import 'package:kisan_veer/models/community_models.dart';
 import 'package:kisan_veer/services/community_service.dart';
 import 'package:kisan_veer/widgets/comment_card.dart';
@@ -119,7 +121,8 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Post Details')),
+      backgroundColor: AppColors.background,
+      appBar: const AppAppBar(title: 'Post details', showBack: true),
       body: Column(
         children: [
           // Post details
@@ -297,6 +300,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                 ),
                 const SizedBox(width: 16),
                 IconButton(
+                  tooltip: 'Post comment',
                   onPressed: _isPostingComment ? null : _postComment,
                   icon: _isPostingComment
                       ? const SizedBox(

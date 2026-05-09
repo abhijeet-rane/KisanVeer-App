@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kisan_veer/constants/app_colors.dart';
+import 'package:kisan_veer/widgets/ui/ui.dart';
 import 'package:kisan_veer/constants/app_text_styles.dart';
 import 'package:kisan_veer/models/financial_models.dart';
 import 'package:kisan_veer/screens/finance/loan_payment_screen.dart';
@@ -17,10 +18,8 @@ class LoanDetailsScreen extends StatelessWidget {
         (loan.totalAmount - loan.remainingAmount) / loan.totalAmount;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(loan.title),
-        backgroundColor: AppColors.primary,
-      ),
+      backgroundColor: AppColors.background,
+      appBar: AppAppBar(title: loan.title, showBack: true),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -95,10 +94,9 @@ class LoanDetailsScreen extends StatelessWidget {
             CustomButton(
               onPressed: loan.remainingAmount > 0
                   ? () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => LoanPaymentScreen(
+                      Navigator.of(context).push(
+                        AppPageRoute.of(
+                          LoanPaymentScreen(
                             loan: loan,
                             onPaymentSuccess: () {
                               Navigator.pop(context, true);

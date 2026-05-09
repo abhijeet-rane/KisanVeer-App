@@ -1,65 +1,80 @@
 import 'package:flutter/material.dart';
+import 'package:kisan_veer/constants/app_radii.dart';
+import 'package:kisan_veer/constants/app_spacing.dart';
 import 'package:kisan_veer/constants/app_text_styles.dart';
 
+/// V2 alert banner used by the weather screen to surface active
+/// warnings (storm, heat, heavy rain). Tappable — [onViewAll] opens
+/// the full alerts list.
 class AlertBanner extends StatelessWidget {
+  const AlertBanner({super.key, required this.alerts, required this.onViewAll});
+
   final List<String> alerts;
   final VoidCallback onViewAll;
 
-  const AlertBanner({Key? key, required this.alerts, required this.onViewAll})
-    : super(key: key);
+  static const Color _bg = Color(0xFFE65100);
 
   @override
   Widget build(BuildContext context) {
-    if (alerts.isEmpty) {
-      return const SizedBox.shrink();
-    }
+    if (alerts.isEmpty) return const SizedBox.shrink();
 
-    return GestureDetector(
-      onTap: onViewAll,
-      child: Container(
-        margin: const EdgeInsets.all(16.0),
-        width: double.infinity,
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-        decoration: BoxDecoration(
-          color: Colors.orange.shade800,
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
+    return Padding(
+      padding: const EdgeInsets.all(AppSpacing.space16),
+      child: Material(
+        color: _bg,
+        borderRadius: AppRadii.brLg,
+        child: InkWell(
+          onTap: onViewAll,
+          borderRadius: AppRadii.brLg,
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpacing.space16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Icon(Icons.warning_amber, color: Colors.white, size: 20),
-                const SizedBox(width: 8),
-                const Text(
-                  'Weather Alerts',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.warning_amber_rounded,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                    const SizedBox(width: AppSpacing.space8),
+                    Text(
+                      'Weather alerts',
+                      style: AppTextStyles.titleSmall.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const Spacer(),
+                    Text(
+                      'View all',
+                      style: AppTextStyles.labelMedium.copyWith(
+                        color: Colors.white,
+                        decoration: TextDecoration.underline,
+                      ),
+                    ),
+                  ],
                 ),
-                const Spacer(),
+                const SizedBox(height: AppSpacing.space8),
                 Text(
-                  'View All',
-                  style: AppTextStyles.bodySmall.copyWith(
-                    color: Colors.white,
-                    decoration: TextDecoration.underline,
-                  ),
+                  alerts.first,
+                  style: AppTextStyles.bodyMedium.copyWith(color: Colors.white),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
+                if (alerts.length > 1) ...[
+                  const SizedBox(height: 2),
+                  Text(
+                    '+${alerts.length - 1} more alert${alerts.length == 2 ? '' : 's'}',
+                    style: AppTextStyles.labelSmall.copyWith(
+                      color: Colors.white.withValues(alpha: 0.9),
+                    ),
+                  ),
+                ],
               ],
             ),
-            const SizedBox(height: 4),
-            Text(
-              alerts.first, // Show first alert in the banner
-              style: const TextStyle(color: Colors.white, fontSize: 14),
-            ),
-            if (alerts.length > 1)
-              Text(
-                '+${alerts.length - 1} more alerts',
-                style: const TextStyle(color: Colors.white70, fontSize: 12),
-              ),
-          ],
+          ),
         ),
       ),
     );

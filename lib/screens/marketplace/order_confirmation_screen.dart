@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:kisan_veer/constants/app_colors.dart';
+import 'package:kisan_veer/widgets/ui/ui.dart';
 import 'package:kisan_veer/models/marketplace_models.dart';
 import 'package:kisan_veer/screens/marketplace/marketplace_screen_fixed.dart';
 import 'package:kisan_veer/widgets/custom_button.dart';
@@ -19,16 +20,8 @@ class OrderConfirmationScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: const Text(
-          'Order Confirmed',
-          style: TextStyle(color: Colors.white),
-        ),
-        backgroundColor: AppColors.primary,
-        elevation: 0,
-        automaticallyImplyLeading: false,
-      ),
+      backgroundColor: AppColors.background,
+      appBar: const AppAppBar(title: 'Order confirmed', showBack: false),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -229,19 +222,14 @@ class OrderConfirmationScreen extends StatelessWidget {
 
   void _navigateToMarketplace(BuildContext context) {
     Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(
-        builder: (context) =>
-            const MarketplaceScreen(initialTabIndex: 0), // 0 for Buy tab
-      ),
+      AppPageRoute.of(const MarketplaceScreen(initialTabIndex: 0)),
       (route) => false,
     );
   }
 
   void _viewOrderDetails(BuildContext context) {
     Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(
-        builder: (context) => OrderDetailsScreen(orderId: order.id),
-      ),
+      AppPageRoute.of(OrderDetailsScreen(orderId: order.id)),
       (route) => false,
     );
   }

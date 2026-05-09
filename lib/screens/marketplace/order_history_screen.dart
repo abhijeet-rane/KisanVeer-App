@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:kisan_veer/constants/app_colors.dart';
+import 'package:kisan_veer/widgets/ui/ui.dart';
 import 'package:kisan_veer/models/marketplace_models.dart';
 import 'package:kisan_veer/screens/marketplace/marketplace_screen_fixed.dart';
 import 'package:kisan_veer/screens/marketplace/order_details_screen.dart';
@@ -148,22 +149,21 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen>
   Widget build(BuildContext context) {
     final ordersToDisplay = _getOrdersForTab(_tabController.index);
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.green,
-        elevation: 0,
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(0), // Decrease tab height
-          child: TabBar(
-            controller: _tabController,
-            indicatorColor: Colors.white,
-            labelColor: Colors.white,
-            unselectedLabelColor: Colors.white.withValues(alpha: 0.7),
-            tabs: _tabLabels.map((label) => Tab(text: label)).toList(),
-          ),
+      backgroundColor: AppColors.background,
+      appBar: AppAppBar(
+        title: 'Orders',
+        showBack: true,
+        bottom: TabBar(
+          controller: _tabController,
+          indicatorColor: AppColors.primary,
+          indicatorWeight: 3,
+          labelColor: AppColors.primary,
+          unselectedLabelColor: AppColors.onSurfaceVariant,
+          tabs: _tabLabels.map((label) => Tab(text: label)).toList(),
         ),
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const AppLoadingState(message: 'Loading your orders…')
           : _error != null
           ? _buildErrorWidget()
           : ordersToDisplay.isEmpty
@@ -232,10 +232,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen>
             text: 'Continue Shopping',
             onPressed: () {
               Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(
-                  builder: (context) =>
-                      const MarketplaceScreen(initialTabIndex: 0),
-                ),
+                AppPageRoute.of(const MarketplaceScreen(initialTabIndex: 0)),
                 (route) => false,
               );
             },
@@ -256,12 +253,9 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen>
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
-        onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => OrderDetailsScreen(orderId: order.id),
-          ),
-        ).then((_) => _loadOrders()),
+        onTap: () => Navigator.of(context)
+            .push(AppPageRoute.of(OrderDetailsScreen(orderId: order.id)))
+            .then((_) => _loadOrders()),
         borderRadius: BorderRadius.circular(12),
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -356,12 +350,13 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen>
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   TextButton(
-                    onPressed: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => OrderDetailsScreen(orderId: order.id),
-                      ),
-                    ).then((_) => _loadOrders()),
+                    onPressed: () => Navigator.of(context)
+                        .push(
+                          AppPageRoute.of(
+                            OrderDetailsScreen(orderId: order.id),
+                          ),
+                        )
+                        .then((_) => _loadOrders()),
                     style: TextButton.styleFrom(
                       foregroundColor: AppColors.primary,
                     ),

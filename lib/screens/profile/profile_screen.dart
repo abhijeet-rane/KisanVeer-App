@@ -1,29 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:kisan_veer/constants/app_colors.dart';
+import 'package:kisan_veer/constants/app_motion.dart';
+import 'package:kisan_veer/constants/app_radii.dart';
+import 'package:kisan_veer/constants/app_spacing.dart';
 import 'package:kisan_veer/constants/app_text_styles.dart';
 import 'package:kisan_veer/models/user_model.dart';
 import 'package:kisan_veer/screens/auth/login_screen.dart';
-import 'package:kisan_veer/screens/profile/edit_profile_screen.dart';
+import 'package:kisan_veer/screens/notifications/notifications_screen.dart';
 import 'package:kisan_veer/screens/profile/change_password_screen.dart';
-import 'package:kisan_veer/screens/profile/privacy_settings_screen.dart';
+import 'package:kisan_veer/screens/profile/edit_profile_screen.dart';
 import 'package:kisan_veer/screens/profile/help_center_screen.dart';
+import 'package:kisan_veer/screens/profile/privacy_policy_screen.dart';
+import 'package:kisan_veer/screens/profile/privacy_settings_screen.dart';
 import 'package:kisan_veer/screens/profile/report_problem_screen.dart';
 import 'package:kisan_veer/screens/profile/terms_of_service_screen.dart';
-import 'package:kisan_veer/screens/profile/privacy_policy_screen.dart';
 import 'package:kisan_veer/services/auth_service.dart';
+import 'package:kisan_veer/services/biometric_service.dart';
 import 'package:kisan_veer/services/cache_service.dart';
 import 'package:kisan_veer/services/offline_storage_service.dart';
 import 'package:kisan_veer/utils/app_logger.dart';
-import 'package:kisan_veer/widgets/custom_button.dart';
-import 'package:kisan_veer/widgets/custom_card.dart';
-import 'package:kisan_veer/widgets/biometric_login_button.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:kisan_veer/utils/haptic_utils.dart';
+import 'package:kisan_veer/widgets/ui/ui.dart';
 
-import '../notifications/notifications_screen.dart';
-
+/// V2 profile & settings screen.
+///
+/// Visual rhythm: brand-gradient hero with large avatar → sectioned
+/// settings list in elevated cards → destructive sign-out. All
+/// navigation uses [AppPageRoute] for consistent motion.
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({Key? key}) : super(key: key);
+  const ProfileScreen({super.key});
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -31,48 +37,13 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   final AuthService _authService = AuthService();
+
   UserModel? _currentUser;
   bool _isLoading = true;
-  bool _isDarkMode = false;
   String _selectedLanguage = 'English';
   bool _notificationsEnabled = true;
-  final ScrollController _scrollController = ScrollController();
-  final GlobalKey _settingsKey = GlobalKey();
 
-  final List<String> _languages = ['English', 'Hindi', 'Marathi'];
-
-  final List<Map<String, dynamic>> _settingsSections = [
-    {
-      'title': 'Account Settings',
-      'icon': Icons.person_outline,
-      'items': [
-        {'title': 'Edit Profile', 'icon': Icons.edit_outlined},
-        {'title': 'Change Password', 'icon': Icons.lock_outlined},
-        {'title': 'Biometric Login', 'icon': Icons.fingerprint},
-        {'title': 'Privacy', 'icon': Icons.privacy_tip_outlined},
-        {'title': 'Notifications', 'icon': Icons.notifications_outlined},
-      ],
-    },
-    {
-      'title': 'App Settings',
-      'icon': Icons.settings_outlined,
-      'items': [
-        {'title': 'Language', 'icon': Icons.language_outlined},
-        {'title': 'Dark Mode', 'icon': Icons.dark_mode_outlined},
-        {'title': 'Clear Cache', 'icon': Icons.delete_outline},
-      ],
-    },
-    {
-      'title': 'Support',
-      'icon': Icons.help_outline,
-      'items': [
-        {'title': 'Help Center', 'icon': Icons.live_help_outlined},
-        {'title': 'Report a Problem', 'icon': Icons.report_problem_outlined},
-        {'title': 'Terms of Service', 'icon': Icons.description_outlined},
-        {'title': 'Privacy Policy', 'icon': Icons.policy_outlined},
-      ],
-    },
-  ];
+  static const List<String> _languages = ['English', 'Hindi', 'Marathi'];
 
   @override
   void initState() {
@@ -80,50 +51,37 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _loadUserData();
   }
 
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
-  }
-
   Future<void> _loadUserData() async {
-    setState(() {
-      _isLoading = true;
-    });
-
+    setState(() => _isLoading = true);
     try {
       final user = await _authService.getCurrentUserModel();
+      if (!mounted) return;
       setState(() {
         _currentUser = user;
         _isLoading = false;
       });
     } catch (e) {
       AppLogger.e('Error loading user data', tag: 'Profile', error: e);
-      setState(() {
-        _isLoading = false;
-      });
+      if (!mounted) return;
+      setState(() => _isLoading = false);
     }
   }
 
   Future<void> _signOut() async {
     try {
       await _authService.signOut();
-
-      if (mounted) {
-        Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context) => const LoginScreen()),
-          (route) => false,
-        );
-      }
+      if (!mounted) return;
+      Navigator.of(context).pushAndRemoveUntil(
+        AppPageRoute<void>(
+          builder: (_) => const LoginScreen(),
+          transition: AppPageTransition.fadeThrough,
+        ),
+        (route) => false,
+      );
     } catch (e) {
       AppLogger.e('Error signing out', tag: 'Profile', error: e);
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error signing out: ${e.toString()}'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      AppSnackBar.error(context, 'Could not sign out. Please try again.');
     }
   }
 
@@ -131,99 +89,45 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        backgroundColor: AppColors.primary,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.settings, color: Colors.white),
-          onPressed: () {
-            Scrollable.ensureVisible(
-              _settingsKey.currentContext!,
-              duration: Duration(milliseconds: 800), // Smooth scroll effect
-              curve: Curves.easeInOut,
-            );
-          },
-        ),
-        title: const Text(
-          'Profile',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications, color: Colors.white),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => NotificationsScreen()),
-              );
-            },
-          ),
-        ],
-      ),
       body: _isLoading
-          ? const Center(
-              child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
-              ),
-            )
-          : SingleChildScrollView(
-              controller: _scrollController,
-              child: Column(
-                children: [
-                  _buildProfileHeader(),
-                  Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(height: 10),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 12.0,
-                            horizontal: 5.0,
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Settings",
-                                key: _settingsKey,
-                                style: GoogleFonts.poppins(
-                                  fontSize: 23,
-                                  fontWeight: FontWeight.bold,
-                                  letterSpacing: 0.9,
-                                ),
-                              ),
-                              SizedBox(height: 4), // Space before underline
-                              Container(
-                                width: 112, // Small underline effect
-                                height: 4,
-                                decoration: BoxDecoration(
-                                  color: Colors.blue, // Highlight color
-                                  borderRadius: BorderRadius.circular(2),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        _buildSettingsList().animate().fadeIn(
-                          duration: const Duration(milliseconds: 500),
-                          delay: const Duration(milliseconds: 600),
-                        ),
-                        const SizedBox(height: 24),
-                        CustomButton(
-                          text: 'Sign Out',
-                          onPressed: _signOut,
-                          width: double.infinity,
-                          buttonType: ButtonType.outlined,
-                          leadingIcon: Icons.logout,
+          ? const AppLoadingState(message: 'Loading your profile…')
+          : RefreshIndicator(
+              onRefresh: _loadUserData,
+              color: AppColors.primary,
+              child: CustomScrollView(
+                physics: const BouncingScrollPhysics(
+                  parent: AlwaysScrollableScrollPhysics(),
+                ),
+                slivers: [
+                  SliverToBoxAdapter(child: _buildHero()),
+                  SliverPadding(
+                    padding: const EdgeInsets.fromLTRB(
+                      AppSpacing.space16,
+                      AppSpacing.space24,
+                      AppSpacing.space16,
+                      AppSpacing.space24,
+                    ),
+                    sliver: SliverList(
+                      delegate: SliverChildListDelegate([
+                        _buildAccountSection(),
+                        const SizedBox(height: AppSpacing.space20),
+                        _buildAppSection(),
+                        const SizedBox(height: AppSpacing.space20),
+                        _buildSupportSection(),
+                        const SizedBox(height: AppSpacing.space24),
+                        AppButton(
+                          label: 'Sign out',
+                          variant: AppButtonVariant.danger,
+                          size: AppButtonSize.lg,
+                          isFullWidth: true,
+                          leadingIcon: Icons.logout_rounded,
+                          onPressed: _confirmSignOut,
                         ).animate().fadeIn(
-                          duration: const Duration(milliseconds: 500),
-                          delay: const Duration(milliseconds: 700),
+                          duration: AppMotion.base,
+                          delay: const Duration(milliseconds: 400),
                         ),
-                        const SizedBox(height: 24),
-                      ],
+                        const SizedBox(height: AppSpacing.space16),
+                      ]),
                     ),
                   ),
                 ],
@@ -232,302 +136,354 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildProfileHeader() {
+  // ─── Hero ────────────────────────────────────────────────────────────────
+  Widget _buildHero() {
+    final user = _currentUser;
+    final name = user?.name ?? 'Welcome';
+    final email = user?.email ?? '';
+    final initials = (name.isNotEmpty ? name[0] : 'U').toUpperCase();
+
     return Container(
       width: double.infinity,
+      padding: EdgeInsets.fromLTRB(
+        AppSpacing.space24,
+        MediaQuery.of(context).padding.top + AppSpacing.space16,
+        AppSpacing.space24,
+        AppSpacing.space32,
+      ),
       decoration: const BoxDecoration(
-        color: AppColors.primary,
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(32),
-          bottomRight: Radius.circular(32),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: AppColors.brandGradient,
+        ),
+        borderRadius: BorderRadius.vertical(
+          bottom: Radius.circular(AppRadii.xxl),
         ),
       ),
-      padding: const EdgeInsets.only(bottom: 32),
       child: Column(
         children: [
-          const SizedBox(height: 16),
-          CircleAvatar(
-            radius: 50,
-            backgroundColor: Colors.white,
-            backgroundImage: _currentUser?.photoUrl.isNotEmpty == true
-                ? NetworkImage(_currentUser!.photoUrl) as ImageProvider<Object>
-                : null,
-            child: (_currentUser?.photoUrl.isEmpty ?? true)
-                ? Text(
-                    _currentUser?.name != null
-                        ? _currentUser!.name.substring(0, 1).toUpperCase()
-                        : 'U',
-                    style: const TextStyle(
-                      color: AppColors.primary,
-                      fontSize: 30,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  )
-                : null,
-          ).animate().fadeIn(duration: const Duration(milliseconds: 500)),
-          const SizedBox(height: 16),
-          Text(
-            _currentUser?.name ?? 'User',
-            style: const TextStyle(
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Profile',
+                style: AppTextStyles.titleLarge.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              _buildHeroAction(
+                icon: Icons.notifications_outlined,
+                onTap: () => Navigator.of(
+                  context,
+                ).push(AppPageRoute.of(const NotificationsScreen())),
+                tooltip: 'Notifications',
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.space24),
+          Container(
+            width: 96,
+            height: 96,
+            decoration: BoxDecoration(
               color: Colors.white,
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
+              borderRadius: AppRadii.brFull,
+              border: Border.all(
+                color: Colors.white.withValues(alpha: 0.3),
+                width: 3,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.1),
+                  blurRadius: 16,
+                  offset: const Offset(0, 8),
+                ),
+              ],
+            ),
+            child: ClipOval(
+              child: user != null && user.photoUrl.isNotEmpty
+                  ? Image.network(
+                      user.photoUrl,
+                      fit: BoxFit.cover,
+                      errorBuilder: (c, e, s) => _initialsAvatar(initials),
+                    )
+                  : _initialsAvatar(initials),
+            ),
+          ).animate().scale(
+            duration: AppMotion.slow,
+            curve: Curves.easeOutBack,
+          ),
+          const SizedBox(height: AppSpacing.space16),
+          Text(
+            name,
+            style: AppTextStyles.headlineSmall.copyWith(
+              color: Colors.white,
+              fontWeight: FontWeight.w700,
             ),
           ).animate().fadeIn(
-            duration: const Duration(milliseconds: 500),
+            duration: AppMotion.slow,
             delay: const Duration(milliseconds: 100),
           ),
-          const SizedBox(height: 8),
-          Text(
-            _currentUser?.email ?? 'user@example.com',
-            style: TextStyle(
-              color: Colors.white.withAlpha((0.9 * 255).round()),
-              fontSize: 16,
+          if (email.isNotEmpty) ...[
+            const SizedBox(height: AppSpacing.space4),
+            Text(
+              email,
+              style: AppTextStyles.bodyMedium.copyWith(
+                color: Colors.white.withValues(alpha: 0.9),
+              ),
+            ).animate().fadeIn(
+              duration: AppMotion.slow,
+              delay: const Duration(milliseconds: 200),
             ),
+          ],
+          const SizedBox(height: AppSpacing.space20),
+          _EditProfileButton(
+            onPressed: () async {
+              final result = await Navigator.of(
+                context,
+              ).push(AppPageRoute.of(const EditProfileScreen()));
+              if (result != null) await _loadUserData();
+            },
           ).animate().fadeIn(
-            duration: const Duration(milliseconds: 500),
-            delay: const Duration(milliseconds: 200),
+            duration: AppMotion.slow,
+            delay: const Duration(milliseconds: 300),
           ),
-          const SizedBox(height: 10),
         ],
       ),
     );
   }
 
-  Widget _buildSettingsList() {
-    return Column(
-      children: List.generate(_settingsSections.length, (sectionIndex) {
-        final section = _settingsSections[sectionIndex];
-
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-              child: Row(
-                children: [
-                  Icon(section['icon'], size: 18, color: AppColors.primary),
-                  const SizedBox(width: 8),
-                  Text(
-                    section['title'],
-                    style: AppTextStyles.bodyMedium.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.primary,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            CustomCard(
-              padding: EdgeInsets.zero,
-              child: ListView.separated(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: section['items'].length,
-                separatorBuilder: (context, index) => const Divider(height: 1),
-                itemBuilder: (context, index) {
-                  final item = section['items'][index];
-
-                  // Use BiometricSettingsToggle for biometric setting
-                  if (item['title'] == 'Biometric Login') {
-                    return const BiometricSettingsToggle();
-                  }
-
-                  return ListTile(
-                    leading: Icon(item['icon'], color: AppColors.textSecondary),
-                    title: Text(item['title'], style: AppTextStyles.bodyMedium),
-                    trailing: _buildSettingControl(item['title']),
-                    onTap: () {
-                      // Handle setting tap
-                      _handleSettingTap(item['title']);
-                    },
-                  );
-                },
-              ),
-            ),
-            if (sectionIndex < _settingsSections.length - 1)
-              const SizedBox(height: 24),
-          ],
-        );
-      }),
+  Widget _initialsAvatar(String initials) {
+    return Container(
+      width: 96,
+      height: 96,
+      alignment: Alignment.center,
+      decoration: const BoxDecoration(color: Colors.white),
+      child: Text(
+        initials,
+        style: AppTextStyles.displaySmall.copyWith(
+          color: AppColors.primary,
+          fontWeight: FontWeight.w800,
+        ),
+      ),
     );
   }
 
-  Widget? _buildSettingControl(String settingTitle) {
-    switch (settingTitle) {
-      case 'Dark Mode':
-        return Switch(
-          value: _isDarkMode,
-          activeColor: AppColors.primary,
-          onChanged: (value) {
-            setState(() {
-              _isDarkMode = value;
-            });
-          },
-        );
-      case 'Biometric Login':
-        return null; // Will be handled specially
-      case 'Notifications':
-        return Switch(
-          value: _notificationsEnabled,
-          activeColor: AppColors.primary,
-          onChanged: (value) {
-            setState(() {
-              _notificationsEnabled = value;
-            });
-          },
-        );
-      case 'Language':
-        return Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              _selectedLanguage,
-              style: AppTextStyles.bodySmall.copyWith(
-                color: AppColors.textSecondary,
-              ),
-            ),
-            const SizedBox(width: 4),
-            const Icon(
-              Icons.arrow_forward_ios,
-              size: 16,
-              color: AppColors.textSecondary,
-            ),
-          ],
-        );
-      default:
-        return const Icon(
-          Icons.arrow_forward_ios,
-          size: 16,
-          color: AppColors.textSecondary,
-        );
-    }
-  }
-
-  void _handleSettingTap(String settingTitle) {
-    // Handle different settings
-    switch (settingTitle) {
-      case 'Language':
-        _showLanguageDialog();
-        break;
-      case 'Edit Profile':
-        // Navigate to profile edit screen
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const EditProfileScreen()),
-        ).then((value) {
-          if (value == true) {
-            // Reload user data after profile edit
-            _loadUserData();
-          }
-        });
-        break;
-      case 'Change Password':
-        // Navigate to change password screen
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const ChangePasswordScreen()),
-        );
-        break;
-      case 'Privacy':
-        // Navigate to privacy settings
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const PrivacySettingsScreen(),
-          ),
-        );
-        break;
-      case 'Help Center':
-        // Navigate to help center
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const HelpCenterScreen()),
-        );
-        break;
-      case 'Report a Problem':
-        // Navigate to problem reporting
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const ReportProblemScreen()),
-        );
-        break;
-      case 'Terms of Service':
-        // Show terms of service
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const TermsOfServiceScreen()),
-        );
-        break;
-      case 'Privacy Policy':
-        // Show privacy policy
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const PrivacyPolicyScreen()),
-        );
-        break;
-      case 'Clear Cache':
-        _showClearCacheDialog();
-        break;
-      default:
-        // Handle other settings
-        break;
-    }
-  }
-
-  void _showLanguageDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Select Language'),
-        content: SizedBox(
-          width: double.maxFinite,
-          child: ListView.builder(
-            shrinkWrap: true,
-            itemCount: _languages.length,
-            itemBuilder: (context, index) {
-              final language = _languages[index];
-              return ListTile(
-                title: Text(language),
-                trailing: language == _selectedLanguage
-                    ? const Icon(Icons.check, color: AppColors.primary)
-                    : null,
-                onTap: () {
-                  setState(() {
-                    _selectedLanguage = language;
-                  });
-                  Navigator.pop(context);
-                },
-              );
-            },
+  Widget _buildHeroAction({
+    required IconData icon,
+    required VoidCallback onTap,
+    required String tooltip,
+  }) {
+    return Tooltip(
+      message: tooltip,
+      child: Material(
+        color: Colors.white.withValues(alpha: 0.16),
+        borderRadius: AppRadii.brFull,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: AppRadii.brFull,
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpacing.space8),
+            child: Icon(icon, color: Colors.white, size: 22),
           ),
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+      ),
+    );
+  }
+
+  // ─── Settings sections ──────────────────────────────────────────────────
+  Widget _buildAccountSection() {
+    return _SettingsSection(
+      title: 'Account',
+      icon: Icons.person_outline_rounded,
+      items: [
+        _SettingRow(
+          icon: Icons.edit_outlined,
+          title: 'Edit profile',
+          onTap: () async {
+            final result = await Navigator.of(
+              context,
+            ).push(AppPageRoute.of(const EditProfileScreen()));
+            if (result != null) await _loadUserData();
+          },
+        ),
+        _SettingRow(
+          icon: Icons.lock_outline_rounded,
+          title: 'Change password',
+          onTap: () => Navigator.of(
+            context,
+          ).push(AppPageRoute.of(const ChangePasswordScreen())),
+        ),
+        const _BiometricRow(),
+        _SettingRow(
+          icon: Icons.privacy_tip_outlined,
+          title: 'Privacy',
+          onTap: () => Navigator.of(
+            context,
+          ).push(AppPageRoute.of(const PrivacySettingsScreen())),
+        ),
+        _SettingRow(
+          icon: Icons.notifications_outlined,
+          title: 'Push notifications',
+          trailing: Switch.adaptive(
+            value: _notificationsEnabled,
+            activeColor: AppColors.primary,
+            onChanged: (v) => setState(() => _notificationsEnabled = v),
           ),
-        ],
+          onTap: () =>
+              setState(() => _notificationsEnabled = !_notificationsEnabled),
+        ),
+      ],
+    ).animate().fadeIn(duration: AppMotion.base);
+  }
+
+  Widget _buildAppSection() {
+    return _SettingsSection(
+      title: 'App',
+      icon: Icons.tune_rounded,
+      items: [
+        _SettingRow(
+          icon: Icons.language_outlined,
+          title: 'Language',
+          subtitle: _selectedLanguage,
+          onTap: _showLanguageSheet,
+        ),
+        _SettingRow(
+          icon: Icons.cleaning_services_outlined,
+          title: 'Clear cache',
+          subtitle: 'Remove cached market data and listings',
+          onTap: _showClearCacheDialog,
+        ),
+      ],
+    ).animate().fadeIn(
+      duration: AppMotion.base,
+      delay: const Duration(milliseconds: 100),
+    );
+  }
+
+  Widget _buildSupportSection() {
+    return _SettingsSection(
+      title: 'Support',
+      icon: Icons.help_outline_rounded,
+      items: [
+        _SettingRow(
+          icon: Icons.live_help_outlined,
+          title: 'Help center',
+          onTap: () => Navigator.of(
+            context,
+          ).push(AppPageRoute.of(const HelpCenterScreen())),
+        ),
+        _SettingRow(
+          icon: Icons.report_problem_outlined,
+          title: 'Report a problem',
+          onTap: () => Navigator.of(
+            context,
+          ).push(AppPageRoute.of(const ReportProblemScreen())),
+        ),
+        _SettingRow(
+          icon: Icons.description_outlined,
+          title: 'Terms of service',
+          onTap: () => Navigator.of(
+            context,
+          ).push(AppPageRoute.of(const TermsOfServiceScreen())),
+        ),
+        _SettingRow(
+          icon: Icons.policy_outlined,
+          title: 'Privacy policy',
+          onTap: () => Navigator.of(
+            context,
+          ).push(AppPageRoute.of(const PrivacyPolicyScreen())),
+        ),
+      ],
+    ).animate().fadeIn(
+      duration: AppMotion.base,
+      delay: const Duration(milliseconds: 200),
+    );
+  }
+
+  // ─── Dialogs ────────────────────────────────────────────────────────────
+  void _showLanguageSheet() {
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: AppColors.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadii.xxl)),
+      ),
+      builder: (ctx) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            vertical: AppSpacing.space16,
+            horizontal: AppSpacing.space8,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: AppColors.outlineVariant,
+                  borderRadius: AppRadii.brFull,
+                ),
+              ),
+              const SizedBox(height: AppSpacing.space16),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.space16,
+                ),
+                child: Row(
+                  children: [
+                    Text(
+                      'Language',
+                      style: AppTextStyles.titleLarge.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: AppSpacing.space8),
+              ..._languages.map(
+                (lang) => ListTile(
+                  title: Text(lang, style: AppTextStyles.bodyLarge),
+                  trailing: lang == _selectedLanguage
+                      ? const Icon(
+                          Icons.check_circle_rounded,
+                          color: AppColors.primary,
+                        )
+                      : null,
+                  onTap: () {
+                    setState(() => _selectedLanguage = lang);
+                    Navigator.pop(ctx);
+                  },
+                ),
+              ),
+              const SizedBox(height: AppSpacing.space8),
+            ],
+          ),
+        ),
       ),
     );
   }
 
   void _showClearCacheDialog() {
-    showDialog(
+    showDialog<void>(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Clear Cache'),
+      builder: (dialogCtx) => AlertDialog(
+        title: const Text('Clear cache'),
         content: const Text(
-          'This will clear cached market data, product listings, and other temporary files. Your account stays signed in.',
+          'This will remove cached market data, product listings, and '
+          'other temporary files. Your account stays signed in.',
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
+            onPressed: () => Navigator.pop(dialogCtx),
             child: const Text('Cancel'),
           ),
-          TextButton(
+          FilledButton(
             onPressed: () async {
-              Navigator.pop(dialogContext);
+              Navigator.pop(dialogCtx);
               await _clearAppCache();
             },
             child: const Text('Clear'),
@@ -542,21 +498,362 @@ class _ProfileScreenState extends State<ProfileScreen> {
       await CacheService().clearCache();
       await OfflineStorageService().clearAll();
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Cache cleared successfully'),
-          backgroundColor: Colors.green,
-        ),
-      );
+      AppSnackBar.success(context, 'Cache cleared');
     } catch (e) {
       AppLogger.e('Failed to clear cache', tag: 'Profile', error: e);
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to clear cache: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      AppSnackBar.error(context, 'Could not clear cache');
     }
+  }
+
+  void _confirmSignOut() {
+    showDialog<void>(
+      context: context,
+      builder: (dialogCtx) => AlertDialog(
+        title: const Text('Sign out?'),
+        content: const Text(
+          "You'll need to sign in again to use the app. Any cached data "
+          "will remain on this device.",
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogCtx),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(backgroundColor: AppColors.danger),
+            onPressed: () {
+              Navigator.pop(dialogCtx);
+              _signOut();
+            },
+            child: const Text('Sign out'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SettingsSection extends StatelessWidget {
+  const _SettingsSection({
+    required this.title,
+    required this.icon,
+    required this.items,
+  });
+
+  final String title;
+  final IconData icon;
+  final List<Widget> items;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.space4,
+            vertical: AppSpacing.space8,
+          ),
+          child: Row(
+            children: [
+              Icon(icon, size: 16, color: AppColors.onSurfaceVariant),
+              const SizedBox(width: AppSpacing.space8),
+              Text(
+                title.toUpperCase(),
+                style: AppTextStyles.labelSmall.copyWith(
+                  color: AppColors.onSurfaceVariant,
+                  letterSpacing: 1.2,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ),
+        ),
+        AppCard(
+          padding: EdgeInsets.zero,
+          child: Column(
+            children: [
+              for (int i = 0; i < items.length; i++) ...[
+                items[i],
+                if (i < items.length - 1)
+                  const Divider(
+                    height: 1,
+                    thickness: 1,
+                    color: AppColors.outlineVariant,
+                    indent: AppSpacing.space56,
+                  ),
+              ],
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _SettingRow extends StatelessWidget {
+  const _SettingRow({
+    required this.icon,
+    required this.title,
+    this.subtitle,
+    this.trailing,
+    this.onTap,
+  });
+
+  final IconData icon;
+  final String title;
+  final String? subtitle;
+  final Widget? trailing;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      type: MaterialType.transparency,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.space16,
+            vertical: AppSpacing.space12,
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 36,
+                height: 36,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: AppColors.primaryContainer.withValues(alpha: 0.5),
+                  borderRadius: AppRadii.brMd,
+                ),
+                child: Icon(icon, size: 20, color: AppColors.primary),
+              ),
+              const SizedBox(width: AppSpacing.space12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: AppTextStyles.bodyLarge.copyWith(
+                        color: AppColors.onSurface,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    if (subtitle != null) ...[
+                      const SizedBox(height: 2),
+                      Text(
+                        subtitle!,
+                        style: AppTextStyles.bodySmall.copyWith(
+                          color: AppColors.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              const SizedBox(width: AppSpacing.space8),
+              trailing ??
+                  Icon(
+                    Icons.chevron_right_rounded,
+                    color: AppColors.onSurfaceVariant,
+                    size: 20,
+                  ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Inline biometric toggle row used inside the Profile settings list.
+///
+/// Intentionally does *not* delegate to `BiometricSettingsToggle` —
+/// that widget renders a [SwitchListTile], which expects to be a child
+/// of a Column-like surface and asserts when placed inside a flex
+/// [Row]. We render a plain [Switch.adaptive] as the trailing control
+/// so the row lays out correctly in the settings card.
+class _BiometricRow extends StatefulWidget {
+  const _BiometricRow();
+
+  @override
+  State<_BiometricRow> createState() => _BiometricRowState();
+}
+
+class _BiometricRowState extends State<_BiometricRow> {
+  final BiometricService _biometricService = BiometricService();
+
+  bool _loading = true;
+  bool _available = false;
+  bool _enabled = false;
+  String _typeName = 'Biometric';
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    try {
+      final canCheck = await _biometricService.canCheckBiometrics();
+      final isEnabled = await _biometricService.isBiometricEnabled();
+      final typeName = await _biometricService.getBiometricTypeName();
+      if (!mounted) return;
+      setState(() {
+        _available = canCheck;
+        _enabled = isEnabled;
+        _typeName = typeName;
+        _loading = false;
+      });
+    } catch (e) {
+      AppLogger.w('Biometric check failed: $e', tag: 'Profile');
+      if (!mounted) return;
+      setState(() => _loading = false);
+    }
+  }
+
+  Future<void> _toggle(bool value) async {
+    if (!_available) return;
+    HapticUtils.selection();
+    try {
+      if (value) {
+        final ok = await _biometricService.enableBiometric();
+        if (!mounted) return;
+        if (ok) {
+          setState(() => _enabled = true);
+          AppSnackBar.success(context, '$_typeName login enabled');
+        }
+      } else {
+        await _biometricService.disableBiometric();
+        if (!mounted) return;
+        setState(() => _enabled = false);
+        AppSnackBar.info(context, '$_typeName login disabled');
+      }
+    } catch (e) {
+      AppLogger.e('Biometric toggle failed', tag: 'Profile', error: e);
+      if (!mounted) return;
+      AppSnackBar.error(context, 'Could not update biometric login');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final subtitle = _loading
+        ? 'Checking…'
+        : !_available
+        ? 'Not available on this device'
+        : _enabled
+        ? 'Enabled'
+        : 'Disabled';
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.space16,
+        vertical: AppSpacing.space8,
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 36,
+            height: 36,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: AppColors.primaryContainer.withValues(alpha: 0.5),
+              borderRadius: AppRadii.brMd,
+            ),
+            child: const Icon(
+              Icons.fingerprint_rounded,
+              size: 20,
+              color: AppColors.primary,
+            ),
+          ),
+          const SizedBox(width: AppSpacing.space12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '$_typeName login',
+                  style: AppTextStyles.bodyLarge.copyWith(
+                    color: AppColors.onSurface,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  subtitle,
+                  style: AppTextStyles.bodySmall.copyWith(
+                    color: AppColors.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: AppSpacing.space8),
+          SizedBox(
+            height: 32,
+            child: _loading
+                ? const Padding(
+                    padding: EdgeInsets.all(6),
+                    child: SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: AppColors.primary,
+                      ),
+                    ),
+                  )
+                : Switch.adaptive(
+                    value: _enabled,
+                    activeColor: AppColors.primary,
+                    onChanged: _available ? _toggle : null,
+                  ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _EditProfileButton extends StatelessWidget {
+  const _EditProfileButton({required this.onPressed});
+
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.white.withValues(alpha: 0.18),
+      borderRadius: AppRadii.brFull,
+      child: InkWell(
+        onTap: onPressed,
+        borderRadius: AppRadii.brFull,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.space16,
+            vertical: AppSpacing.space8,
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.edit_outlined, color: Colors.white, size: 16),
+              const SizedBox(width: AppSpacing.space8),
+              Text(
+                'Edit profile',
+                style: AppTextStyles.labelLarge.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

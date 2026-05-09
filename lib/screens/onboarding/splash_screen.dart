@@ -1,16 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:kisan_veer/constants/app_colors.dart';
 import 'package:kisan_veer/constants/app_constants.dart';
+import 'package:kisan_veer/constants/app_motion.dart';
+import 'package:kisan_veer/constants/app_radii.dart';
+import 'package:kisan_veer/constants/app_spacing.dart';
+import 'package:kisan_veer/constants/app_text_styles.dart';
 import 'package:kisan_veer/screens/auth/login_screen.dart';
 import 'package:kisan_veer/screens/home/main_screen.dart';
+import 'package:kisan_veer/widgets/ui/app_page_route.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'dart:math' as math;
 
-/// Premium animated splash screen with glassmorphism effects
+/// Brand-first splash screen.
+///
+/// Shows the KisanVeer mark and tagline on a brand-gradient background
+/// for a short, deliberate moment, then routes to either [MainScreen]
+/// or [LoginScreen] depending on the Supabase session.
+///
+/// Total visible time target: ~1.6 s on a warm start. The previous
+/// v1 splash ran particle animations, rotating rings, and a pulse
+/// effect that pushed the total to ~2.8 s and felt busy; this version
+/// favours a single, confident brand moment.
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({Key? key}) : super(key: key);
+  const SplashScreen({super.key});
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
@@ -18,83 +30,51 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen>
     with TickerProviderStateMixin {
-  late AnimationController _logoController;
-  late AnimationController _backgroundController;
-  late AnimationController _pulseController;
-  late Animation<double> _logoScale;
-  late Animation<double> _logoRotation;
-  late Animation<double> _pulseAnimation;
+  late final AnimationController _logoController;
+  late final AnimationController _contentController;
 
-  bool _showContent = false;
-  bool _showLoader = false;
+  /// Guards against double-navigation if the async check finishes
+  /// while the widget is being torn down.
   bool _isNavigating = false;
 
   @override
   void initState() {
     super.initState();
-    _initializeAnimations();
-    _startAnimationSequence();
 
-    // Set status bar style
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
         statusBarIconBrightness: Brightness.light,
+        statusBarBrightness: Brightness.dark,
       ),
     );
-  }
 
-  void _initializeAnimations() {
-    // Logo animation controller
     _logoController = AnimationController(
-      duration: const Duration(milliseconds: 1500),
       vsync: this,
+      duration: AppMotion.slow,
     );
-
-    // Background particle animation
-    _backgroundController = AnimationController(
-      duration: const Duration(seconds: 20),
+    _contentController = AnimationController(
       vsync: this,
-    )..repeat();
-
-    // Pulse animation for logo glow
-    _pulseController = AnimationController(
-      duration: const Duration(milliseconds: 2000),
-      vsync: this,
-    )..repeat(reverse: true);
-
-    _logoScale = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _logoController, curve: Curves.elasticOut),
+      duration: AppMotion.base,
     );
 
-    _logoRotation = Tween<double>(begin: -0.1, end: 0.0).animate(
-      CurvedAnimation(parent: _logoController, curve: Curves.easeOutBack),
-    );
-
-    _pulseAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
-      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
-    );
+    _runSequence();
   }
 
-  void _startAnimationSequence() async {
-    // Start logo animation
-    await Future.delayed(const Duration(milliseconds: 300));
+  Future<void> _runSequence() async {
+    // Let the frame settle before kicking off the logo reveal.
+    await Future.delayed(AppMotion.fast);
+    if (!mounted) return;
     _logoController.forward();
 
-    // Show content after logo animation
-    await Future.delayed(const Duration(milliseconds: 800));
-    if (mounted) {
-      setState(() => _showContent = true);
-    }
+    await Future.delayed(AppMotion.base);
+    if (!mounted) return;
+    _contentController.forward();
 
-    // Show loader
-    await Future.delayed(const Duration(milliseconds: 500));
-    if (mounted) {
-      setState(() => _showLoader = true);
-    }
-
-    // Navigate after splash
-    await Future.delayed(const Duration(milliseconds: 2000));
+    // Keep the brand moment visible for ~1 s after content lands so
+    // users don't feel yanked to the next screen.
+    await Future.delayed(const Duration(milliseconds: 900));
+    if (!mounted) return;
     _navigateToNextScreen();
   }
 
@@ -102,32 +82,15 @@ class _SplashScreenState extends State<SplashScreen>
     if (_isNavigating || !mounted) return;
     _isNavigating = true;
 
-    // Check if user is logged in
     final session = Supabase.instance.client.auth.currentSession;
+    final Widget next = session != null
+        ? const MainScreen()
+        : const LoginScreen();
 
     Navigator.of(context).pushReplacement(
-      PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) =>
-            session != null ? const MainScreen() : const LoginScreen(),
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          return FadeTransition(
-            opacity: animation,
-            child: SlideTransition(
-              position:
-                  Tween<Offset>(
-                    begin: const Offset(0, 0.1),
-                    end: Offset.zero,
-                  ).animate(
-                    CurvedAnimation(
-                      parent: animation,
-                      curve: Curves.easeOutCubic,
-                    ),
-                  ),
-              child: child,
-            ),
-          );
-        },
-        transitionDuration: const Duration(milliseconds: 800),
+      AppPageRoute<void>(
+        builder: (_) => next,
+        transition: AppPageTransition.fadeThrough,
       ),
     );
   }
@@ -135,161 +98,100 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   void dispose() {
     _logoController.dispose();
-    _backgroundController.dispose();
-    _pulseController.dispose();
+    _contentController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-
     return Scaffold(
-      body: Stack(
-        children: [
-          // Animated gradient background
-          _buildAnimatedBackground(size),
-
-          // Floating particles
-          _buildFloatingParticles(size),
-
-          // Main content
-          SafeArea(
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Spacer(flex: 2),
-
-                  // Animated logo with glow
-                  _buildAnimatedLogo(),
-
-                  const SizedBox(height: 40),
-
-                  // App name with gradient
-                  if (_showContent) _buildAppName(),
-
-                  const SizedBox(height: 12),
-
-                  // Tagline
-                  if (_showContent) _buildTagline(),
-
-                  const Spacer(flex: 2),
-
-                  // Premium loader
-                  if (_showLoader) _buildPremiumLoader(),
-
-                  const SizedBox(height: 40),
-
-                  // Version info
-                  if (_showContent) _buildVersionInfo(),
-
-                  const SizedBox(height: 20),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildAnimatedBackground(Size size) {
-    return AnimatedBuilder(
-      animation: _backgroundController,
-      builder: (context, child) {
-        return Container(
-          decoration: BoxDecoration(
+      body: AnnotatedRegion<SystemUiOverlayStyle>(
+        value: const SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          statusBarIconBrightness: Brightness.light,
+          statusBarBrightness: Brightness.dark,
+          systemNavigationBarColor: AppColors.primary,
+          systemNavigationBarIconBrightness: Brightness.light,
+        ),
+        child: Container(
+          decoration: const BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [
-                AppColors.primary.withValues(alpha: 0.9),
-                AppColors.primary,
-                const Color(0xFF064E2B),
-                const Color(0xFF032615),
-              ],
-              stops: const [0.0, 0.3, 0.7, 1.0],
+              colors: AppColors.brandGradient,
             ),
           ),
-        );
-      },
+          child: SafeArea(
+            child: Column(
+              children: [
+                const Spacer(flex: 5),
+                _LogoReveal(controller: _logoController),
+                const SizedBox(height: AppSpacing.space24),
+                _BrandText(controller: _contentController),
+                const Spacer(flex: 4),
+                _ProgressStrip(controller: _contentController),
+                const SizedBox(height: AppSpacing.space32),
+                _Footer(controller: _contentController),
+                const SizedBox(height: AppSpacing.space24),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
+}
 
-  Widget _buildFloatingParticles(Size size) {
-    return AnimatedBuilder(
-      animation: _backgroundController,
-      builder: (context, child) {
-        return CustomPaint(
-          size: size,
-          painter: ParticlesPainter(animation: _backgroundController.value),
-        );
-      },
-    );
-  }
+class _LogoReveal extends StatelessWidget {
+  const _LogoReveal({required this.controller});
 
-  Widget _buildAnimatedLogo() {
+  final AnimationController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    final scale = Tween<double>(begin: 0.85, end: 1.0)
+        .chain(CurveTween(curve: AppMotion.emphasizedDecelerate))
+        .animate(controller);
+    final fade = CurvedAnimation(parent: controller, curve: Curves.easeOut);
+
     return AnimatedBuilder(
-      animation: Listenable.merge([_logoController, _pulseController]),
-      builder: (context, child) {
-        return Transform.scale(
-          scale: _logoScale.value * _pulseAnimation.value,
-          child: Transform.rotate(
-            angle: _logoRotation.value,
+      animation: controller,
+      builder: (context, _) {
+        return Opacity(
+          opacity: fade.value,
+          child: Transform.scale(
+            scale: scale.value,
             child: Container(
-              width: 140,
-              height: 140,
+              width: 112,
+              height: 112,
               decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.white.withValues(alpha: 0.3),
-                    blurRadius: 30,
-                    spreadRadius: 10,
-                  ),
-                  BoxShadow(
-                    color: AppColors.primary.withValues(alpha: 0.5),
-                    blurRadius: 60,
-                    spreadRadius: 20,
-                  ),
-                ],
+                color: Colors.white.withValues(alpha: 0.14),
+                borderRadius: AppRadii.brXxl,
+                border: Border.all(
+                  color: Colors.white.withValues(alpha: 0.24),
+                  width: 1,
+                ),
               ),
               child: Center(
-                child: ClipOval(
-                  child: Image.asset(
-                    AppConstants.logoPath,
-                    width: 100,
-                    height: 100,
-                    fit: BoxFit.contain,
-                    errorBuilder: (context, error, stackTrace) {
-                      // Fallback to styled initials
-                      return Container(
-                        width: 100,
-                        height: 100,
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: AppColors.greenGradient,
-                          ),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Center(
-                          child: Text(
-                            'KV',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 42,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: 'Poppins',
-                              letterSpacing: 2,
-                            ),
-                          ),
-                        ),
-                      );
-                    },
+                child: Container(
+                  width: 80,
+                  height: 80,
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(AppSpacing.space16),
+                    child: Image.asset(
+                      AppConstants.logoPath,
+                      errorBuilder: (context, error, stack) {
+                        return const Icon(
+                          Icons.eco_rounded,
+                          size: 36,
+                          color: AppColors.primary,
+                        );
+                      },
+                    ),
                   ),
                 ),
               ),
@@ -299,167 +201,113 @@ class _SplashScreenState extends State<SplashScreen>
       },
     );
   }
+}
 
-  Widget _buildAppName() {
-    return ShaderMask(
-          shaderCallback: (bounds) => const LinearGradient(
-            colors: [Colors.white, Color(0xFFE8F5E9)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ).createShader(bounds),
-          child: const Text(
-            'Kisan Veer',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 42,
-              fontWeight: FontWeight.bold,
-              fontFamily: 'Poppins',
-              letterSpacing: 2,
-            ),
-          ),
-        )
-        .animate()
-        .fadeIn(duration: 600.ms, delay: 200.ms)
-        .slideY(
-          begin: 0.3,
-          end: 0,
-          duration: 600.ms,
-          curve: Curves.easeOutCubic,
-        );
-  }
+class _BrandText extends StatelessWidget {
+  const _BrandText({required this.controller});
 
-  Widget _buildTagline() {
-    return Text(
-          AppConstants.appTagline,
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            color: Colors.white.withValues(alpha: 0.85),
-            fontSize: 16,
-            fontFamily: 'Poppins',
-            fontWeight: FontWeight.w400,
-            letterSpacing: 0.5,
-          ),
-        )
-        .animate()
-        .fadeIn(duration: 600.ms, delay: 400.ms)
-        .slideY(
-          begin: 0.3,
-          end: 0,
-          duration: 600.ms,
-          curve: Curves.easeOutCubic,
-        );
-  }
+  final AnimationController controller;
 
-  Widget _buildPremiumLoader() {
-    return Column(
+  @override
+  Widget build(BuildContext context) {
+    final fade = CurvedAnimation(parent: controller, curve: Curves.easeOut);
+    final rise = Tween<Offset>(begin: const Offset(0, 0.15), end: Offset.zero)
+        .chain(CurveTween(curve: AppMotion.emphasizedDecelerate))
+        .animate(controller);
+
+    return FadeTransition(
+      opacity: fade,
+      child: SlideTransition(
+        position: rise,
+        child: Column(
           children: [
-            // Custom animated loader
-            SizedBox(
-              width: 50,
-              height: 50,
-              child: Stack(
-                children: [
-                  // Outer ring
-                  _buildAnimatedRing(50, 3, 0),
-                  // Middle ring
-                  Center(child: _buildAnimatedRing(35, 2.5, 0.3)),
-                  // Inner ring
-                  Center(child: _buildAnimatedRing(20, 2, 0.6)),
-                ],
+            Text(
+              AppConstants.appName,
+              style: AppTextStyles.headlineLarge.copyWith(
+                color: Colors.white,
+                letterSpacing: 0.5,
               ),
             ),
-            const SizedBox(height: 20),
-            Text(
-              'Loading your farm assistant...',
-              style: TextStyle(
+            const SizedBox(height: AppSpacing.space8),
+            Container(
+              width: 48,
+              height: 3,
+              decoration: BoxDecoration(
                 color: Colors.white.withValues(alpha: 0.7),
-                fontSize: 14,
-                fontFamily: 'Poppins',
+                borderRadius: AppRadii.brFull,
+              ),
+            ),
+            const SizedBox(height: AppSpacing.space16),
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.space32,
+              ),
+              child: Text(
+                AppConstants.appTagline,
+                textAlign: TextAlign.center,
+                style: AppTextStyles.bodyMedium.copyWith(
+                  color: Colors.white.withValues(alpha: 0.9),
+                ),
               ),
             ),
           ],
-        )
-        .animate()
-        .fadeIn(duration: 500.ms)
-        .scale(begin: const Offset(0.8, 0.8), end: const Offset(1, 1));
+        ),
+      ),
+    );
   }
+}
 
-  Widget _buildAnimatedRing(double size, double strokeWidth, double delay) {
-    return SizedBox(
-          width: size,
-          height: size,
-          child: CircularProgressIndicator(
-            strokeWidth: strokeWidth,
-            valueColor: AlwaysStoppedAnimation<Color>(
-              Colors.white.withValues(alpha: 0.8 - delay),
+class _ProgressStrip extends StatelessWidget {
+  const _ProgressStrip({required this.controller});
+
+  final AnimationController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    return FadeTransition(
+      opacity: CurvedAnimation(parent: controller, curve: Curves.easeIn),
+      child: SizedBox(
+        width: 140,
+        child: ClipRRect(
+          borderRadius: AppRadii.brFull,
+          child: LinearProgressIndicator(
+            minHeight: 3,
+            backgroundColor: Colors.white.withValues(alpha: 0.2),
+            valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _Footer extends StatelessWidget {
+  const _Footer({required this.controller});
+
+  final AnimationController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    return FadeTransition(
+      opacity: CurvedAnimation(parent: controller, curve: Curves.easeIn),
+      child: Column(
+        children: [
+          Text(
+            'v${AppConstants.appVersion}',
+            style: AppTextStyles.labelSmall.copyWith(
+              color: Colors.white.withValues(alpha: 0.7),
+              letterSpacing: 1.2,
             ),
           ),
-        )
-        .animate(onPlay: (controller) => controller.repeat())
-        .rotate(
-          duration: Duration(milliseconds: (1500 + delay * 1000).toInt()),
-        );
-  }
-
-  Widget _buildVersionInfo() {
-    return Text(
-      'Version ${AppConstants.appVersion}',
-      style: TextStyle(
-        color: Colors.white.withValues(alpha: 0.5),
-        fontSize: 12,
-        fontFamily: 'Poppins',
+          const SizedBox(height: AppSpacing.space4),
+          Text(
+            'Built with care for Indian farmers',
+            style: AppTextStyles.labelSmall.copyWith(
+              color: Colors.white.withValues(alpha: 0.55),
+            ),
+          ),
+        ],
       ),
-    ).animate().fadeIn(duration: 500.ms, delay: 600.ms);
-  }
-}
-
-/// Custom painter for floating particles effect
-class ParticlesPainter extends CustomPainter {
-  final double animation;
-  final List<Particle> particles;
-
-  ParticlesPainter({required this.animation})
-    : particles = List.generate(30, (index) => Particle(index));
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()..style = PaintingStyle.fill;
-
-    for (var particle in particles) {
-      final progress = (animation + particle.offset) % 1.0;
-      final x = particle.x * size.width;
-      final y = (particle.y + progress) % 1.0 * size.height;
-
-      paint.color = Colors.white.withValues(
-        alpha: particle.opacity * (1 - progress) * 0.3,
-      );
-
-      canvas.drawCircle(Offset(x, y), particle.size, paint);
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant ParticlesPainter oldDelegate) {
-    return oldDelegate.animation != animation;
-  }
-}
-
-/// Particle data class
-class Particle {
-  final double x;
-  final double y;
-  final double size;
-  final double opacity;
-  final double offset;
-
-  Particle(int seed)
-    : x = _random(seed * 1),
-      y = _random(seed * 2),
-      size = 1 + _random(seed * 3) * 3,
-      opacity = 0.3 + _random(seed * 4) * 0.7,
-      offset = _random(seed * 5);
-
-  static double _random(int seed) {
-    return ((math.sin(seed.toDouble()) * 10000) % 1).abs();
+    );
   }
 }

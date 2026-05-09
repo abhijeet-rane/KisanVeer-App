@@ -1,13 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:kisan_veer/constants/app_colors.dart';
+import 'package:kisan_veer/constants/app_motion.dart';
+import 'package:kisan_veer/constants/app_radii.dart';
+import 'package:kisan_veer/constants/app_spacing.dart';
+import 'package:kisan_veer/constants/app_text_styles.dart';
 import 'package:kisan_veer/models/community_models.dart';
-import 'package:kisan_veer/screens/community/create_post_screen.dart';
-import 'package:kisan_veer/services/community_service.dart';
-import 'package:kisan_veer/widgets/post_card.dart';
-import 'package:kisan_veer/screens/community/post_details_screen.dart';
 import 'package:kisan_veer/screens/community/communities_screen.dart';
+import 'package:kisan_veer/screens/community/create_post_screen.dart';
+import 'package:kisan_veer/screens/community/post_details_screen.dart';
+import 'package:kisan_veer/services/community_service.dart';
+import 'package:kisan_veer/utils/app_logger.dart';
+import 'package:kisan_veer/widgets/post_card.dart';
+import 'package:kisan_veer/widgets/ui/ui.dart';
 
+/// V2 community hub.
+///
+/// Two-tab surface (Discussions / Communities). The Discussions tab
+/// shows category pills + paginated post feed; the Communities tab
+/// delegates to the existing [CommunitiesScreen].
 class CommunityScreen extends StatefulWidget {
-  const CommunityScreen({Key? key}) : super(key: key);
+  const CommunityScreen({super.key});
 
   @override
   State<CommunityScreen> createState() => _CommunityScreenState();
@@ -26,12 +38,14 @@ class _CommunityScreenState extends State<CommunityScreen>
   bool _hasMore = true;
   int _offset = 0;
 
+  static const int _pageSize = 10;
+
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
     _tabController.addListener(() {
-      setState(() {}); // Ensures UI updates when the tab changes
+      if (mounted) setState(() {});
     });
     _scrollController.addListener(_onScroll);
     _loadInitialData();
@@ -44,8 +58,6 @@ class _CommunityScreenState extends State<CommunityScreen>
     super.dispose();
   }
 
-  static const int _pageSize = 10;
-
   Future<void> _loadInitialData() async {
     setState(() => _isLoading = true);
     try {
@@ -55,7 +67,7 @@ class _CommunityScreenState extends State<CommunityScreen>
         offset: 0,
         limit: _pageSize,
       );
-
+      if (!mounted) return;
       setState(() {
         _categories = categories;
         _posts = posts;
@@ -63,15 +75,11 @@ class _CommunityScreenState extends State<CommunityScreen>
         _offset = posts.length;
       });
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error loading data: $e')));
-      }
+      AppLogger.e('Community load failed', tag: 'Community', error: e);
+      if (!mounted) return;
+      AppSnackBar.error(context, 'Could not load community');
     } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -84,7 +92,6 @@ class _CommunityScreenState extends State<CommunityScreen>
 
   Future<void> _loadMorePosts() async {
     if (_isLoading || !_hasMore) return;
-
     setState(() => _isLoading = true);
     try {
       final posts = await _communityService.getPosts(
@@ -92,24 +99,16 @@ class _CommunityScreenState extends State<CommunityScreen>
         offset: _offset,
         limit: _pageSize,
       );
-
-      if (mounted) {
-        setState(() {
-          _posts.addAll(posts);
-          _hasMore = posts.length >= _pageSize;
-          _offset += posts.length;
-        });
-      }
+      if (!mounted) return;
+      setState(() {
+        _posts.addAll(posts);
+        _hasMore = posts.length >= _pageSize;
+        _offset += posts.length;
+      });
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error loading more posts: $e')));
-      }
+      AppLogger.e('Load more posts failed', tag: 'Community', error: e);
     } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -124,22 +123,13 @@ class _CommunityScreenState extends State<CommunityScreen>
 
   Future<void> _createPost() async {
     if (_categories.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please wait for categories to load')),
-      );
+      AppSnackBar.info(context, 'Still loading categories, try again');
       return;
     }
-
-    final result = await Navigator.push<bool>(
+    final result = await Navigator.of(
       context,
-      MaterialPageRoute(
-        builder: (context) => CreatePostScreen(categories: _categories),
-      ),
-    );
-
-    if (result == true && mounted) {
-      _refreshPosts();
-    }
+    ).push<bool>(AppPageRoute.of(CreatePostScreen(categories: _categories)));
+    if (result == true && mounted) _refreshPosts();
   }
 
   void _onCategorySelected(String? category) {
@@ -155,23 +145,33 @@ class _CommunityScreenState extends State<CommunityScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Community'),
-        actions: _tabController.index == 1
-            ? [
-                IconButton(
-                  icon: const Icon(Icons.search),
-                  onPressed: () {
-                    showSearch(
-                      context: context,
-                      delegate: CommunitySearchDelegate(_communityService),
-                    );
-                  },
-                ),
-              ]
-            : null,
+      backgroundColor: AppColors.background,
+      appBar: AppAppBar(
+        title: 'Community',
+        showBack: false,
+        actions: [
+          if (_tabController.index == 1)
+            IconButton(
+              icon: const Icon(Icons.search_rounded),
+              tooltip: 'Search communities',
+              onPressed: () {
+                showSearch<dynamic>(
+                  context: context,
+                  delegate: CommunitySearchDelegate(_communityService),
+                );
+              },
+            ),
+        ],
         bottom: TabBar(
           controller: _tabController,
+          indicatorColor: AppColors.primary,
+          indicatorWeight: 3,
+          labelColor: AppColors.primary,
+          unselectedLabelColor: AppColors.onSurfaceVariant,
+          labelStyle: AppTextStyles.titleSmall.copyWith(
+            fontWeight: FontWeight.w700,
+          ),
+          unselectedLabelStyle: AppTextStyles.titleSmall,
           tabs: const [
             Tab(text: 'Discussions'),
             Tab(text: 'Communities'),
@@ -180,119 +180,172 @@ class _CommunityScreenState extends State<CommunityScreen>
       ),
       body: TabBarView(
         controller: _tabController,
-        children: [
-          // Discussions Tab
-          RefreshIndicator(
-            onRefresh: _refreshPosts,
-            child: Column(
-              children: [
-                // Category selector
-                if (_categories.isNotEmpty)
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    child: Row(
-                      children: [
-                        const SizedBox(width: 16),
-                        FilterChip(
-                          label: const Text('All'),
-                          selected: _selectedCategory == null,
-                          onSelected: (_) => _onCategorySelected(null),
-                        ),
-                        const SizedBox(width: 8),
-                        ..._categories.map(
-                          (category) => Padding(
-                            padding: const EdgeInsets.only(right: 8),
-                            child: FilterChip(
-                              label: Text(category.name),
-                              selected: category.name == _selectedCategory,
-                              onSelected: (_) =>
-                                  _onCategorySelected(category.name),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                // Posts list
-                Expanded(
-                  child: _isLoading && _posts.isEmpty
-                      ? const Center(child: CircularProgressIndicator())
-                      : ListView.builder(
-                          controller: _scrollController,
-                          padding: const EdgeInsets.all(16),
-                          itemCount: _posts.length + 1,
-                          itemBuilder: (context, index) {
-                            if (index == _posts.length) {
-                              return _hasMore
-                                  ? const Center(
-                                      child: Padding(
-                                        padding: EdgeInsets.all(16),
-                                        child: CircularProgressIndicator(),
-                                      ),
-                                    )
-                                  : const SizedBox();
-                            }
-
-                            final post = _posts[index];
-                            return PostCard(
-                              post: post,
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        PostDetailsScreen(post: post),
-                                  ),
-                                );
-                              },
-                              onLike: () async {
-                                try {
-                                  if (post.isLikedByUser) {
-                                    await _communityService.unlikePost(post.id);
-                                    setState(() {
-                                      post.isLikedByUser = false;
-                                      post.likesCount--;
-                                    });
-                                  } else {
-                                    await _communityService.likePost(post.id);
-                                    setState(() {
-                                      post.isLikedByUser = true;
-                                      post.likesCount++;
-                                    });
-                                  }
-                                } catch (e) {
-                                  if (mounted) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(content: Text('Error: $e')),
-                                    );
-                                  }
-                                }
-                              },
-                            );
-                          },
-                        ),
-                ),
-              ],
-            ),
-          ),
-
-          // Communities Tab (to be implemented)
-          // Communities Tab
-          const CommunitiesScreen(),
-        ],
+        children: [_buildDiscussionsTab(), const CommunitiesScreen()],
       ),
       floatingActionButton: AnimatedBuilder(
         animation: _tabController,
-        builder: (context, child) {
-          return _tabController.index == 0
-              ? FloatingActionButton(
-                  onPressed: _createPost,
-                  child: const Icon(Icons.add),
-                )
-              : SizedBox(); // Empty SizedBox hides the button
+        builder: (context, _) {
+          if (_tabController.index != 0) return const SizedBox.shrink();
+          return FloatingActionButton.extended(
+            onPressed: _createPost,
+            backgroundColor: AppColors.primary,
+            foregroundColor: Colors.white,
+            icon: const Icon(Icons.edit_rounded),
+            label: const Text('New post'),
+          );
         },
+      ),
+    );
+  }
+
+  Widget _buildDiscussionsTab() {
+    return RefreshIndicator(
+      onRefresh: _refreshPosts,
+      color: AppColors.primary,
+      child: Column(
+        children: [
+          if (_categories.isNotEmpty)
+            SizedBox(
+              height: 52,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.space16,
+                  vertical: AppSpacing.space8,
+                ),
+                itemCount: _categories.length + 1,
+                separatorBuilder: (_, _) =>
+                    const SizedBox(width: AppSpacing.space8),
+                itemBuilder: (context, index) {
+                  if (index == 0) {
+                    return _CategoryPill(
+                      label: 'All',
+                      selected: _selectedCategory == null,
+                      onTap: () => _onCategorySelected(null),
+                    );
+                  }
+                  final category = _categories[index - 1];
+                  return _CategoryPill(
+                    label: category.name,
+                    selected: category.name == _selectedCategory,
+                    onTap: () => _onCategorySelected(category.name),
+                  );
+                },
+              ),
+            ),
+          Expanded(
+            child: _isLoading && _posts.isEmpty
+                ? const AppLoadingState(message: 'Loading discussions…')
+                : _posts.isEmpty
+                ? const AppEmptyState(
+                    icon: Icons.forum_outlined,
+                    title: 'No discussions yet',
+                    message:
+                        'Be the first to start a conversation. Tap '
+                        '"New post" below.',
+                  )
+                : ListView.builder(
+                    controller: _scrollController,
+                    padding: const EdgeInsets.fromLTRB(
+                      AppSpacing.space16,
+                      AppSpacing.space8,
+                      AppSpacing.space16,
+                      AppSpacing.space96,
+                    ),
+                    itemCount: _posts.length + 1,
+                    itemBuilder: (context, index) {
+                      if (index == _posts.length) {
+                        if (!_hasMore) return const SizedBox.shrink();
+                        return const Padding(
+                          padding: EdgeInsets.all(AppSpacing.space16),
+                          child: Center(
+                            child: CircularProgressIndicator(
+                              color: AppColors.primary,
+                              strokeWidth: 2,
+                            ),
+                          ),
+                        );
+                      }
+                      final post = _posts[index];
+                      return PostCard(
+                        post: post,
+                        onTap: () => Navigator.of(
+                          context,
+                        ).push(AppPageRoute.of(PostDetailsScreen(post: post))),
+                        onLike: () => _togglePostLike(post),
+                      );
+                    },
+                  ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _togglePostLike(Post post) async {
+    try {
+      if (post.isLikedByUser) {
+        await _communityService.unlikePost(post.id);
+        if (!mounted) return;
+        setState(() {
+          post.isLikedByUser = false;
+          post.likesCount--;
+        });
+      } else {
+        await _communityService.likePost(post.id);
+        if (!mounted) return;
+        setState(() {
+          post.isLikedByUser = true;
+          post.likesCount++;
+        });
+      }
+    } catch (e) {
+      AppLogger.e('Toggle post like failed', tag: 'Community', error: e);
+      if (!mounted) return;
+      AppSnackBar.error(context, 'Could not update like');
+    }
+  }
+}
+
+class _CategoryPill extends StatelessWidget {
+  const _CategoryPill({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: AppRadii.brFull,
+        child: AnimatedContainer(
+          duration: AppMotion.fast,
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.space16,
+            vertical: AppSpacing.space8,
+          ),
+          decoration: BoxDecoration(
+            color: selected ? AppColors.primary : AppColors.surface,
+            borderRadius: AppRadii.brFull,
+            border: Border.all(
+              color: selected ? AppColors.primary : AppColors.outlineVariant,
+            ),
+          ),
+          child: Text(
+            label,
+            style: AppTextStyles.labelLarge.copyWith(
+              color: selected ? AppColors.onPrimary : AppColors.onSurface,
+              fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+            ),
+          ),
+        ),
       ),
     );
   }

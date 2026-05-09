@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:kisan_veer/constants/app_colors.dart';
+import 'package:kisan_veer/widgets/ui/ui.dart';
 import 'package:kisan_veer/constants/app_text_styles.dart';
 import 'package:kisan_veer/models/financial_models.dart';
 import 'package:kisan_veer/services/financial_service.dart';
@@ -135,10 +136,8 @@ class _AddLoanScreenState extends State<AddLoanScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Add New Loan'),
-        backgroundColor: AppColors.primary,
-      ),
+      backgroundColor: AppColors.background,
+      appBar: const AppAppBar(title: 'Add new loan', showBack: true),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Form(

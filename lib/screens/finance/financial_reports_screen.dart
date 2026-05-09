@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:kisan_veer/constants/app_colors.dart';
+import 'package:kisan_veer/widgets/ui/ui.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../../services/financial_service.dart';
 
@@ -60,9 +62,10 @@ class _FinancialReportsScreenState extends State<FinancialReportsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Financial Reports')),
+      backgroundColor: AppColors.background,
+      appBar: const AppAppBar(title: 'Financial reports', showBack: true),
       body: _isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? const AppLoadingState(message: 'Crunching numbers…')
           : SingleChildScrollView(
               padding: const EdgeInsets.all(16.0),
               child: Column(
